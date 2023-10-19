@@ -6,8 +6,8 @@ RUN npm run build
 
 FROM node:18-alpine AS final
 WORKDIR /app
-COPY --from=builder ./app/dist ./dist
-COPY package*.json ./
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package*.json ./
 RUN npm ci
 ENV PORT=5000
 ENV NODE_ENV=production

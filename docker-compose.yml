@@ -6,28 +6,24 @@ services:
       context: ./backend
     depends_on:
       - mongo
+      - redis
     ports:
       - 5000:5000
-
-  phishit-ui:
-    build:
-      context: ./frontend
-    depends_on:
-      - phishit-api
-    ports:
-      - 3000:3000
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb://mongo:27017/merodera?authSource=admin
 
   mongo:
     image: mongo
     ports:
-      - 27017:27017
+      - "27017:27017"
     volumes:
       - mongo-db:/data/db
 
   redis:
     image: redis
     ports:
-      - 6379:6379
+      - "6379:6379"
     volumes:
       - redis-data:/data
 
