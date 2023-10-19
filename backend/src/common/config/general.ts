@@ -1,0 +1,3 @@
+const OTP_EXPIRATION_DURATION = 5 * 60 * 1000; // 5 minutes
+
+export { OTP_EXPIRATION_DURATION };

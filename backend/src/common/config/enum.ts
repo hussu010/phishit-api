@@ -4,5 +4,7 @@ const UserRole = {
   ADMIN: "ADMIN",
   SUPER_ADMIN: "SUPER_ADMIN",
 };
+const OTPTypeEnum = ["AUTH"];
+type OtpType = "AUTH";
 
-export { UserEnum, UserRole };
+export { UserEnum, UserRole, OTPTypeEnum, OtpType };

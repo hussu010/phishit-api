@@ -1,11 +1,16 @@
 import express, { Express } from "express";
 import dotenv from "dotenv";
-
 dotenv.config();
+
+if (process.env.NODE_ENV !== "test") {
+  import("./src/common/config/db-connect");
+}
 
 import morgan from "morgan";
 import cors from "cors";
 import { stream } from "./src/common/config/winston";
+
+import authRouter from "./src/auth/auth.route";
 
 const app: Express = express();
 
@@ -19,5 +24,7 @@ app.use(
   )
 );
 app.use(express.json());
+
+app.use("/api/auth", authRouter);
 
 export default app;
