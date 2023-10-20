@@ -1,4 +1,4 @@
-import { ErrorRequestHandler } from "express";
+import { ErrorRequestHandler, Request, Response, NextFunction } from "express";
 
 import winston from "../config/winston";
 
@@ -16,4 +16,8 @@ const errorResponder: ErrorRequestHandler = (err, req, res, next) => {
   res.status(status).json({ message: err.message });
 };
 
-export { errorLogger, errorResponder };
+const haltOnTimedout = (req: Request, res: Response, next: NextFunction) => {
+  if (!req.timedout) next();
+};
+
+export { errorLogger, errorResponder, haltOnTimedout };

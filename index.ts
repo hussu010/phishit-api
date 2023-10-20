@@ -8,15 +8,21 @@ if (process.env.NODE_ENV !== "test") {
 
 import morgan from "morgan";
 import cors from "cors";
+import timeout from "connect-timeout";
 import { stream } from "./src/common/config/winston";
 
-import { errorLogger, errorResponder } from "./src/common/middlewares/errors";
+import {
+  errorLogger,
+  errorResponder,
+  haltOnTimedout,
+} from "./src/common/middlewares/errors";
 
 import authRouter from "./src/auth/auth.route";
 
 const app: Express = express();
 
 app.enable("trust proxy");
+app.use(timeout("2.5s"));
 app.use(cors());
 app.use(
   morgan(
@@ -26,6 +32,7 @@ app.use(
   )
 );
 app.use(express.json());
+app.use(haltOnTimedout);
 
 app.use("/api/auth", authRouter);
 
