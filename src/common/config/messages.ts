@@ -4,6 +4,7 @@ const successMessages = {
 
 const errorMessages = {
   CANNOT_SEND_OTP: "Cannot send OTP",
+  INVALID_PHONE_NUMBER: "Invalid phone number",
 };
 
 export { errorMessages, successMessages };
