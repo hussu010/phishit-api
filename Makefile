@@ -12,7 +12,7 @@ stop-development: ## Stop the development docker container.
 
 .PHONY: build-production
 build-production: ## Build the production docker image.
-	docker compose -f docker-compose.yml -f docker-compose.prod.yml build
+	docker compose -f docker-compose.yml -f docker-compose.prod.yml build --no-cache
 
 .PHONY: start-production
 start-production: ## Start the production docker container.
