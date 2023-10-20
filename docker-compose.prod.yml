@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+  phishit-api:
+    image: "hussu010/phishit-api:${GIT_SHA}"
+    build:
+      context: .
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - .env
+    depends_on:
+      - redis
