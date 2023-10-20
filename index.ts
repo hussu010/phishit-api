@@ -10,6 +10,8 @@ import morgan from "morgan";
 import cors from "cors";
 import { stream } from "./src/common/config/winston";
 
+import { errorLogger, errorResponder } from "./src/common/middlewares/errors";
+
 import authRouter from "./src/auth/auth.route";
 
 const app: Express = express();
@@ -26,5 +28,8 @@ app.use(
 app.use(express.json());
 
 app.use("/api/auth", authRouter);
+
+app.use(errorLogger);
+app.use(errorResponder);
 
 export default app;
