@@ -6,5 +6,6 @@ const UserRole = {
 };
 const OTPTypeEnum = ["AUTH"];
 type OtpType = "AUTH";
+type JWTGrantType = "ACCESS" | "REFRESH";
 
-export { UserEnum, UserRole, OTPTypeEnum, OtpType };
+export { UserEnum, UserRole, OTPTypeEnum, OtpType, JWTGrantType };

@@ -71,4 +71,29 @@ const sendSMS = async (phoneNumber: number, message: string) => {
   }
 };
 
-export { generateUserOtp, sendSMS };
+const verifyOtp = async (user: IUser, otp: string, type: OtpType) => {
+  try {
+    const otpRecord = await Otp.findOne({
+      user: user._id,
+      type: type,
+      code: otp,
+      expiresAt: { $gt: new Date() },
+    });
+
+    if (!otpRecord) {
+      throw new CustomError(errorMessages.INVALID_OTP, 401);
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+const deleteUserOtp = async (user: IUser, type: OtpType): Promise<void> => {
+  try {
+    await Otp.deleteMany({ user: user._id, type: type });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export { generateUserOtp, sendSMS, verifyOtp, deleteUserOtp };
