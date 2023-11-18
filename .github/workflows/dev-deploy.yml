@@ -5,6 +5,9 @@ on:
     branches:
       - development
 
+env:
+  JWT_SECRET_KEY: ${{ secrets.DEVELOPMENT_JWT_SECRET_KEY }}
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
