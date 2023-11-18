@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 if (process.env.NODE_ENV !== "test") {
-  import("./src/common/config/db-connect");
+  import("./src/common/config/db");
 }
 
 import morgan from "morgan";
