@@ -1,0 +1,20 @@
+v: 0
+micros:
+  - name: phishit-api
+    src: .
+    engine: nodejs16
+    primary: true
+    public: true
+    dev: "npm run dev"
+    commands:
+      - npm run build
+    include:
+      - dist
+      - node_modules
+    run: "node dist/server.js"
+    presets:
+      env:
+        - name: MONGO_URI
+          description: Mongo Uri to connect to mongo database
+        - name: JWT_SECRET_KEY
+          description: Secret key to sign jwt tokens

@@ -1,0 +1,34 @@
+name: Publish the latest version of the package to Deta
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+      - run: npm install
+      - run: npm test
+
+  push-to-space:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deta Space Deployment Github Action
+        uses: neobrains/space-deployment-github-action@v0.5
+        with:
+          access_token: ${{ secrets.DETA_ACCESS_TOKEN }}
+          project_id: ${{ secrets.PROD_DETA_PROJECT_ID }}
+          space_push: true
