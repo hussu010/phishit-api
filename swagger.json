@@ -1,0 +1,96 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Phishit API",
+    "description": "API documentation of Phishit (P.S: use HTTPS scheme if hosted on https).",
+    "version": "1.0.0"
+  },
+  "host": "",
+  "basePath": "/",
+  "schemes": ["http", "https"],
+  "securityDefinitions": {
+    "jwt": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "Authorization"
+    }
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["health"],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/Health"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Health": {
+      "type": "object",
+      "properties": {
+        "uptime": {
+          "type": "string",
+          "example": "string"
+        },
+        "message": {
+          "type": "string",
+          "example": "string"
+        },
+        "date": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "SingleMessage": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "BadRequestError": {
+      "type": "object",
+      "properties": {
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "msg": {
+                "type": "string",
+                "example": "string"
+              },
+              "param": {
+                "type": "string",
+                "example": "param"
+              },
+              "location": {
+                "type": "string",
+                "example": "body"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "jwt": []
+    }
+  ]
+}

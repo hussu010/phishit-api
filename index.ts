@@ -17,6 +17,9 @@ import {
   haltOnTimedout,
 } from "./src/common/middlewares/errors";
 
+import * as swaggerUi from "swagger-ui-express";
+import * as swaggerDocument from "./swagger.json";
+
 import authRouter from "./src/auth/auth.route";
 
 const app: Express = express();
@@ -35,6 +38,7 @@ app.use(express.json());
 app.use(haltOnTimedout);
 
 app.use("/api/auth", authRouter);
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(errorLogger);
 app.use(errorResponder);
