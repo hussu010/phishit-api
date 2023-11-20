@@ -9,6 +9,8 @@ const errorMessages = {
   INVALID_OTP: "Invalid OTP",
   INVALID_OTP_LENGTH: "Invalid OTP length",
   INVALID_GOOGLE_CODE: "Invalid Google code",
+  INVALID_JWT_TYPE: "Invalid JWT type",
+  INVALID_USER_ID: "Invalid user ID",
 };
 
 export { errorMessages, successMessages };

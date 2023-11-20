@@ -30,4 +30,6 @@ const createJWTSchema = [
   }),
 ];
 
-export { requestOtpSchema, createJWTSchema };
+const refreshJWTSchema = [body("refreshToken").isJWT()];
+
+export { requestOtpSchema, createJWTSchema, refreshJWTSchema };

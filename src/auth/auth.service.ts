@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { CustomError } from "../common/interfaces/common";
 import User from "../users/users.model";
 import { IUser } from "../users/users.interface";
 import { errorMessages } from "../common/config/messages";
@@ -21,6 +22,19 @@ const getUserUsingPhoneNumber = async (phoneNumber: string): Promise<IUser> => {
     return user;
   } catch (error) {
     throw error;
+  }
+};
+
+const getUserById = async (_id: string): Promise<IUser> => {
+  try {
+    const user = await User.findById(_id);
+
+    if (!user) {
+      throw new Error(errorMessages.INVALID_USER_ID);
+    }
+    return user;
+  } catch (error: any) {
+    throw new CustomError(error.message, 401);
   }
 };
 
@@ -76,4 +90,38 @@ const getUserViaMethod = async ({
   }
 };
 
-export { generateJWT, getUserViaMethod, getUserUsingPhoneNumber };
+const verifyJWT = async ({
+  token,
+  type,
+}: {
+  token: string;
+  type: JWTGrantType;
+}): Promise<any> => {
+  try {
+    const payload: any = jwt.verify(
+      token,
+      process.env.JWT_SECRET_KEY as string,
+      (err: any, decoded: unknown) => {
+        if (err) {
+          throw new Error(err.message);
+        }
+        return decoded;
+      }
+    );
+
+    if (payload.type != type) {
+      throw new Error(errorMessages.INVALID_JWT_TYPE);
+    }
+    return payload;
+  } catch (error: any) {
+    throw new CustomError(error.message, 401);
+  }
+};
+
+export {
+  generateJWT,
+  getUserViaMethod,
+  getUserUsingPhoneNumber,
+  verifyJWT,
+  getUserById,
+};

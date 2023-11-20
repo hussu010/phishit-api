@@ -38,7 +38,7 @@ app.use(
 app.use(express.json());
 app.use(haltOnTimedout);
 
-app.use("/health", healthRouter);
+app.use("/api/health", healthRouter);
 app.use("/api/auth", authRouter);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 

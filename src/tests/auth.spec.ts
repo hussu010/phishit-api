@@ -198,3 +198,155 @@ describe("POST /api/v1/auth/jwt/create", () => {
     );
   });
 });
+
+describe("POST /api/auth/jwt/refresh", () => {
+  it("should validate refreshToken is present in the body of request", async () => {
+    const res = await request(app)
+      .post("/api/auth/jwt/refresh")
+      .send({})
+      .set("Accept", "application/json");
+
+    expect(res.statusCode).toEqual(400);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body).toEqual(
+      expect.objectContaining({
+        errors: expect.arrayContaining([
+          expect.objectContaining({
+            path: "refreshToken",
+            location: "body",
+          }),
+        ]),
+      })
+    );
+  });
+
+  it("should validate refreshToken is a valid JWT", async () => {
+    const res = await request(app)
+      .post("/api/auth/jwt/refresh")
+      .send({
+        refreshToken: "invalid-jwt",
+      })
+      .set("Accept", "application/json");
+
+    expect(res.statusCode).toEqual(400);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body).toEqual(
+      expect.objectContaining({
+        errors: expect.arrayContaining([
+          expect.objectContaining({
+            path: "refreshToken",
+            location: "body",
+          }),
+        ]),
+      })
+    );
+  });
+
+  it("should return 401 when jwt is invalid", async () => {
+    const res = await request(app)
+      .post("/api/auth/jwt/refresh")
+      .send({
+        refreshToken:
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.cThIIoDvwdueQB468K5xDc5633seEFoqwxjF_xSJyQQ",
+      })
+      .set("Accept", "application/json");
+
+    expect(res.statusCode).toEqual(401);
+    expect(res.body).toHaveProperty("message");
+  });
+
+  it("should return 401 if accessToken is used to refresh", async () => {
+    const phoneNumber = "9840000000";
+    const user = await getUserUsingPhoneNumber(phoneNumber);
+    const { otp } = await generateUserOtp(user, "AUTH");
+
+    const res = await request(app)
+      .post("/api/auth/jwt/create")
+      .send({
+        phoneNumber,
+        code: otp,
+      })
+      .set("Accept", "application/json");
+
+    const { accessToken } = res.body;
+
+    const refreshRes = await request(app)
+      .post("/api/auth/jwt/refresh")
+      .send({
+        refreshToken: accessToken,
+      })
+      .set("Accept", "application/json");
+
+    expect(refreshRes.statusCode).toEqual(401);
+    expect(refreshRes.body).toHaveProperty("message");
+    expect(refreshRes.body).toEqual(
+      expect.objectContaining({
+        message: errorMessages.INVALID_JWT_TYPE,
+      })
+    );
+  });
+
+  it("should return 401 if the user does not exist", async () => {
+    const phoneNumber = "9840000000";
+    const user = await getUserUsingPhoneNumber(phoneNumber);
+    const { otp } = await generateUserOtp(user, "AUTH");
+
+    const res = await request(app)
+      .post("/api/auth/jwt/create")
+      .send({
+        phoneNumber,
+        code: otp,
+      })
+      .set("Accept", "application/json");
+
+    const { refreshToken } = res.body;
+
+    await user.deleteOne();
+
+    const refreshRes = await request(app)
+      .post("/api/auth/jwt/refresh")
+      .send({
+        refreshToken,
+      })
+      .set("Accept", "application/json");
+
+    expect(refreshRes.statusCode).toEqual(401);
+    expect(refreshRes.body).toHaveProperty("message");
+    expect(refreshRes.body).toEqual(
+      expect.objectContaining({
+        message: errorMessages.INVALID_USER_ID,
+      })
+    );
+  });
+
+  it("should return new accessToken for a valid refreshToken", async () => {
+    const phoneNumber = "9840000000";
+    const user = await getUserUsingPhoneNumber(phoneNumber);
+    const { otp } = await generateUserOtp(user, "AUTH");
+
+    const res = await request(app)
+      .post("/api/auth/jwt/create")
+      .send({
+        phoneNumber,
+        code: otp,
+      })
+      .set("Accept", "application/json");
+
+    const { refreshToken } = res.body;
+
+    const refreshRes = await request(app)
+      .post("/api/auth/jwt/refresh")
+      .send({
+        refreshToken,
+      })
+      .set("Accept", "application/json");
+
+    expect(refreshRes.statusCode).toEqual(200);
+    expect(refreshRes.body).toHaveProperty("accessToken");
+    expect(refreshRes.body).toEqual(
+      expect.objectContaining({
+        accessToken: expect.any(String),
+      })
+    );
+  });
+});

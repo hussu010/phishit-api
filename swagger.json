@@ -6,7 +6,7 @@
     "version": "1.0.0"
   },
   "host": "",
-  "basePath": "/",
+  "basePath": "/api/",
   "schemes": ["http", "https"],
   "securityDefinitions": {
     "jwt": {
@@ -33,6 +33,163 @@
           }
         }
       }
+    },
+    "/auth/otp": {
+      "post": {
+        "tags": ["auth"],
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "Requesting OTP for login.",
+            "schema": {
+              "$ref": "#/definitions/RequestOtp"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OTP sent to the phoneNumber.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/BadRequestError"
+            }
+          },
+          "503": {
+            "description": "Error while sending OTP.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "429": {
+            "description": "Too many requests.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      }
+    },
+    "/auth/jwt/create": {
+      "post": {
+        "tags": ["auth"],
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "create jwt from otp.",
+            "schema": {
+              "$ref": "#/definitions/CreateJWT"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "accessToken and refreshToken created successfully.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "accessToken": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "refreshToken": {
+                  "type": "string",
+                  "example": "string"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/BadRequestError"
+            }
+          },
+          "401": {
+            "description": "Invalid OTP.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "429": {
+            "description": "Too many requests.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      }
+    },
+    "/auth/jwt/refresh": {
+      "post": {
+        "tags": ["auth"],
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "refresh accessToken from refreshToken.",
+            "schema": {
+              "$ref": "#/definitions/RefreshJWT"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "accessToken created successfully.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "accessToken": {
+                  "type": "string",
+                  "example": "string"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/BadRequestError"
+            }
+          },
+          "401": {
+            "description": "Invalid JWT or token type.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -48,6 +205,41 @@
           "example": "string"
         },
         "date": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "RequestOtp": {
+      "type": "object",
+      "properties": {
+        "phoneNumber": {
+          "type": "string",
+          "example": "9800000000"
+        }
+      }
+    },
+    "CreateJWT": {
+      "type": "object",
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": ["phone", "google"]
+        },
+        "phoneNumber": {
+          "type": "string",
+          "example": "9800000000"
+        },
+        "code": {
+          "type": "string",
+          "example": "000000"
+        }
+      }
+    },
+    "RefreshJWT": {
+      "type": "object",
+      "properties": {
+        "refreshToken": {
           "type": "string",
           "example": "string"
         }

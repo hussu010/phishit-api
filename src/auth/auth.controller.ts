@@ -2,7 +2,12 @@ import { NextFunction, Request, Response } from "express";
 import { getUserUsingPhoneNumber } from "../users/users.service";
 import { generateUserOtp, sendSMS } from "./otp.service";
 import { successMessages } from "../common/config/messages";
-import { getUserViaMethod, generateJWT } from "./auth.service";
+import {
+  getUserViaMethod,
+  generateJWT,
+  verifyJWT,
+  getUserById,
+} from "./auth.service";
 
 const requestOTP = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -39,4 +44,25 @@ const createJWT = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { requestOTP, createJWT };
+const refreshJWT = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { refreshToken } = req.body;
+
+    const payload = await verifyJWT({
+      token: refreshToken,
+      type: "REFRESH",
+    });
+
+    const user = await getUserById(payload._id);
+
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    res.status(200).json({
+      accessToken,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { requestOTP, createJWT, refreshJWT };
