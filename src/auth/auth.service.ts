@@ -10,6 +10,8 @@ import {
 } from "../common/config/general";
 import { verifyOtp, deleteUserOtp } from "./otp.service";
 
+import { generateGoogleOauthProviderAuthorizationUrl } from "./auth.utils";
+
 const getUserUsingPhoneNumber = async (phoneNumber: string): Promise<IUser> => {
   try {
     const user = await User.findOne({ phoneNumber });
@@ -82,6 +84,11 @@ const getUserViaMethod = async ({
       await verifyOtp(user, code, "AUTH");
       deleteUserOtp(user, "AUTH");
       return user;
+      // } else if (method == "google") {
+      //   const user = await getUserUsingGoogleOauth({
+      //     code,
+      //   });
+      //   return user;
     } else {
       throw new Error(errorMessages.INVALID_AUTH_METHOD);
     }
@@ -118,10 +125,22 @@ const verifyJWT = async ({
   }
 };
 
+const generateOauthProviderAuthorizationUrl = async (
+  provider: string,
+  redirect_uri: string
+): Promise<string> => {
+  if (provider == "google") {
+    return generateGoogleOauthProviderAuthorizationUrl(redirect_uri);
+  } else {
+    throw new Error(errorMessages.INVALID_OAUTH_PROVIDER);
+  }
+};
+
 export {
   generateJWT,
   getUserViaMethod,
   getUserUsingPhoneNumber,
   verifyJWT,
   getUserById,
+  generateOauthProviderAuthorizationUrl,
 };

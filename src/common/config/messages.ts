@@ -11,6 +11,7 @@ const errorMessages = {
   INVALID_GOOGLE_CODE: "Invalid Google code",
   INVALID_JWT_TYPE: "Invalid JWT type",
   INVALID_USER_ID: "Invalid user ID",
+  INVALID_OAUTH_PROVIDER: "Invalid oauth provider",
 };
 
 export { errorMessages, successMessages };

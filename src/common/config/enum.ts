@@ -8,4 +8,13 @@ const OTPTypeEnum = ["AUTH"];
 type OtpType = "AUTH";
 type JWTGrantType = "ACCESS" | "REFRESH";
 
-export { UserEnum, UserRole, OTPTypeEnum, OtpType, JWTGrantType };
+const OauthProviderEnum = ["google"];
+
+export {
+  UserEnum,
+  UserRole,
+  OTPTypeEnum,
+  OtpType,
+  JWTGrantType,
+  OauthProviderEnum,
+};

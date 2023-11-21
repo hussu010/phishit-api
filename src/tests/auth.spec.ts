@@ -350,3 +350,71 @@ describe("POST /api/auth/jwt/refresh", () => {
     );
   });
 });
+
+describe("GET /api/auth/o/:provider", () => {
+  it("should validate provider is valid", async () => {
+    const res = await request(app)
+      .get("/api/auth/o/invalid-provider")
+      .set("Accept", "application/json");
+
+    expect(res.statusCode).toEqual(400);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body).toEqual(
+      expect.objectContaining({
+        errors: expect.arrayContaining([
+          expect.objectContaining({
+            path: "provider",
+            location: "params",
+          }),
+        ]),
+      })
+    );
+  });
+
+  it("should validate redirect_uri is present", async () => {
+    const res = await request(app)
+      .get("/api/auth/o/google")
+      .set("Accept", "application/json");
+
+    expect(res.statusCode).toEqual(400);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body).toEqual(
+      expect.objectContaining({
+        errors: expect.arrayContaining([
+          expect.objectContaining({
+            path: "redirect_uri",
+            location: "query",
+          }),
+        ]),
+      })
+    );
+  });
+
+  it("should validate redirect_uri is valid", async () => {
+    const res = await request(app)
+      .get("/api/auth/o/google?redirect_uri=http://evil.com")
+      .set("Accept", "application/json");
+
+    expect(res.statusCode).toEqual(400);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body).toEqual(
+      expect.objectContaining({
+        errors: expect.arrayContaining([
+          expect.objectContaining({
+            path: "redirect_uri",
+            location: "query",
+          }),
+        ]),
+      })
+    );
+  });
+
+  it("should return 200 if provider is valid", async () => {
+    const res = await request(app)
+      .get("/api/auth/o/google?redirect_uri=https://merodera.com/login")
+      .set("Accept", "application/json");
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toHaveProperty("authorization_url");
+  });
+});

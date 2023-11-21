@@ -1,5 +1,7 @@
 import { body, param, query } from "express-validator";
 import { errorMessages, successMessages } from "../common/config/messages";
+import { ALLOWED_REDIRECT_URLS } from "../common/config/general";
+import { OauthProviderEnum } from "../common/config/enum";
 
 const requestOtpSchema = [
   body("phoneNumber")
@@ -32,4 +34,26 @@ const createJWTSchema = [
 
 const refreshJWTSchema = [body("refreshToken").isJWT()];
 
-export { requestOtpSchema, createJWTSchema, refreshJWTSchema };
+const oauthProviderSchema = [
+  param("provider")
+    .isIn(OauthProviderEnum)
+    .withMessage(
+      `Invalid oauth provider. Valid values are: ${OauthProviderEnum.join(
+        ", "
+      )}`
+    ),
+  query("redirect_uri")
+    .isIn(ALLOWED_REDIRECT_URLS)
+    .withMessage(
+      `Invalid redirect_uri. Valid values are: ${ALLOWED_REDIRECT_URLS.join(
+        ", "
+      )}`
+    ),
+];
+
+export {
+  requestOtpSchema,
+  createJWTSchema,
+  refreshJWTSchema,
+  oauthProviderSchema,
+};

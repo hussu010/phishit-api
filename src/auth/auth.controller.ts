@@ -7,6 +7,7 @@ import {
   generateJWT,
   verifyJWT,
   getUserById,
+  generateOauthProviderAuthorizationUrl,
 } from "./auth.service";
 
 const requestOTP = async (req: Request, res: Response, next: NextFunction) => {
@@ -65,4 +66,26 @@ const refreshJWT = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { requestOTP, createJWT, refreshJWT };
+const getOauthProvider = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { provider } = req.params;
+    const redirect_uri = req.query.redirect_uri as string;
+
+    const authorization_url = await generateOauthProviderAuthorizationUrl(
+      provider,
+      redirect_uri
+    );
+
+    res.status(200).json({
+      authorization_url,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { requestOTP, createJWT, refreshJWT, getOauthProvider };
