@@ -10,7 +10,10 @@ import {
 } from "../common/config/general";
 import { verifyOtp, deleteUserOtp } from "./otp.service";
 
-import { generateGoogleOauthProviderAuthorizationUrl } from "./auth.utils";
+import {
+  generateGoogleOauthProviderAuthorizationUrl,
+  getGoogleUserDetails,
+} from "./auth.utils";
 
 const getUserUsingPhoneNumber = async (phoneNumber: string): Promise<IUser> => {
   try {
@@ -84,11 +87,11 @@ const getUserViaMethod = async ({
       await verifyOtp(user, code, "AUTH");
       deleteUserOtp(user, "AUTH");
       return user;
-      // } else if (method == "google") {
-      //   const user = await getUserUsingGoogleOauth({
-      //     code,
-      //   });
-      //   return user;
+    } else if (method == "google") {
+      const user = await getUserUsingGoogleOauth({
+        code,
+      });
+      return user;
     } else {
       throw new Error(errorMessages.INVALID_AUTH_METHOD);
     }
@@ -133,6 +136,38 @@ const generateOauthProviderAuthorizationUrl = async (
     return generateGoogleOauthProviderAuthorizationUrl(redirect_uri);
   } else {
     throw new Error(errorMessages.INVALID_OAUTH_PROVIDER);
+  }
+};
+
+const getUserUsingGoogleOauth = async ({
+  code,
+}: {
+  code: string;
+}): Promise<IUser> => {
+  try {
+    const { id, email, given_name, family_name, picture } =
+      await getGoogleUserDetails(code);
+
+    const user = await User.findOne({ googleId: id });
+
+    if (!user) {
+      const user = await User.create({
+        googleId: id,
+      });
+
+      // await updateUserProfile({
+      //   user,
+      //   firstName: given_name,
+      //   lastName: family_name,
+      //   email,
+      //   avatarUrl: picture,
+      // });
+      return user;
+    }
+
+    return user;
+  } catch (error) {
+    throw error;
   }
 };
 

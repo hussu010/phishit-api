@@ -10,7 +10,7 @@ const requestOtpSchema = [
 ];
 
 const createJWTSchema = [
-  body("method").default("phone").isIn(["phone", "google"]),
+  body("method").isIn(["phone", "google"]),
   body("phoneNumber").custom((value, { req }) => {
     const phonePattern = /^[9]{1}[0-9]{9}$/;
     if (req.body.method === "phone" && !phonePattern.test(value)) {
