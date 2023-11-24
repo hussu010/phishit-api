@@ -83,10 +83,12 @@ describe("POST /api/auth/otp", () => {
 });
 
 describe("POST /api/v1/auth/jwt/create", () => {
-  it("should validate phone number and code is present on the body of request", async () => {
+  it("should validate valid method is present", async () => {
     const res = await request(app)
       .post("/api/auth/jwt/create")
-      .send({})
+      .send({
+        method: "invalid",
+      })
       .set("Accept", "application/json");
 
     expect(res.statusCode).toEqual(400);
@@ -95,12 +97,33 @@ describe("POST /api/v1/auth/jwt/create", () => {
       expect.objectContaining({
         errors: expect.arrayContaining([
           expect.objectContaining({
-            msg: errorMessages.INVALID_PHONE_NUMBER,
+            path: "method",
+            location: "body",
+          }),
+        ]),
+      })
+    );
+  });
+
+  it("should validate phone number and code is present if method is phone", async () => {
+    const res = await request(app)
+      .post("/api/auth/jwt/create")
+      .send({
+        method: "phone",
+      })
+      .set("Accept", "application/json");
+
+    expect(res.statusCode).toEqual(400);
+    console.log(res.body);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body).toEqual(
+      expect.objectContaining({
+        errors: expect.arrayContaining([
+          expect.objectContaining({
             path: "phoneNumber",
             location: "body",
           }),
           expect.objectContaining({
-            msg: errorMessages.INVALID_OTP_LENGTH,
             path: "code",
             location: "body",
           }),
@@ -114,6 +137,7 @@ describe("POST /api/v1/auth/jwt/create", () => {
       .post("/api/auth/jwt/create")
       .send({
         phoneNumber: "8000000000",
+        method: "phone",
       })
       .set("Accept", "application/json");
 
@@ -138,6 +162,7 @@ describe("POST /api/v1/auth/jwt/create", () => {
       .send({
         phoneNumber: "9000000000",
         code: "1212",
+        method: "phone",
       })
       .set("Accept", "application/json");
 
@@ -162,6 +187,7 @@ describe("POST /api/v1/auth/jwt/create", () => {
       .send({
         phoneNumber: "9840000000",
         code: "123456",
+        method: "phone",
       })
       .set("Accept", "application/json");
 
@@ -184,6 +210,7 @@ describe("POST /api/v1/auth/jwt/create", () => {
       .send({
         phoneNumber,
         code: otp,
+        method: "phone",
       })
       .set("Accept", "application/json");
 
@@ -265,6 +292,7 @@ describe("POST /api/auth/jwt/refresh", () => {
       .send({
         phoneNumber,
         code: otp,
+        method: "phone",
       })
       .set("Accept", "application/json");
 
@@ -296,6 +324,7 @@ describe("POST /api/auth/jwt/refresh", () => {
       .send({
         phoneNumber,
         code: otp,
+        method: "phone",
       })
       .set("Accept", "application/json");
 
@@ -329,6 +358,7 @@ describe("POST /api/auth/jwt/refresh", () => {
       .send({
         phoneNumber,
         code: otp,
+        method: "phone",
       })
       .set("Accept", "application/json");
 
@@ -411,7 +441,9 @@ describe("GET /api/auth/o/:provider", () => {
 
   it("should return 200 if provider is valid", async () => {
     const res = await request(app)
-      .get("/api/auth/o/google?redirect_uri=https://merodera.com/login")
+      .get(
+        "/api/auth/o/google?redirect_uri=http://localhost:3000/auth/google/callback"
+      )
       .set("Accept", "application/json");
 
     expect(res.statusCode).toEqual(200);
