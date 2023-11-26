@@ -442,7 +442,7 @@ describe("GET /api/auth/o/:provider", () => {
   it("should return 200 if provider is valid", async () => {
     const res = await request(app)
       .get(
-        "/api/auth/o/google?redirect_uri=http://localhost:3000/auth/google/callback"
+        "/api/auth/o/google?redirect_uri=http://127.0.0.1:3000/auth/google/callback"
       )
       .set("Accept", "application/json");
 
