@@ -1,3 +1,5 @@
+import axios from "axios";
+
 const generateGoogleOauthProviderAuthorizationUrl = (
   redirect_uri: string
 ): string => {
@@ -23,13 +25,13 @@ const getGoogleUserDetails = async (
 }> => {
   try {
     const baseUrl = "https://www.googleapis.com/oauth2/v2/userinfo";
-    const response = await fetch(baseUrl, {
-      method: "GET",
+
+    const { data } = await axios.get(baseUrl, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    const data = await response.json();
+
     return {
       id: data.id,
       email: data.email,
