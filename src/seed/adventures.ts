@@ -1,11 +1,13 @@
 import { faker } from "@faker-js/faker";
 import Adventure from "../adventures/adventures.model";
+import { IPackage } from "../adventures/adventures.interface";
 
 import dotenv from "dotenv";
-import { IPackage } from "../adventures/adventures.interface";
 dotenv.config();
 
-import("../common/config/db");
+if (process.env.NODE_ENV !== "test") {
+  import("../common/config/db");
+}
 
 const seedAdventures = async ({
   numberOfAdventures,
@@ -48,15 +50,19 @@ const seedAdventures = async ({
   return adventures;
 };
 
-seedAdventures({
-  numberOfAdventures: 6,
-  numberOfPackages: 6,
-})
-  .catch((err) => {
-    console.log(err);
-    process.exit(1);
+if (require.main === module) {
+  seedAdventures({
+    numberOfAdventures: 6,
+    numberOfPackages: 6,
   })
-  .then(() => {
-    console.log("Adventures seeded successfully...");
-    process.exit();
-  });
+    .catch((err) => {
+      console.log(err);
+      process.exit(1);
+    })
+    .then(() => {
+      console.log("Adventures seeded successfully...");
+      process.exit(0);
+    });
+}
+
+export { seedAdventures };
