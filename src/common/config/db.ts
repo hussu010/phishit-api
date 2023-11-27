@@ -1,8 +1,7 @@
 import mongoose from "mongoose";
 
 const mongoUri =
-  (process.env.MONGO_URI as string) ||
-  "mongodb://localhost:27017/universal-api";
+  (process.env.MONGO_URI as string) || "mongodb://localhost:27017/phishit";
 
 mongoose
   .connect(mongoUri)

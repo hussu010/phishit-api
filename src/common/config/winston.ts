@@ -22,11 +22,14 @@ const options = {
   },
 };
 
+const winstonLoggerTransports: any = [new Sentry(options.sentry)];
+
+if (process.env.NODE_ENV !== "test") {
+  winstonLoggerTransports.push(new winston.transports.Console(options.console));
+}
+
 const logger = winston.createLogger({
-  transports: [
-    new winston.transports.Console(options.console),
-    new Sentry(options.sentry),
-  ],
+  transports: winstonLoggerTransports,
   exitOnError: false,
 });
 
