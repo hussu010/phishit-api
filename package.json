@@ -7,12 +7,14 @@
     "build": "npx tsc",
     "start": "node dist/server.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/server.js\"",
-    "test": "jest"
+    "test": "jest",
+    "seed:adventures": "node dist/src/seed/adventures.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@faker-js/faker": "^8.3.1",
     "axios": "^1.6.2",
     "connect-timeout": "^1.9.0",
     "cors": "^2.8.5",
