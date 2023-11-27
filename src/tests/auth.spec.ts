@@ -114,7 +114,6 @@ describe("POST /api/v1/auth/jwt/create", () => {
       .set("Accept", "application/json");
 
     expect(res.statusCode).toEqual(400);
-    console.log(res.body);
     expect(res.body).toHaveProperty("errors");
     expect(res.body).toEqual(
       expect.objectContaining({
