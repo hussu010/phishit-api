@@ -21,11 +21,13 @@ const seedAdventures = async ({
   for (let i = 0; i < numberOfAdventures; i++) {
     const adventure = new Adventure({
       title: faker.lorem.words(3),
-      summary: faker.lorem.words(10),
+      description: faker.lorem.words(10),
       location: {
         type: "Point",
         coordinates: [faker.location.longitude(), faker.location.latitude()],
       },
+      imageUrl: faker.image.url(),
+      imageAlt: faker.lorem.words(3),
       packages: [],
     });
 

@@ -36,7 +36,9 @@ describe("GET /api/adventures", () => {
 
     expect(res.body[0]).toHaveProperty("_id");
     expect(res.body[0]).toHaveProperty("title");
-    expect(res.body[0]).toHaveProperty("summary");
+    expect(res.body[0]).toHaveProperty("description");
+    expect(res.body[0]).toHaveProperty("imageUrl");
+    expect(res.body[0]).toHaveProperty("imageAlt");
     expect(res.body[0]).toHaveProperty("location");
     expect(res.body[0]).toHaveProperty("packages");
 

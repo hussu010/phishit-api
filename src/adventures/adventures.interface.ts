@@ -3,11 +3,13 @@ import { Document } from "mongoose";
 interface IAdventure extends Document {
   _id: string;
   title: string;
-  summary: string;
+  description: string;
   location: {
     type: string;
     coordinates: number[];
   };
+  imageUrl: string;
+  imageAlt: string;
   packages: IPackage[];
   createdAt: Date;
   updatedAt: Date;

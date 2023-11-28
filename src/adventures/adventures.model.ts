@@ -22,7 +22,7 @@ const AdventureSchema = new Schema<IAdventure>(
       minLength: 8,
       maxLength: 64,
     },
-    summary: {
+    description: {
       type: String,
       unique: true,
       sparse: true,
@@ -39,6 +39,14 @@ const AdventureSchema = new Schema<IAdventure>(
         type: [Number],
         required: true,
       },
+    },
+    imageUrl: {
+      type: String,
+      required: true,
+    },
+    imageAlt: {
+      type: String,
+      required: true,
     },
     packages: [PackageSchema],
   },
