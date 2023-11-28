@@ -10,6 +10,10 @@ interface IAdventure extends Document {
   };
   imageUrl: string;
   imageAlt: string;
+  images: {
+    url: string;
+    position: number;
+  }[];
   packages: IPackage[];
   createdAt: Date;
   updatedAt: Date;

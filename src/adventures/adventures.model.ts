@@ -48,6 +48,16 @@ const AdventureSchema = new Schema<IAdventure>(
       type: String,
       required: true,
     },
+    images: [
+      {
+        url: {
+          type: String,
+        },
+        position: {
+          type: Number,
+        },
+      },
+    ],
     packages: [PackageSchema],
   },
   {

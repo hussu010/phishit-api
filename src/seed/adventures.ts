@@ -28,6 +28,20 @@ const seedAdventures = async ({
       },
       imageUrl: faker.image.urlPicsumPhotos(),
       imageAlt: faker.lorem.words(3),
+      images: [
+        {
+          url: faker.image.urlPicsumPhotos(),
+          position: 1,
+        },
+        {
+          url: faker.image.urlPicsumPhotos(),
+          position: 2,
+        },
+        {
+          url: faker.image.urlPicsumPhotos(),
+          position: 3,
+        },
+      ],
       packages: [],
     });
 
