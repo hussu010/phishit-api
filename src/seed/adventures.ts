@@ -26,7 +26,7 @@ const seedAdventures = async ({
         type: "Point",
         coordinates: [faker.location.longitude(), faker.location.latitude()],
       },
-      imageUrl: faker.image.url(),
+      imageUrl: faker.image.urlPicsumPhotos(),
       imageAlt: faker.lorem.words(3),
       packages: [],
     });
