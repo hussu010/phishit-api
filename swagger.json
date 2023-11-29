@@ -210,6 +210,44 @@
           }
         }
       }
+    },
+    "/adventures/{id}": {
+      "get": {
+        "tags": ["adventures"],
+        "summary": "get adventure by id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/Adventure"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/BadRequestError"
+            }
+          },
+          "404": {
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -385,7 +423,7 @@
                 "type": "string",
                 "example": "string"
               },
-              "param": {
+              "path": {
                 "type": "string",
                 "example": "param"
               },

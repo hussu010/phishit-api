@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import { getAdventures } from "./adventures.service";
+import { getAdventures, getAdventureById } from "./adventures.service";
 
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -13,6 +13,10 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
 
 const get = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const { id } = req.params;
+
+    const adventure = await getAdventureById(id);
+    res.status(200).json(adventure);
   } catch (error) {
     next(error);
   }

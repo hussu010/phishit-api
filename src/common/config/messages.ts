@@ -12,6 +12,8 @@ const errorMessages = {
   INVALID_JWT_TYPE: "Invalid JWT type",
   INVALID_USER_ID: "Invalid user ID",
   INVALID_OAUTH_PROVIDER: "Invalid oauth provider",
+  OBJECT_WITH_ID_NOT_FOUND: "Object with ID not found",
+  INVALID_ID: "Invalid ID",
 };
 
 export { errorMessages, successMessages };
