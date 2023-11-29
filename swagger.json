@@ -190,6 +190,26 @@
           }
         }
       }
+    },
+    "/adventures/": {
+      "get": {
+        "tags": ["adventures"],
+        "summary": "Get all adventures.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/AdventureList"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -243,6 +263,105 @@
           "type": "string",
           "example": "string"
         }
+      }
+    },
+    "Adventure": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "example": "string"
+        },
+        "title": {
+          "type": "string",
+          "example": "string"
+        },
+        "description": {
+          "type": "string",
+          "example": "string"
+        },
+        "location": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "example": "Point"
+            },
+            "coordinates": {
+              "type": "array",
+              "example": [85.324, 27.717]
+            }
+          }
+        },
+        "imageUrl": {
+          "type": "string",
+          "example": "string"
+        },
+        "imageAlt": {
+          "type": "string",
+          "example": "string"
+        },
+        "images": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "example": "63d1eef1fee2948db16b7842"
+              },
+              "url": {
+                "type": "string",
+                "example": "https://example.com/image.jpg"
+              },
+              "position": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "packages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "example": "63d1eef1fee2948db16b7842"
+              },
+              "title": {
+                "type": "string",
+                "example": "string"
+              },
+              "description": {
+                "type": "string",
+                "example": "string"
+              },
+              "price": {
+                "type": "integer",
+                "example": 12345
+              },
+              "duration": {
+                "type": "integer",
+                "example": 12
+              }
+            }
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "example": "string"
+        },
+        "updatedAt": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "AdventureList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Adventure"
       }
     },
     "SingleMessage": {
