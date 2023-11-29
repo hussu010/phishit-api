@@ -13,7 +13,7 @@ import {
   refreshJWTSchema,
   oauthProviderSchema,
 } from "./auth.schema";
-import { validateRequest } from "../common/middlewares/validateRequest";
+import { validateRequest } from "../common/middlewares/validator";
 
 router.post("/otp", requestOtpSchema, validateRequest, requestOTP);
 router.post("/jwt/create", createJWTSchema, validateRequest, createJWT);
