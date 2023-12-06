@@ -20,8 +20,8 @@ const seedAdventures = async ({
 
   for (let i = 0; i < numberOfAdventures; i++) {
     const adventure = new Adventure({
-      title: faker.lorem.words(3),
-      description: faker.lorem.words(10),
+      title: faker.location.city(),
+      description: faker.lorem.sentences(3),
       location: {
         type: "Point",
         coordinates: [faker.location.longitude(), faker.location.latitude()],
@@ -47,7 +47,7 @@ const seedAdventures = async ({
 
     for (let j = 0; j < numberOfPackages; j++) {
       const adventurePackage: IPackage = {
-        title: faker.lorem.words(3),
+        title: faker.commerce.productName(),
         price: faker.number.int({
           min: 10000,
           max: 100000,
