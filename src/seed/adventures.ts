@@ -26,19 +26,19 @@ const seedAdventures = async ({
         type: "Point",
         coordinates: [faker.location.longitude(), faker.location.latitude()],
       },
-      imageUrl: faker.image.urlPicsumPhotos(),
+      imageUrl: faker.image.urlLoremFlickr({ category: "nature" }),
       imageAlt: faker.lorem.words(3),
       images: [
         {
-          url: faker.image.urlPicsumPhotos(),
+          url: faker.image.urlLoremFlickr({ category: "nature" }),
           position: 1,
         },
         {
-          url: faker.image.urlPicsumPhotos(),
+          url: faker.image.urlLoremFlickr({ category: "nature" }),
           position: 2,
         },
         {
-          url: faker.image.urlPicsumPhotos(),
+          url: faker.image.urlLoremFlickr({ category: "nature" }),
           position: 3,
         },
       ],
@@ -52,7 +52,7 @@ const seedAdventures = async ({
           min: 10000,
           max: 100000,
         }),
-        description: faker.lorem.paragraphs(3),
+        description: faker.lorem.sentences(3),
         duration: faker.number.int({ min: 1, max: 30 }),
       };
 
