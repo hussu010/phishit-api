@@ -58,7 +58,6 @@ const generateJWT = async (
     const token = jwt.sign(
       {
         _id: user._id,
-        phoneNumber: user.phoneNumber,
         type,
       },
       process.env.JWT_SECRET_KEY as string,

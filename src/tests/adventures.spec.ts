@@ -6,6 +6,7 @@ import request from "supertest";
 import app from "../../index";
 import { seedAdventures } from "../seed/adventures";
 import { errorMessages } from "../common/config/messages";
+import { getAuthenticatedUserJWT, getDeletedUserJWT } from "./auth.helper";
 
 beforeAll(async () => {
   await connect();
@@ -114,9 +115,54 @@ describe("GET /api/adventures/:id", () => {
 });
 
 describe("POST /api/adventures", () => {
-  it("should return 400 Bad Request", async () => {
+  it("should return 401 if user is not logged in", async () => {
     const res = await request(app)
       .post("/api/adventures")
+      .set("Accept", "application/json");
+
+    expect(res.statusCode).toEqual(401);
+    expect(res.body).toHaveProperty("message");
+  });
+
+  it("should return 401 if invalid jwt type is provided", async () => {
+    const { refreshToken } = await getAuthenticatedUserJWT();
+    const res = await request(app)
+      .post("/api/adventures")
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${refreshToken}`);
+
+    expect(res.statusCode).toEqual(401);
+    expect(res.body).toHaveProperty("message");
+    expect(res.body).toEqual(
+      expect.objectContaining({
+        message: errorMessages.INVALID_JWT_TYPE,
+      })
+    );
+  });
+
+  it("should return 401 if user associated with jwt not found", async () => {
+    const accessToken = await getDeletedUserJWT();
+    const res = await request(app)
+      .post("/api/adventures")
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.statusCode).toEqual(401);
+    expect(res.body).toHaveProperty("message");
+    expect(res.body).toEqual(
+      expect.objectContaining({
+        message: errorMessages.USER_ASSOCIATED_WITH_JWT_NOT_FOUND,
+      })
+    );
+  });
+
+  it("should return 400 Bad Request", async () => {
+    const { accessToken } = await getAuthenticatedUserJWT();
+
+    const res = await request(app)
+      .post("/api/adventures")
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`)
       .send({
         title: "a",
         description: "a",
@@ -178,8 +224,12 @@ describe("POST /api/adventures", () => {
   });
 
   it("should return 201 Created", async () => {
+    const { accessToken } = await getAuthenticatedUserJWT();
+
     const res = await request(app)
       .post("/api/adventures")
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`)
       .send({
         title: "a".repeat(3),
         description: "a".repeat(16),
@@ -212,8 +262,23 @@ describe("POST /api/adventures", () => {
 });
 
 describe("DELETE /api/adventures/:id", () => {
+  it("should return 401 if user is not logged in", async () => {
+    const res = await request(app)
+      .post("/api/adventures")
+      .set("Accept", "application/json");
+
+    expect(res.statusCode).toEqual(401);
+    expect(res.body).toHaveProperty("message");
+  });
+
   it("should return 400 Bad Request", async () => {
-    const res = await request(app).delete("/api/adventures/123");
+    const { accessToken } = await getAuthenticatedUserJWT();
+
+    const res = await request(app)
+      .delete("/api/adventures/123")
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`);
+
     expect(res.status).toBe(400);
 
     expect(res.body).toHaveProperty("errors");
@@ -228,16 +293,21 @@ describe("DELETE /api/adventures/:id", () => {
   });
 
   it("should return 404 Not Found", async () => {
-    const res = await request(app).delete(
-      "/api/adventures/5f7a5d713d0f4d1b2c5e3f6e"
-    );
+    const { accessToken } = await getAuthenticatedUserJWT();
+
+    const res = await request(app)
+      .delete("/api/adventures/5f7a5d713d0f4d1b2c5e3f6e")
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`);
     expect(res.status).toBe(404);
     expect(res.body).toEqual({
       message: errorMessages.OBJECT_WITH_ID_NOT_FOUND,
     });
   });
 
-  it("should return 200 OK with adventure", async () => {
+  it("should return 204 if the adventure is deleted successfully", async () => {
+    const { accessToken } = await getAuthenticatedUserJWT();
+
     const numberOfAdventures = 6;
     const numberOfPackages = 6;
 
@@ -246,18 +316,32 @@ describe("DELETE /api/adventures/:id", () => {
       numberOfPackages,
     });
 
-    const res = await request(app).delete(
-      `/api/adventures/${adventures[0]._id}`
-    );
+    const res = await request(app)
+      .delete(`/api/adventures/${adventures[0]._id}`)
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`);
 
     expect(res.status).toBe(204);
   });
 });
 
 describe("PUT /api/adventures/:id", () => {
+  it("should return 401 if user is not logged in", async () => {
+    const res = await request(app)
+      .post("/api/adventures")
+      .set("Accept", "application/json");
+
+    expect(res.statusCode).toEqual(401);
+    expect(res.body).toHaveProperty("message");
+  });
+
   it("should return 400 Bad Request", async () => {
+    const { accessToken } = await getAuthenticatedUserJWT();
+
     const res = await request(app)
       .put("/api/adventures/123")
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`)
       .send({
         title: "a",
         description: "a",
@@ -323,8 +407,12 @@ describe("PUT /api/adventures/:id", () => {
   });
 
   it("should return 404 Not Found", async () => {
+    const { accessToken } = await getAuthenticatedUserJWT();
+
     const res = await request(app)
       .put("/api/adventures/5f7a5d713d0f4d1b2c5e3f6e")
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`)
       .send({
         title: "a".repeat(3),
         description: "a".repeat(16),
@@ -348,6 +436,8 @@ describe("PUT /api/adventures/:id", () => {
   });
 
   it("should return 200 OK with adventure", async () => {
+    const { accessToken } = await getAuthenticatedUserJWT();
+
     const numberOfAdventures = 6;
     const numberOfPackages = 6;
 
@@ -377,6 +467,8 @@ describe("PUT /api/adventures/:id", () => {
 
     const res = await request(app)
       .put(`/api/adventures/${adventures[0]._id}`)
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`)
       .send({
         title: newTitle,
         description: newDescription,
