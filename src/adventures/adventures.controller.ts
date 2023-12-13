@@ -1,6 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 
-import { getAdventures, getAdventureById } from "./adventures.service";
+import {
+  getAdventures,
+  getAdventureById,
+  createAdventure,
+} from "./adventures.service";
 
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -24,6 +28,18 @@ const get = async (req: Request, res: Response, next: NextFunction) => {
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const { title, description, location, imageUrl, imageAlt, images } =
+      req.body;
+
+    const adventure = await createAdventure({
+      title,
+      description,
+      location,
+      images,
+      imageUrl,
+      imageAlt,
+    });
+    res.status(201).json(adventure);
   } catch (error) {
     next(error);
   }

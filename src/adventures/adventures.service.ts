@@ -26,4 +26,38 @@ const getAdventureById = async (id: string) => {
   }
 };
 
-export { getAdventures, getAdventureById };
+const createAdventure = async ({
+  title,
+  description,
+  location,
+  imageUrl,
+  imageAlt,
+  images,
+}: {
+  title: string;
+  description: string;
+  location: string;
+  imageUrl: string;
+  imageAlt: string;
+  images: {
+    url: string;
+    position: number;
+  }[];
+}) => {
+  try {
+    const adventure = await Adventure.create({
+      title,
+      description,
+      location,
+      imageUrl,
+      imageAlt,
+      images,
+    });
+
+    return adventure;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export { getAdventures, getAdventureById, createAdventure };
