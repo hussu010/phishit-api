@@ -5,6 +5,7 @@ import {
   getAdventureById,
   createAdventure,
   deleteAdventure,
+  updateAdventure,
 } from "./adventures.service";
 
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
@@ -48,6 +49,20 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
 
 const update = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const { id } = req.params;
+    const { title, description, location, imageUrl, imageAlt, images } =
+      req.body;
+
+    const adventure = await updateAdventure({
+      id,
+      title,
+      description,
+      location,
+      images,
+      imageUrl,
+      imageAlt,
+    });
+    res.status(200).json(adventure);
   } catch (error) {
     next(error);
   }

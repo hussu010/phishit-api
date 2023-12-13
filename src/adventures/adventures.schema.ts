@@ -16,4 +16,9 @@ const createAdventureSchema = [
   body("images.*.position").isNumeric(),
 ];
 
-export { getAdventureByIdSchema, createAdventureSchema };
+const updateAdventureSchema = [
+  ...getAdventureByIdSchema,
+  ...createAdventureSchema,
+];
+
+export { getAdventureByIdSchema, createAdventureSchema, updateAdventureSchema };

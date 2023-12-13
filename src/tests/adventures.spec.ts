@@ -253,3 +253,154 @@ describe("DELETE /api/adventures/:id", () => {
     expect(res.status).toBe(204);
   });
 });
+
+describe("PUT /api/adventures/:id", () => {
+  it("should return 400 Bad Request", async () => {
+    const res = await request(app)
+      .put("/api/adventures/123")
+      .send({
+        title: "a",
+        description: "a",
+        location: {
+          type: "a",
+          coordinates: "[0, 0]",
+        },
+        imageUrl: "a",
+        imageAlt: "a",
+        images: [
+          {
+            url: "a",
+            position: "a",
+          },
+        ],
+      });
+    expect(res.status).toBe(400);
+
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors).toBeInstanceOf(Array);
+
+    const errorDetails = res.body.errors.map((error) => ({
+      path: error.path,
+      location: error.location,
+    }));
+
+    expect(errorDetails).toContainEqual({
+      path: "id",
+      location: "params",
+    });
+    expect(errorDetails).toContainEqual({
+      path: "title",
+      location: "body",
+    });
+    expect(errorDetails).toContainEqual({
+      path: "description",
+      location: "body",
+    });
+    expect(errorDetails).toContainEqual({
+      path: "location.type",
+      location: "body",
+    });
+    expect(errorDetails).toContainEqual({
+      path: "location.coordinates",
+      location: "body",
+    });
+    expect(errorDetails).toContainEqual({
+      path: "imageUrl",
+      location: "body",
+    });
+    expect(errorDetails).toContainEqual({
+      path: "imageAlt",
+      location: "body",
+    });
+    expect(errorDetails).toContainEqual({
+      path: "images[0].url",
+      location: "body",
+    });
+    expect(errorDetails).toContainEqual({
+      path: "images[0].position",
+      location: "body",
+    });
+  });
+
+  it("should return 404 Not Found", async () => {
+    const res = await request(app)
+      .put("/api/adventures/5f7a5d713d0f4d1b2c5e3f6e")
+      .send({
+        title: "a".repeat(3),
+        description: "a".repeat(16),
+        location: {
+          type: "Point",
+          coordinates: [0, 0],
+        },
+        imageUrl: faker.image.urlLoremFlickr(),
+        imageAlt: faker.lorem.words(3),
+        images: [
+          {
+            url: faker.image.urlLoremFlickr(),
+            position: 1,
+          },
+        ],
+      });
+    expect(res.status).toBe(404);
+    expect(res.body).toEqual({
+      message: errorMessages.OBJECT_WITH_ID_NOT_FOUND,
+    });
+  });
+
+  it("should return 200 OK with adventure", async () => {
+    const numberOfAdventures = 6;
+    const numberOfPackages = 6;
+
+    const adventures = await seedAdventures({
+      numberOfAdventures,
+      numberOfPackages,
+    });
+
+    const newTitle = "a".repeat(3);
+    const newDescription = "a".repeat(16);
+    const newLocation = {
+      type: "Point",
+      coordinates: [0, 0],
+    };
+    const newImageUrl = faker.image.urlLoremFlickr();
+    const newImageAlt = faker.lorem.words(3);
+    const newImages = [
+      {
+        url: faker.image.urlLoremFlickr(),
+        position: 1,
+      },
+      {
+        url: faker.image.urlLoremFlickr(),
+        position: 2,
+      },
+    ];
+
+    const res = await request(app)
+      .put(`/api/adventures/${adventures[0]._id}`)
+      .send({
+        title: newTitle,
+        description: newDescription,
+        location: newLocation,
+        imageUrl: newImageUrl,
+        imageAlt: newImageAlt,
+        images: newImages,
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("_id");
+    expect(res.body).toHaveProperty("title");
+    expect(res.body).toHaveProperty("description");
+    expect(res.body).toHaveProperty("imageUrl");
+    expect(res.body).toHaveProperty("imageAlt");
+    expect(res.body).toHaveProperty("location");
+
+    expect(res.body.title).toEqual(newTitle);
+    expect(res.body.description).toEqual(newDescription);
+    expect(res.body.location).toEqual(newLocation);
+    expect(res.body.imageUrl).toEqual(newImageUrl);
+    expect(res.body.imageAlt).toEqual(newImageAlt);
+
+    const expectedImages = newImages.map((img) => expect.objectContaining(img));
+    expect(res.body.images).toEqual(expect.arrayContaining(expectedImages));
+  });
+});

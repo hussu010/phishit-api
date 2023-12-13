@@ -74,4 +74,54 @@ const deleteAdventure = async (id: string) => {
   }
 };
 
-export { getAdventures, getAdventureById, createAdventure, deleteAdventure };
+const updateAdventure = async ({
+  id,
+  title,
+  description,
+  location,
+  imageUrl,
+  imageAlt,
+  images,
+}: {
+  id: string;
+  title: string;
+  description: string;
+  location: string;
+  imageUrl: string;
+  imageAlt: string;
+  images: {
+    url: string;
+    position: number;
+  }[];
+}) => {
+  try {
+    const adventure = await Adventure.findByIdAndUpdate(
+      id,
+      {
+        title,
+        description,
+        location,
+        imageUrl,
+        imageAlt,
+        images,
+      },
+      { new: true }
+    );
+
+    if (!adventure) {
+      throw new CustomError(errorMessages.OBJECT_WITH_ID_NOT_FOUND, 404);
+    }
+
+    return adventure;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export {
+  getAdventures,
+  getAdventureById,
+  createAdventure,
+  deleteAdventure,
+  updateAdventure,
+};
