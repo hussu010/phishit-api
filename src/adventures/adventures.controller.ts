@@ -4,6 +4,7 @@ import {
   getAdventures,
   getAdventureById,
   createAdventure,
+  deleteAdventure,
 } from "./adventures.service";
 
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
@@ -54,6 +55,10 @@ const update = async (req: Request, res: Response, next: NextFunction) => {
 
 const remove = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const { id } = req.params;
+
+    await deleteAdventure(id);
+    res.status(204).json();
   } catch (error) {
     next(error);
   }

@@ -60,4 +60,18 @@ const createAdventure = async ({
   }
 };
 
-export { getAdventures, getAdventureById, createAdventure };
+const deleteAdventure = async (id: string) => {
+  try {
+    const adventure = await Adventure.findByIdAndDelete(id);
+
+    if (!adventure) {
+      throw new CustomError(errorMessages.OBJECT_WITH_ID_NOT_FOUND, 404);
+    }
+
+    return adventure;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export { getAdventures, getAdventureById, createAdventure, deleteAdventure };

@@ -210,3 +210,46 @@ describe("POST /api/adventures", () => {
     expect(res.body.location).toHaveProperty("coordinates");
   });
 });
+
+describe("DELETE /api/adventures/:id", () => {
+  it("should return 400 Bad Request", async () => {
+    const res = await request(app).delete("/api/adventures/123");
+    expect(res.status).toBe(400);
+
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors).toBeInstanceOf(Array);
+
+    const errorDetails = res.body.errors.map((error) => ({
+      path: error.path,
+      location: error.location,
+    }));
+
+    expect(errorDetails).toContainEqual({ path: "id", location: "params" });
+  });
+
+  it("should return 404 Not Found", async () => {
+    const res = await request(app).delete(
+      "/api/adventures/5f7a5d713d0f4d1b2c5e3f6e"
+    );
+    expect(res.status).toBe(404);
+    expect(res.body).toEqual({
+      message: errorMessages.OBJECT_WITH_ID_NOT_FOUND,
+    });
+  });
+
+  it("should return 200 OK with adventure", async () => {
+    const numberOfAdventures = 6;
+    const numberOfPackages = 6;
+
+    const adventures = await seedAdventures({
+      numberOfAdventures,
+      numberOfPackages,
+    });
+
+    const res = await request(app).delete(
+      `/api/adventures/${adventures[0]._id}`
+    );
+
+    expect(res.status).toBe(204);
+  });
+});
