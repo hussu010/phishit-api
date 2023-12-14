@@ -24,10 +24,9 @@ const AdventureSchema = new Schema<IAdventure>(
     },
     description: {
       type: String,
-      unique: true,
       sparse: true,
       minLength: 16,
-      maxLength: 512,
+      maxLength: 1024,
     },
     location: {
       type: {
