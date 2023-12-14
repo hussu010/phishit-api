@@ -209,6 +209,56 @@
             }
           }
         }
+      },
+      "post": {
+        "tags": ["adventures"],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "create adventure.",
+            "schema": {
+              "$ref": "#/definitions/Adventure"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Adventure created successfully.",
+            "schema": {
+              "$ref": "#/definitions/Adventure"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/BadRequestError"
+            }
+          },
+          "401": {
+            "description": "Unautorized request.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "403": {
+            "description": "Forbidden.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
       }
     },
     "/adventures/{id}": {
@@ -236,6 +286,118 @@
             }
           },
           "404": {
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["adventures"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "update adventure.",
+            "schema": {
+              "$ref": "#/definitions/Adventure"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Adventure updated successfully.",
+            "schema": {
+              "$ref": "#/definitions/Adventure"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/BadRequestError"
+            }
+          },
+          "401": {
+            "description": "Unautorized request.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "403": {
+            "description": "Forbidden.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "404": {
+            "description": "Adventure not found.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["adventures"],
+        "summary": "delete adventure by id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {},
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/BadRequestError"
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "403": {
+            "description": "Forbidden.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "404": {
+            "description": "Property not found.",
             "schema": {
               "$ref": "#/definitions/SingleMessage"
             }
