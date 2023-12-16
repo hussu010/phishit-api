@@ -5,7 +5,7 @@ interface IUser extends Document {
   phoneNumber: string;
   googleId: string;
   username: string;
-  role: string;
+  role: string[];
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;

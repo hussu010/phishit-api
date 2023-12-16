@@ -15,6 +15,7 @@ const errorMessages = {
   OBJECT_WITH_ID_NOT_FOUND: "Object with ID not found",
   INVALID_ID: "Invalid ID",
   USER_ASSOCIATED_WITH_JWT_NOT_FOUND: "User associated with JWT not found",
+  FORBIDDEN: "Forbidden",
 };
 
 export { errorMessages, successMessages };

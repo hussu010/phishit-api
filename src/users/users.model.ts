@@ -27,11 +27,13 @@ const UserSchema = new Schema<IUser>(
       maxLength: 15,
       default: generateRandomUsername(),
     },
-    role: {
-      type: String,
-      enum: UserEnum,
-      default: UserRole.GENERAL,
-    },
+    role: [
+      {
+        type: String,
+        enum: Object.values(UserRole),
+        default: UserRole.GENERAL,
+      },
+    ],
     isActive: {
       type: Boolean,
       default: true,

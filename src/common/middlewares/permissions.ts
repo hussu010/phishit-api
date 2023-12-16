@@ -46,4 +46,17 @@ const isAuthorized = async (
   }
 };
 
-export { isAuthorized };
+const hasRole = (role: string[]) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      if (!req.user?.role.some((r) => role.includes(r))) {
+        throw new CustomError(errorMessages.FORBIDDEN, 403);
+      }
+      next();
+    } catch (error) {
+      next(error);
+    }
+  };
+};
+
+export { isAuthorized, hasRole };

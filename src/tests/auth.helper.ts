@@ -17,4 +17,12 @@ const getDeletedUserJWT = async () => {
   return accessToken;
 };
 
-export { getAuthenticatedUserJWT, getDeletedUserJWT };
+const getUserWithRole = async (role: string) => {
+  const phoneNumber = "9840000000";
+  const user = await getUserUsingPhoneNumber(phoneNumber);
+  user.role = [role];
+  await user.save();
+  return user;
+};
+
+export { getAuthenticatedUserJWT, getDeletedUserJWT, getUserWithRole };

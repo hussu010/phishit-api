@@ -6,7 +6,12 @@ import request from "supertest";
 import app from "../../index";
 import { seedAdventures } from "../seed/adventures";
 import { errorMessages } from "../common/config/messages";
-import { getAuthenticatedUserJWT, getDeletedUserJWT } from "./auth.helper";
+import {
+  getAuthenticatedUserJWT,
+  getDeletedUserJWT,
+  getUserWithRole,
+} from "./auth.helper";
+import { generateJWT } from "../auth/auth.service";
 
 beforeAll(async () => {
   await connect();
@@ -156,8 +161,22 @@ describe("POST /api/adventures", () => {
     );
   });
 
-  it("should return 400 Bad Request", async () => {
+  it("should return 403 if user is not an admin", async () => {
     const { accessToken } = await getAuthenticatedUserJWT();
+
+    const res = await request(app)
+      .post("/api/adventures")
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.statusCode).toEqual(403);
+    expect(res.body).toHaveProperty("message");
+    expect(res.body.message).toEqual(errorMessages.FORBIDDEN);
+  });
+
+  it("should return 400 Bad Request", async () => {
+    const user = await getUserWithRole("ADMIN");
+    const accessToken = await generateJWT(user, "ACCESS");
 
     const res = await request(app)
       .post("/api/adventures")
@@ -224,7 +243,8 @@ describe("POST /api/adventures", () => {
   });
 
   it("should return 201 Created", async () => {
-    const { accessToken } = await getAuthenticatedUserJWT();
+    const user = await getUserWithRole("ADMIN");
+    const accessToken = await generateJWT(user, "ACCESS");
 
     const res = await request(app)
       .post("/api/adventures")
@@ -271,8 +291,22 @@ describe("DELETE /api/adventures/:id", () => {
     expect(res.body).toHaveProperty("message");
   });
 
-  it("should return 400 Bad Request", async () => {
+  it("should return 403 if user is not an admin", async () => {
     const { accessToken } = await getAuthenticatedUserJWT();
+
+    const res = await request(app)
+      .post("/api/adventures")
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.statusCode).toEqual(403);
+    expect(res.body).toHaveProperty("message");
+    expect(res.body.message).toEqual(errorMessages.FORBIDDEN);
+  });
+
+  it("should return 400 Bad Request with invalid id", async () => {
+    const user = await getUserWithRole("ADMIN");
+    const accessToken = await generateJWT(user, "ACCESS");
 
     const res = await request(app)
       .delete("/api/adventures/123")
@@ -292,8 +326,9 @@ describe("DELETE /api/adventures/:id", () => {
     expect(errorDetails).toContainEqual({ path: "id", location: "params" });
   });
 
-  it("should return 404 Not Found", async () => {
-    const { accessToken } = await getAuthenticatedUserJWT();
+  it("should return 404 when adventure is not found", async () => {
+    const user = await getUserWithRole("ADMIN");
+    const accessToken = await generateJWT(user, "ACCESS");
 
     const res = await request(app)
       .delete("/api/adventures/5f7a5d713d0f4d1b2c5e3f6e")
@@ -306,7 +341,8 @@ describe("DELETE /api/adventures/:id", () => {
   });
 
   it("should return 204 if the adventure is deleted successfully", async () => {
-    const { accessToken } = await getAuthenticatedUserJWT();
+    const user = await getUserWithRole("ADMIN");
+    const accessToken = await generateJWT(user, "ACCESS");
 
     const numberOfAdventures = 6;
     const numberOfPackages = 6;
@@ -335,8 +371,22 @@ describe("PUT /api/adventures/:id", () => {
     expect(res.body).toHaveProperty("message");
   });
 
-  it("should return 400 Bad Request", async () => {
+  it("should return 403 if user is not an admin", async () => {
     const { accessToken } = await getAuthenticatedUserJWT();
+
+    const res = await request(app)
+      .post("/api/adventures")
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.statusCode).toEqual(403);
+    expect(res.body).toHaveProperty("message");
+    expect(res.body.message).toEqual(errorMessages.FORBIDDEN);
+  });
+
+  it("should return 400 Bad Request with invalid paramters", async () => {
+    const user = await getUserWithRole("ADMIN");
+    const accessToken = await generateJWT(user, "ACCESS");
 
     const res = await request(app)
       .put("/api/adventures/123")
@@ -407,7 +457,8 @@ describe("PUT /api/adventures/:id", () => {
   });
 
   it("should return 404 Not Found", async () => {
-    const { accessToken } = await getAuthenticatedUserJWT();
+    const user = await getUserWithRole("ADMIN");
+    const accessToken = await generateJWT(user, "ACCESS");
 
     const res = await request(app)
       .put("/api/adventures/5f7a5d713d0f4d1b2c5e3f6e")
@@ -435,8 +486,9 @@ describe("PUT /api/adventures/:id", () => {
     });
   });
 
-  it("should return 200 OK with adventure", async () => {
-    const { accessToken } = await getAuthenticatedUserJWT();
+  it("should return 200 OK when adventure is updated", async () => {
+    const user = await getUserWithRole("ADMIN");
+    const accessToken = await generateJWT(user, "ACCESS");
 
     const numberOfAdventures = 6;
     const numberOfPackages = 6;
