@@ -191,6 +191,38 @@
         }
       }
     },
+    "/users/me": {
+      "get": {
+        "tags": ["users"],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User informaton.",
+            "schema": {
+              "$ref": "#/definitions/GetMeUser"
+            }
+          },
+          "401": {
+            "description": "Unautorized request.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      }
+    },
     "/users/me/username": {
       "put": {
         "tags": ["users"],
@@ -620,6 +652,42 @@
       "type": "object",
       "properties": {
         "username": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "GetMeUser": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "example": "string"
+        },
+        "phoneNumber": {
+          "type": "string",
+          "example": "string"
+        },
+        "googleId": {
+          "type": "string",
+          "example": "string"
+        },
+        "username": {
+          "type": "string",
+          "example": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "example": "string"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "example": "string"
+        },
+        "updatedAt": {
           "type": "string",
           "example": "string"
         }

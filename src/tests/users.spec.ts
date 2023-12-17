@@ -17,6 +17,27 @@ beforeEach(async () => {
 });
 afterAll(async () => await close());
 
+describe("GET /users/me", () => {
+  it("should return 401 if user is not authenticated", async () => {
+    const res = await request(app).get("/api/users/me");
+
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty("message");
+  });
+
+  it("should return 200 if user is authenticated", async () => {
+    const { accessToken } = await getAuthenticatedUserJWT();
+
+    const res = await request(app)
+      .get("/api/users/me")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("username");
+    expect(res.body).toHaveProperty("role");
+  });
+});
+
 describe("PUT /users/me/username", () => {
   it("should return 401 if user is not authenticated", async () => {
     const username = faker.internet.userName();

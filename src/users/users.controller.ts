@@ -22,4 +22,14 @@ const updateUsername = async (
   }
 };
 
-export { updateUsername };
+const getMe = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = req.user!;
+
+    res.status(200).json(user);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { updateUsername, getMe };
