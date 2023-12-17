@@ -10,34 +10,31 @@ import {
 } from "./adventures.schema";
 import { validateRequest } from "../common/middlewares/validator";
 
-router.route("/").get(getAll);
-router.route("/:id").get(getAdventureByIdSchema, validateRequest, get);
-router
-  .route("/")
-  .post(
-    isAuthorized,
-    hasRole(["SUPER_ADMIN", "ADMIN"]),
-    createAdventureSchema,
-    validateRequest,
-    create
-  );
-router
-  .route("/:id")
-  .put(
-    isAuthorized,
-    hasRole(["SUPER_ADMIN", "ADMIN"]),
-    updateAdventureSchema,
-    validateRequest,
-    update
-  );
-router
-  .route("/:id")
-  .delete(
-    isAuthorized,
-    hasRole(["SUPER_ADMIN", "ADMIN"]),
-    getAdventureByIdSchema,
-    validateRequest,
-    remove
-  );
+router.get("/", getAll);
+router.get("/:id", getAdventureByIdSchema, validateRequest, get);
+router.post(
+  "/",
+  isAuthorized,
+  hasRole(["SUPER_ADMIN", "ADMIN"]),
+  createAdventureSchema,
+  validateRequest,
+  create
+);
+router.put(
+  "/:id",
+  isAuthorized,
+  hasRole(["SUPER_ADMIN", "ADMIN"]),
+  updateAdventureSchema,
+  validateRequest,
+  update
+);
+router.delete(
+  "/:id",
+  isAuthorized,
+  hasRole(["SUPER_ADMIN", "ADMIN"]),
+  getAdventureByIdSchema,
+  validateRequest,
+  remove
+);
 
 export default router;
