@@ -23,6 +23,7 @@ import * as swaggerDocument from "./swagger.json";
 import authRouter from "./src/auth/auth.route";
 import healthRouter from "./src/common/routes/health.route";
 import adventuresRouter from "./src/adventures/adventures.route";
+import usersRouter from "./src/users/users.route";
 
 const app: Express = express();
 
@@ -42,6 +43,7 @@ app.use(haltOnTimedout);
 app.use("/api/health", healthRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/adventures", adventuresRouter);
+app.use("/api/users", usersRouter);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(errorLogger);

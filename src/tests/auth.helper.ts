@@ -1,4 +1,5 @@
 import { getUserUsingPhoneNumber, generateJWT } from "../auth/auth.service";
+import { UserRoleType } from "../common/config/enum";
 
 const getAuthenticatedUserJWT = async () => {
   const phoneNumber = "9840000000";
@@ -17,7 +18,7 @@ const getDeletedUserJWT = async () => {
   return accessToken;
 };
 
-const getUserWithRole = async (role: string) => {
+const getUserWithRole = async (role: UserRoleType) => {
   const phoneNumber = "9840000000";
   const user = await getUserUsingPhoneNumber(phoneNumber);
   user.role = [role];

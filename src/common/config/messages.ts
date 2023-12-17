@@ -16,6 +16,7 @@ const errorMessages = {
   INVALID_ID: "Invalid ID",
   USER_ASSOCIATED_WITH_JWT_NOT_FOUND: "User associated with JWT not found",
   FORBIDDEN: "Forbidden",
+  USERNAME_ALREADY_EXISTS: "Username is already taken",
 };
 
 export { errorMessages, successMessages };

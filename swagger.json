@@ -191,6 +191,58 @@
         }
       }
     },
+    "/users/me/username": {
+      "put": {
+        "tags": ["users"],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "update username",
+            "schema": {
+              "$ref": "#/definitions/UpdateUsername"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Adventure updated successfully.",
+            "schema": {
+              "$ref": "#/definitions/Adventure"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/BadRequestError"
+            }
+          },
+          "401": {
+            "description": "Unautorized request.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "409": {
+            "description": "Username already exists.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      }
+    },
     "/adventures/": {
       "get": {
         "tags": ["adventures"],
@@ -562,6 +614,15 @@
       "type": "array",
       "items": {
         "$ref": "#/definitions/Adventure"
+      }
+    },
+    "UpdateUsername": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "example": "string"
+        }
       }
     },
     "SingleMessage": {
