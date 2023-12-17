@@ -8,7 +8,8 @@
     "start": "node dist/server.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/server.js\"",
     "test": "jest",
-    "seed:adventures": "node dist/src/seed/adventures.js"
+    "seed:adventures": "node dist/src/seed/adventures.js",
+    "seed:users": "node dist/src/seed/users.js"
   },
   "keywords": [],
   "author": "",
