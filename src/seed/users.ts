@@ -17,7 +17,7 @@ const users = [
   {
     phoneNumber: "9863299610",
     username: "user2",
-    roles: ["GENERAL", "ADMIN", "SUPER_ADMIN"],
+    roles: ["GENERAL", "ADMIN"],
     isActive: true,
   },
   {

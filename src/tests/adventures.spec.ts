@@ -284,7 +284,7 @@ describe("POST /api/adventures", () => {
 describe("DELETE /api/adventures/:id", () => {
   it("should return 401 if user is not logged in", async () => {
     const res = await request(app)
-      .post("/api/adventures")
+      .delete("/api/adventures/5f7a5d713d0f4d1b2c5e3f6e")
       .set("Accept", "application/json");
 
     expect(res.statusCode).toEqual(401);
@@ -295,7 +295,21 @@ describe("DELETE /api/adventures/:id", () => {
     const { accessToken } = await getAuthenticatedUserJWT();
 
     const res = await request(app)
-      .post("/api/adventures")
+      .delete("/api/adventures/5f7a5d713d0f4d1b2c5e3f6e")
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.statusCode).toEqual(403);
+    expect(res.body).toHaveProperty("message");
+    expect(res.body.message).toEqual(errorMessages.FORBIDDEN);
+  });
+
+  it("should return 403 if user is not an SUPER_ADMIN", async () => {
+    const user = await getUserWithRole("ADMIN");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const res = await request(app)
+      .delete("/api/adventures/5f7a5d713d0f4d1b2c5e3f6e")
       .set("Accept", "application/json")
       .set("Authorization", `Bearer ${accessToken}`);
 
@@ -305,7 +319,7 @@ describe("DELETE /api/adventures/:id", () => {
   });
 
   it("should return 400 Bad Request with invalid id", async () => {
-    const user = await getUserWithRole("ADMIN");
+    const user = await getUserWithRole("SUPER_ADMIN");
     const accessToken = await generateJWT(user, "ACCESS");
 
     const res = await request(app)
@@ -327,7 +341,7 @@ describe("DELETE /api/adventures/:id", () => {
   });
 
   it("should return 404 when adventure is not found", async () => {
-    const user = await getUserWithRole("ADMIN");
+    const user = await getUserWithRole("SUPER_ADMIN");
     const accessToken = await generateJWT(user, "ACCESS");
 
     const res = await request(app)
@@ -341,7 +355,7 @@ describe("DELETE /api/adventures/:id", () => {
   });
 
   it("should return 204 if the adventure is deleted successfully", async () => {
-    const user = await getUserWithRole("ADMIN");
+    const user = await getUserWithRole("SUPER_ADMIN");
     const accessToken = await generateJWT(user, "ACCESS");
 
     const numberOfAdventures = 6;

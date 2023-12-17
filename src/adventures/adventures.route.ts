@@ -31,7 +31,7 @@ router.put(
 router.delete(
   "/:id",
   isAuthorized,
-  hasRole(["SUPER_ADMIN", "ADMIN"]),
+  hasRole(["SUPER_ADMIN"]),
   getAdventureByIdSchema,
   validateRequest,
   remove
