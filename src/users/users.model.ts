@@ -27,7 +27,7 @@ const UserSchema = new Schema<IUser>(
       maxLength: 15,
       default: generateRandomUsername(),
     },
-    role: [
+    roles: [
       {
         type: String,
         enum: Object.values(UserRole),

@@ -49,7 +49,7 @@ const isAuthorized = async (
 const hasRole = (role: string[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      if (!req.user?.role.some((r) => role.includes(r))) {
+      if (!req.user?.roles.some((r) => role.includes(r))) {
         throw new CustomError(errorMessages.FORBIDDEN, 403);
       }
       next();

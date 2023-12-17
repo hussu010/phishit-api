@@ -34,7 +34,7 @@ describe("GET /users/me", () => {
 
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty("username");
-    expect(res.body).toHaveProperty("role");
+    expect(res.body).toHaveProperty("roles");
   });
 });
 

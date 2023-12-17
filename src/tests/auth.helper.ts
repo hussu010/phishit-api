@@ -21,7 +21,7 @@ const getDeletedUserJWT = async () => {
 const getUserWithRole = async (role: UserRoleType) => {
   const phoneNumber = "9840000000";
   const user = await getUserUsingPhoneNumber(phoneNumber);
-  user.role = [role];
+  user.roles = [role];
   await user.save();
   return user;
 };
