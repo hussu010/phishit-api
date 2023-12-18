@@ -275,6 +275,94 @@
         }
       }
     },
+    "/profiles/": {
+      "get": {
+        "tags": ["profiles"],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User profile successfully obtained.",
+            "schema": {
+              "$ref": "#/definitions/Profile"
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "404": {
+            "description": "User not found.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["profiles"],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "Adding new user.",
+            "schema": {
+              "$ref": "#/definitions/Profile"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User profile successfully updated.",
+            "schema": {
+              "$ref": "#/definitions/Profile"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/BadRequestError"
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "404": {
+            "description": "User not found.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      }
+    },
     "/adventures/": {
       "get": {
         "tags": ["adventures"],
@@ -682,6 +770,51 @@
             "type": "string",
             "example": "string"
           }
+        },
+        "createdAt": {
+          "type": "string",
+          "example": "string"
+        },
+        "updatedAt": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "Profile": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "example": "string"
+        },
+        "user": {
+          "type": "string",
+          "example": "objectID"
+        },
+        "fullName": {
+          "type": "string",
+          "example": "string"
+        },
+        "email": {
+          "type": "string",
+          "example": "email@gmail.com"
+        },
+        "gender": {
+          "type": "string",
+          "example": "MALE"
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "example": "1969-12-25"
+        },
+        "bio": {
+          "type": "string",
+          "example": "beautiful bio of a good person"
+        },
+        "avatarUrl": {
+          "type": "string",
+          "example": "https://merodera-production.s3.ap-south-1.amazonaws.com/assets/default_user_avatar.png"
         },
         "createdAt": {
           "type": "string",
