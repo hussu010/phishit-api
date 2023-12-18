@@ -9,6 +9,8 @@ const OTPTypeEnum = ["AUTH"];
 type OtpType = "AUTH";
 type JWTGrantType = "ACCESS" | "REFRESH";
 
+const GenderEnum = ["MALE", "FEMALE", "OTHER"];
+
 const OauthProviderEnum = ["google"];
 
 export {
@@ -19,4 +21,5 @@ export {
   OtpType,
   JWTGrantType,
   OauthProviderEnum,
+  GenderEnum,
 };
