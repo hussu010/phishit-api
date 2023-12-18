@@ -17,6 +17,7 @@ const errorMessages = {
   USER_ASSOCIATED_WITH_JWT_NOT_FOUND: "User associated with JWT not found",
   FORBIDDEN: "Forbidden",
   USERNAME_ALREADY_EXISTS: "Username is already taken",
+  PROFILE_NOT_FOUND: "Profile not found",
 };
 
 export { errorMessages, successMessages };
