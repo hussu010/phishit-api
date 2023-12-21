@@ -25,6 +25,7 @@ import healthRouter from "./src/common/routes/health.route";
 import adventuresRouter from "./src/adventures/adventures.route";
 import usersRouter from "./src/users/users.route";
 import profilesRouter from "./src/profiles/profiles.route";
+import guideRequestsRouter from "./src/guide_requests/guide_requests.route";
 
 const app: Express = express();
 
@@ -46,6 +47,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/adventures", adventuresRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/profiles", profilesRouter);
+app.use("/api/guide-requests", guideRequestsRouter);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(errorLogger);

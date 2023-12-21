@@ -6,6 +6,10 @@ const UserRole = {
 };
 type UserRoleType = "GENERAL" | "ADMIN" | "SUPER_ADMIN";
 const OTPTypeEnum = ["AUTH"];
+const StatusEnum = ["PENDING", "APPROVED", "REJECTED"];
+type StatusType = "PENDING" | "APPROVED" | "REJECTED";
+const GuideTypeEnum = ["INDIVIDUAL", "ORGANIZATION"];
+type GuideType = "INDIVIDUAL" | "ORGANIZATION";
 type OtpType = "AUTH";
 type JWTGrantType = "ACCESS" | "REFRESH";
 
@@ -22,4 +26,8 @@ export {
   JWTGrantType,
   OauthProviderEnum,
   GenderEnum,
+  StatusEnum,
+  StatusType,
+  GuideTypeEnum,
+  GuideType,
 };
