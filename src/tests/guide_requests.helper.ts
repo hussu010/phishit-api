@@ -1,7 +1,10 @@
 import { faker } from "@faker-js/faker";
 
 import GuideRequest from "../guide_requests/guide_requests.model";
-import { GuideTypeEnum } from "../common/config/enum";
+import {
+  GuideTypeEnum,
+  GuideRequestDocumentTypeEnum,
+} from "../common/config/enum";
 
 const seedGuideRequests = async ({
   numberOfGuideRequests,
@@ -22,11 +25,7 @@ const seedGuideRequests = async ({
         documents: [
           {
             url: faker.image.avatar(),
-            type: faker.helpers.arrayElement([
-              "nid",
-              "passport",
-              "company_registration_certificate",
-            ]),
+            type: faker.helpers.arrayElement(GuideRequestDocumentTypeEnum),
           },
         ],
       };

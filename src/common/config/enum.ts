@@ -9,6 +9,12 @@ const OTPTypeEnum = ["AUTH"];
 const StatusEnum = ["PENDING", "APPROVED", "REJECTED"];
 type StatusType = "PENDING" | "APPROVED" | "REJECTED";
 const GuideTypeEnum = ["INDIVIDUAL", "ORGANIZATION"];
+const GuideRequestDocumentTypeEnum = [
+  "NID",
+  "PASSPORT",
+  "COMPANY_REGISTRATION_CERTIFICATE",
+  "OTHER",
+];
 type GuideType = "INDIVIDUAL" | "ORGANIZATION";
 type OtpType = "AUTH";
 type JWTGrantType = "ACCESS" | "REFRESH";
@@ -30,4 +36,5 @@ export {
   StatusType,
   GuideTypeEnum,
   GuideType,
+  GuideRequestDocumentTypeEnum,
 };

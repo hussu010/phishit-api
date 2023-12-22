@@ -1,5 +1,9 @@
 import { Schema, model, Model } from "mongoose";
-import { StatusEnum, GuideTypeEnum } from "../common/config/enum";
+import {
+  StatusEnum,
+  GuideTypeEnum,
+  GuideRequestDocumentTypeEnum,
+} from "../common/config/enum";
 import { IGuideRequest } from "./guide_requests.interface";
 
 const GuideRequestSchema = new Schema<IGuideRequest>(
@@ -33,7 +37,7 @@ const GuideRequestSchema = new Schema<IGuideRequest>(
         },
         type: {
           type: String,
-          enum: ["nid", "passport", "company_registration_certificate"],
+          enum: GuideRequestDocumentTypeEnum,
         },
       },
     ],

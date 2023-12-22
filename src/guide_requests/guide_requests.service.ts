@@ -11,4 +11,37 @@ const getGuideRequests = async () => {
   }
 };
 
-export { getGuideRequests };
+const createGuideRequest = async ({
+  type,
+  name,
+  phoneNumber,
+  email,
+  address,
+  cover_letter,
+  documents,
+}: {
+  type: string;
+  name: string;
+  phoneNumber: string;
+  email: string;
+  address: string;
+  cover_letter: string;
+  documents: string[];
+}) => {
+  try {
+    const guideRequest = await GuideRequest.create({
+      type,
+      name,
+      phoneNumber,
+      email,
+      address,
+      cover_letter,
+      documents,
+    });
+    return guideRequest;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export { getGuideRequests, createGuideRequest };
