@@ -110,10 +110,10 @@ jobs:
           username: ${{ secrets.DEV_LINODE_USERNAME }}
           password: ${{ secrets.DEV_LINODE_PASSWORD }}
           script: |
-            cd /root/phishit-api
+            cd phishit-api
 
             echo ${{ env.CR_PAT }} | docker login ghcr.io -u hussu010 --password-stdin
-
             docker pull ghcr.io/hussu010/phishit-api:development
 
+            export GIT_SHA=development
             make start-production
