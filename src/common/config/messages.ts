@@ -18,6 +18,7 @@ const errorMessages = {
   FORBIDDEN: "Forbidden",
   USERNAME_ALREADY_EXISTS: "Username is already taken",
   PROFILE_NOT_FOUND: "Profile not found",
+  FILE_SIZE_TOO_LARGE: "File size too large",
 };
 
 export { errorMessages, successMessages };

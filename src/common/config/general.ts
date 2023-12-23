@@ -11,10 +11,13 @@ const ALLOWED_REDIRECT_URLS = [
 
 const DICEBEAR_URL = "https://api.dicebear.com/7.x/adventurer/svg";
 
+const MAX_IMAGE_SIZE = 15 * 1024 * 1024; // 15MB
+
 export {
   OTP_EXPIRATION_DURATION,
   ACCESS_TOKEN_VALIDITY,
   REFRESH_TOKEN_VALIDITY,
   ALLOWED_REDIRECT_URLS,
   DICEBEAR_URL,
+  MAX_IMAGE_SIZE,
 };

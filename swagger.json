@@ -363,6 +363,66 @@
         }
       }
     },
+    "/upload-images": {
+      "post": {
+        "tags": ["upload-images"],
+        "summary": "upload images to s3.",
+        "consumes": ["multipart/form-data"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "images",
+            "in": "formData",
+            "description": "Images to be uploaded",
+            "required": true,
+            "type": "file",
+            "format": "binary"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "description": "https://example.s3.url.com"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/BadRequestError"
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "413": {
+            "description": "Request Entity Too Large.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      }
+    },
     "/adventures/": {
       "get": {
         "tags": ["adventures"],
