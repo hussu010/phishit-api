@@ -6,14 +6,12 @@ name: Docker
 # documentation.
 
 on:
-  schedule:
-    - cron: '45 5 * * *'
   push:
-    branches: [ "development" ]
+    branches: ["development"]
     # Publish semver tags as releases.
-    tags: [ 'v*.*.*' ]
+    tags: ["v*.*.*"]
   pull_request:
-    branches: [ "development" ]
+    branches: ["development"]
 
 env:
   # Use docker.io for Docker Hub if empty
@@ -21,10 +19,8 @@ env:
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
 
-
 jobs:
   build:
-
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -43,7 +39,7 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: sigstore/cosign-installer@6e04d228eb30da1757ee4e1dd75a0ec73a653e06 #v3.1.1
         with:
-          cosign-release: 'v2.1.1'
+          cosign-release: "v2.1.1"
 
       # Set up BuildKit Docker container builder to be able to build
       # multi-platform images and export cache
@@ -96,3 +92,25 @@ jobs:
         # This step uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    name: Deploy to development server
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Deploy to development server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEV_LINODE_HOST }}
+          username: ${{ secrets.DEV_LINODE_USERNAME }}
+          password: ${{ secrets.DEV_LINODE_PASSWORD }}
+          script: |
+            cd /root/phishit-api
+
+            docker pull ghcr.io/hussu010/phishit-api:sha256-${DIGEST}.sig
+
+            make start-production
