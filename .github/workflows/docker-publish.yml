@@ -111,6 +111,6 @@ jobs:
           script: |
             cd /root/phishit-api
 
-            docker pull ghcr.io/hussu010/phishit-api:sha256-${{ steps.build-and-push.outputs.digest }}.sig
+            docker pull ghcr.io/hussu010/phishit-api:development
 
             make start-production
