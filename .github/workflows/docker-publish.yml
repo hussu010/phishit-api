@@ -116,4 +116,11 @@ jobs:
             docker pull ghcr.io/hussu010/phishit-api:development
 
             export GIT_SHA=development
+            echo "MONGO_URI=${{ secrets.DEV_MONGO_URI }}" >> .env
+            echo "JWT_SECRET_KEY=${{ secrets.DEVELOPMENT_JWT_SECRET_KEY }}" >> .env
+            echo "AWS_ACCESS_KEY=${{ secrets.DEV_AWS_ACCESS_KEY }}" >> .env
+            echo "AWS_SECRET_ACCESS_KEY=${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}" >> .env
+            echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
+            echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
+
             make start-production
