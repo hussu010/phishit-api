@@ -642,6 +642,93 @@
           }
         }
       }
+    },
+    "/guide-requests": {
+      "get": {
+        "tags": ["guide-requests"],
+        "summary": "Get all guide requests.",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/GuideRequestList"
+            }
+          },
+          "401": {
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "403": {
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["guide-requests"],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "create guide request.",
+            "schema": {
+              "$ref": "#/definitions/GuideRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Guide request created successfully.",
+            "schema": {
+              "$ref": "#/definitions/GuideRequest"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/BadRequestError"
+            }
+          },
+          "401": {
+            "description": "Unautorized request.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "403": {
+            "description": "Forbidden.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -684,7 +771,7 @@
         },
         "code": {
           "type": "string",
-          "example": "000000"
+          "example": "123456"
         }
       }
     },
@@ -803,6 +890,74 @@
           "type": "string",
           "example": "string"
         }
+      }
+    },
+    "GuideRequest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["INDIVIDUAL", "ORGANIZATION"]
+        },
+        "name": {
+          "type": "string",
+          "example": "Herald College"
+        },
+        "email": {
+          "type": "string",
+          "example": "college@email.com"
+        },
+        "phoneNumber": {
+          "type": "string",
+          "example": "9800000000"
+        },
+        "address": {
+          "type": "string",
+          "example": "macchapokhari ko side"
+        },
+        "message": {
+          "type": "string",
+          "example": "this is a message"
+        },
+        "documents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "example": "63d1eef1fee2948db16b7842"
+              },
+              "url": {
+                "type": "string",
+                "example": "https://example.com/image.jpg"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "NID",
+                  "PASSPORT",
+                  "COMPANY_REGISTRATION_CERTIFICATE",
+                  "OTHER"
+                ]
+              }
+            }
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "example": "string"
+        },
+        "updatedAt": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "GuideRequestList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/GuideRequest"
       }
     },
     "GetMeUser": {
