@@ -21,7 +21,7 @@ const seedGuideRequests = async ({
         phoneNumber: faker.phone.number(),
         email: faker.internet.email(),
         address: faker.location.streetAddress(),
-        cover_letter: faker.lorem.sentences(3),
+        message: faker.lorem.sentences(3),
         documents: [
           {
             url: faker.image.avatar(),

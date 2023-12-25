@@ -17,7 +17,7 @@ const createGuideRequest = async ({
   phoneNumber,
   email,
   address,
-  cover_letter,
+  message,
   documents,
 }: {
   type: string;
@@ -25,7 +25,7 @@ const createGuideRequest = async ({
   phoneNumber: string;
   email: string;
   address: string;
-  cover_letter: string;
+  message: string;
   documents: string[];
 }) => {
   try {
@@ -35,7 +35,7 @@ const createGuideRequest = async ({
       phoneNumber,
       email,
       address,
-      cover_letter,
+      message,
       documents,
     });
     return guideRequest;

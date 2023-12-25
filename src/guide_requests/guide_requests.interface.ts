@@ -8,7 +8,7 @@ interface IGuideRequest extends Document {
   phoneNumber: string;
   email: string;
   address: string;
-  cover_letter: string;
+  message: string;
   documents: {
     url: string;
     type: string;

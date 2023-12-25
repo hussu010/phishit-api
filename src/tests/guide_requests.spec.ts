@@ -57,7 +57,7 @@ describe("GET /api/guide-requests", () => {
     expect(res.body[0].phoneNumber).toBeDefined();
     expect(res.body[0].email).toBeDefined();
     expect(res.body[0].address).toBeDefined();
-    expect(res.body[0].cover_letter).toBeDefined();
+    expect(res.body[0].message).toBeDefined();
     expect(res.body[0].documents).toBeDefined();
     expect(res.body[0].status).toBeDefined();
     expect(res.body[0].createdAt).toBeDefined();
@@ -112,7 +112,7 @@ describe("POST /api/guide-requests", () => {
       location: "body",
     });
     expect(errorDetails).toContainEqual({
-      path: "cover_letter",
+      path: "message",
       location: "body",
     });
     expect(errorDetails).toContainEqual({
@@ -134,7 +134,7 @@ describe("POST /api/guide-requests", () => {
         phoneNumber: "1234567890",
         email: faker.internet.email(),
         address: faker.location.streetAddress(),
-        cover_letter: faker.lorem.paragraph(),
+        message: faker.lorem.paragraph(),
         documents: [
           {
             url: faker.internet.url(),
@@ -180,7 +180,7 @@ describe("POST /api/guide-requests", () => {
         phoneNumber: "9800000000",
         email: faker.internet.email(),
         address: faker.location.streetAddress(),
-        cover_letter: faker.lorem.paragraph(),
+        message: faker.lorem.paragraph(),
         documents: [
           {
             url: faker.internet.url(),
@@ -195,7 +195,7 @@ describe("POST /api/guide-requests", () => {
     expect(res.body.phoneNumber).toBeDefined();
     expect(res.body.email).toBeDefined();
     expect(res.body.address).toBeDefined();
-    expect(res.body.cover_letter).toBeDefined();
+    expect(res.body.message).toBeDefined();
     expect(res.body.documents).toBeDefined();
     expect(res.body.status).toBeDefined();
     expect(res.body.createdAt).toBeDefined();

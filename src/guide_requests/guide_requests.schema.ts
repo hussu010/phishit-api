@@ -17,7 +17,7 @@ const createGuideRequestSchema = [
   }),
   body("email").isEmail(),
   body("address").isString().isLength({ min: 3, max: 255 }),
-  body("cover_letter").isString().isLength({ min: 3, max: 255 }),
+  body("message").isString().isLength({ min: 3, max: 255 }),
   body("documents").isArray(),
   body("documents.*.url").isURL(),
   body("documents.*.type").isIn(GuideRequestDocumentTypeEnum),

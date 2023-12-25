@@ -12,7 +12,7 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { type, name, phoneNumber, email, address, cover_letter, documents } =
+    const { type, name, phoneNumber, email, address, message, documents } =
       req.body;
 
     const guideRequest = await createGuideRequest({
@@ -21,7 +21,7 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
       phoneNumber,
       email,
       address,
-      cover_letter,
+      message,
       documents,
     });
     res.status(200).json(guideRequest);

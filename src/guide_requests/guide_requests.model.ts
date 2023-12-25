@@ -27,7 +27,7 @@ const GuideRequestSchema = new Schema<IGuideRequest>(
     address: {
       type: String,
     },
-    cover_letter: {
+    message: {
       type: String,
     },
     documents: [
