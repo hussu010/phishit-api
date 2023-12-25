@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker";
 
 import GuideRequest from "../guide_requests/guide_requests.model";
+import User from "../users/users.model";
 import {
   GuideTypeEnum,
   GuideRequestDocumentTypeEnum,
@@ -13,9 +14,14 @@ const seedGuideRequests = async ({
 }) => {
   try {
     const guideRequestsToCreate: any = [];
+    const user = await User.create({
+      phoneNumber: "9800000000",
+      roles: ["GENERAL"],
+    });
 
     for (let i = 0; i < numberOfGuideRequests; i++) {
       const guideRequest = {
+        user,
         type: faker.helpers.arrayElement(GuideTypeEnum),
         name: faker.person.fullName(),
         phoneNumber: faker.phone.number(),
@@ -31,7 +37,8 @@ const seedGuideRequests = async ({
       };
       guideRequestsToCreate.push(guideRequest);
     }
-    await GuideRequest.create(guideRequestsToCreate);
+    const guideRequests = await GuideRequest.create(guideRequestsToCreate);
+    return guideRequests;
   } catch (error) {
     throw error;
   }

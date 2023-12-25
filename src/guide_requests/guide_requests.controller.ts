@@ -1,5 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { getGuideRequests, createGuideRequest } from "./guide_requests.service";
+import {
+  getGuideRequests,
+  createGuideRequest,
+  updateGuideRequestApproval,
+} from "./guide_requests.service";
 
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -12,10 +16,12 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const user = req.user!;
     const { type, name, phoneNumber, email, address, message, documents } =
       req.body;
 
     const guideRequest = await createGuideRequest({
+      user,
       type,
       name,
       phoneNumber,
@@ -30,4 +36,19 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { getAll, create };
+const updateApproval = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    const guideRequest = await updateGuideRequestApproval({ id, status });
+    res.status(200).json(guideRequest);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { getAll, create, updateApproval };

@@ -1,7 +1,8 @@
-import { body } from "express-validator";
+import { body, param } from "express-validator";
 import {
   GuideTypeEnum,
   GuideRequestDocumentTypeEnum,
+  StatusEnum,
 } from "../common/config/enum";
 import { errorMessages } from "../common/config/messages";
 
@@ -23,4 +24,9 @@ const createGuideRequestSchema = [
   body("documents.*.type").isIn(GuideRequestDocumentTypeEnum),
 ];
 
-export { createGuideRequestSchema };
+const updateGuideRequestApprovalSchema = [
+  param("id").isMongoId(),
+  body("status").isString().isIn(StatusEnum),
+];
+
+export { createGuideRequestSchema, updateGuideRequestApprovalSchema };

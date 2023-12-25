@@ -1,10 +1,11 @@
 const UserEnum = ["GENERAL", "ADMIN", "SUPER_ADMIN"];
 const UserRole = {
   GENERAL: "GENERAL",
+  GUIDE: "GUIDE",
   ADMIN: "ADMIN",
   SUPER_ADMIN: "SUPER_ADMIN",
 };
-type UserRoleType = "GENERAL" | "ADMIN" | "SUPER_ADMIN";
+type UserRoleType = "GENERAL" | "GUIDE" | "ADMIN" | "SUPER_ADMIN";
 const OTPTypeEnum = ["AUTH"];
 const StatusEnum = ["PENDING", "APPROVED", "REJECTED"];
 type StatusType = "PENDING" | "APPROVED" | "REJECTED";

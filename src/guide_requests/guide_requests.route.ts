@@ -1,9 +1,12 @@
 import express from "express";
 const router = express.Router();
 
-import { getAll, create } from "./guide_requests.controller";
+import { getAll, create, updateApproval } from "./guide_requests.controller";
 import { isAuthorized, hasRole } from "../common/middlewares/permissions";
-import { createGuideRequestSchema } from "./guide_requests.schema";
+import {
+  createGuideRequestSchema,
+  updateGuideRequestApprovalSchema,
+} from "./guide_requests.schema";
 import { validateRequest } from "../common/middlewares/validator";
 
 router.get("/", isAuthorized, hasRole(["SUPER_ADMIN", "ADMIN"]), getAll);
@@ -13,6 +16,14 @@ router.post(
   createGuideRequestSchema,
   validateRequest,
   create
+);
+router.put(
+  "/:id/status",
+  isAuthorized,
+  hasRole(["SUPER_ADMIN", "ADMIN"]),
+  updateGuideRequestApprovalSchema,
+  validateRequest,
+  updateApproval
 );
 
 export default router;

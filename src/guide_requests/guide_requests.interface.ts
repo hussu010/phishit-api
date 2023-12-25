@@ -1,8 +1,10 @@
 import { Document } from "mongoose";
 import { StatusType, GuideType } from "../common/config/enum";
+import { IUser } from "../users/users.interface";
 
 interface IGuideRequest extends Document {
   _id: string;
+  user: IUser;
   type: GuideType;
   name: string;
   phoneNumber: string;

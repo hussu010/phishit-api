@@ -11,7 +11,7 @@ const users = [
   {
     phoneNumber: "9848000000",
     username: "user1",
-    roles: ["GENERAL"],
+    roles: ["GENERAL", "GUIDE"],
     isActive: true,
   },
   {
@@ -23,7 +23,7 @@ const users = [
   {
     googleId: "105438825981277363287",
     username: "user3",
-    roles: ["GENERAL"],
+    roles: ["GENERAL", "GUIDE"],
     isActive: true,
   },
   {

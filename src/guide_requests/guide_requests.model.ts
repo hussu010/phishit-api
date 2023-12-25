@@ -8,6 +8,10 @@ import { IGuideRequest } from "./guide_requests.interface";
 
 const GuideRequestSchema = new Schema<IGuideRequest>(
   {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
     type: {
       type: String,
       enum: GuideTypeEnum,

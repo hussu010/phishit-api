@@ -728,6 +728,67 @@
             }
           }
         }
+      },
+      "put": {
+        "tags": ["guide-requests"],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "update guide request.",
+            "schema": {
+              "$ref": "#/definitions/UpdateGuideRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Guide request updated successfully.",
+            "schema": {
+              "$ref": "#/definitions/GuideRequest"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/BadRequestError"
+            }
+          },
+          "401": {
+            "description": "Unautorized request.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "403": {
+            "description": "Forbidden.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "404": {
+            "description": "Guide request not found.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ]
       }
     }
   },
@@ -958,6 +1019,15 @@
       "type": "array",
       "items": {
         "$ref": "#/definitions/GuideRequest"
+      }
+    },
+    "UpdateGuideRequest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "status": "string",
+          "enum": ["APPROVED", "REJECTED"]
+        }
       }
     },
     "GetMeUser": {
