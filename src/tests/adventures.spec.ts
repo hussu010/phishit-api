@@ -562,3 +562,112 @@ describe("PUT /api/adventures/:id", () => {
     expect(res.body.images).toEqual(expect.arrayContaining(expectedImages));
   });
 });
+
+describe("POST /api/adventures/:id/enroll", () => {
+  it("should return 401 if user is not logged in", async () => {
+    const res = await request(app)
+      .post("/api/adventures/5f7a5d713d0f4d1b2c5e3f6e/enroll")
+      .set("Accept", "application/json");
+
+    expect(res.statusCode).toEqual(401);
+    expect(res.body).toHaveProperty("message");
+  });
+
+  it("should return 403 if user is not an guide", async () => {
+    const { accessToken } = await getAuthenticatedUserJWT();
+
+    const res = await request(app)
+      .post("/api/adventures/5f7a5d713d0f4d1b2c5e3f6e/enroll")
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.statusCode).toEqual(403);
+    expect(res.body).toHaveProperty("message");
+    expect(res.body.message).toEqual(errorMessages.FORBIDDEN);
+  });
+
+  it("should return 400 Bad Request with invalid id", async () => {
+    const user = await getUserWithRole("GUIDE");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const res = await request(app)
+      .post("/api/adventures/123/enroll")
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.status).toBe(400);
+
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors).toBeInstanceOf(Array);
+
+    const errorDetails = res.body.errors.map((error) => ({
+      path: error.path,
+      location: error.location,
+    }));
+
+    expect(errorDetails).toContainEqual({ path: "id", location: "params" });
+  });
+
+  it("should return 404 if adventure does not exists", async () => {
+    const user = await getUserWithRole("GUIDE");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const res = await request(app)
+      .post("/api/adventures/5f7a5d713d0f4d1b2c5e3f6e/enroll")
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.status).toBe(404);
+    expect(res.body).toEqual({
+      message: errorMessages.OBJECT_WITH_ID_NOT_FOUND,
+    });
+  });
+
+  it("should return 204 No Content when user is enrolled", async () => {
+    const user = await getUserWithRole("GUIDE");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const numberOfAdventures = 6;
+    const numberOfPackages = 6;
+
+    const adventures = await seedAdventures({
+      numberOfAdventures,
+      numberOfPackages,
+    });
+
+    const res = await request(app)
+      .post(`/api/adventures/${adventures[0]._id}/enroll`)
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.status).toBe(204);
+  });
+
+  it("should return 409 Conflict when user is already enrolled", async () => {
+    const user = await getUserWithRole("GUIDE");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const numberOfAdventures = 6;
+    const numberOfPackages = 6;
+
+    const adventures = await seedAdventures({
+      numberOfAdventures,
+      numberOfPackages,
+    });
+
+    await request(app)
+      .post(`/api/adventures/${adventures[0]._id}/enroll`)
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    const res = await request(app)
+      .post(`/api/adventures/${adventures[0]._id}/enroll`)
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.status).toBe(409);
+    expect(res.body).toEqual({
+      message: errorMessages.GUIDE_ALREADY_ENROLLED,
+    });
+  });
+});

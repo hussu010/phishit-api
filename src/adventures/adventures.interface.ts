@@ -1,4 +1,5 @@
 import { Document } from "mongoose";
+import { IUser } from "../users/users.interface";
 
 interface IAdventure extends Document {
   _id: string;
@@ -15,6 +16,7 @@ interface IAdventure extends Document {
     position: number;
   }[];
   packages: IPackage[];
+  guides: IUser[];
   createdAt: Date;
   updatedAt: Date;
 }

@@ -58,6 +58,12 @@ const AdventureSchema = new Schema<IAdventure>(
       },
     ],
     packages: [PackageSchema],
+    guides: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   {
     timestamps: true,

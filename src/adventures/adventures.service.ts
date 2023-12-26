@@ -2,6 +2,7 @@ import { CustomError } from "../common/interfaces/common";
 import { errorMessages } from "../common/config/messages";
 
 import Adventure from "./adventures.model";
+import { IUser } from "../users/users.interface";
 
 const getAdventures = async () => {
   try {
@@ -118,10 +119,42 @@ const updateAdventure = async ({
   }
 };
 
+const enrollGuideToAdventure = async ({
+  id,
+  user,
+}: {
+  id: string;
+  user: IUser;
+}) => {
+  try {
+    const adventure = await Adventure.findById(id);
+
+    if (!adventure) {
+      throw new CustomError(errorMessages.OBJECT_WITH_ID_NOT_FOUND, 404);
+    }
+
+    const isGuideAlreadyEnrolled = adventure.guides.some(
+      (guide) => guide._id.toString() === user._id.toString()
+    );
+
+    if (isGuideAlreadyEnrolled) {
+      throw new CustomError(errorMessages.GUIDE_ALREADY_ENROLLED, 409);
+    }
+
+    adventure.guides.push(user);
+    await adventure.save();
+
+    return adventure;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export {
   getAdventures,
   getAdventureById,
   createAdventure,
   deleteAdventure,
   updateAdventure,
+  enrollGuideToAdventure,
 };

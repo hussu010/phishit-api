@@ -1,7 +1,14 @@
 import express from "express";
 const router = express.Router();
 
-import { getAll, get, create, remove, update } from "./adventures.controller";
+import {
+  getAll,
+  get,
+  create,
+  remove,
+  update,
+  enrollToAdventure,
+} from "./adventures.controller";
 import { isAuthorized, hasRole } from "../common/middlewares/permissions";
 import {
   getAdventureByIdSchema,
@@ -35,6 +42,14 @@ router.delete(
   getAdventureByIdSchema,
   validateRequest,
   remove
+);
+router.post(
+  "/:id/enroll",
+  isAuthorized,
+  hasRole(["GUIDE"]),
+  getAdventureByIdSchema,
+  validateRequest,
+  enrollToAdventure
 );
 
 export default router;

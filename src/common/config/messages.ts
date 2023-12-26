@@ -19,6 +19,7 @@ const errorMessages = {
   USERNAME_ALREADY_EXISTS: "Username is already taken",
   PROFILE_NOT_FOUND: "Profile not found",
   FILE_SIZE_TOO_LARGE: "File size too large",
+  GUIDE_ALREADY_ENROLLED: "Guide already enrolled",
 };
 
 export { errorMessages, successMessages };
