@@ -1,17 +1,5 @@
 import { Schema, model, Model } from "mongoose";
-import { IAdventure, IPackage } from "./adventures.interface";
-
-const PackageSchema = new Schema<IPackage>(
-  {
-    title: { type: String, required: true },
-    price: { type: Number, required: true },
-    description: { type: String, required: true },
-    duration: { type: Number, required: true },
-  },
-  {
-    timestamps: true,
-  }
-);
+import { IAdventure } from "./adventures.interface";
 
 const AdventureSchema = new Schema<IAdventure>(
   {
@@ -57,7 +45,12 @@ const AdventureSchema = new Schema<IAdventure>(
         },
       },
     ],
-    packages: [PackageSchema],
+    packages: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Package",
+      },
+    ],
     guides: [
       {
         type: Schema.Types.ObjectId,

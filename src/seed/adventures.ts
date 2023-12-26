@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker";
 import Adventure from "../adventures/adventures.model";
-import { IPackage } from "../adventures/adventures.interface";
+import Package from "../packages/packages.model";
+import User from "../users/users.model";
 
 import dotenv from "dotenv";
 import { IUser } from "../users/users.interface";
@@ -49,8 +50,7 @@ const seedAdventures = async ({
     });
 
     for (let j = 0; j < numberOfPackages; j++) {
-      const adventurePackage: IPackage = {
-        _id: faker.database.mongodbObjectId(),
+      const adventurePackage = await Package.create({
         title: faker.commerce.productName(),
         price: faker.number.int({
           min: 10000,
@@ -58,24 +58,18 @@ const seedAdventures = async ({
         }),
         description: faker.lorem.sentences(3),
         duration: faker.number.int({ min: 1, max: 30 }),
-      };
+      });
 
       adventure.packages.push(adventurePackage);
     }
 
     for (let k = 0; k < numberOfGuides; k++) {
-      const guide: IUser = {
-        _id: faker.database.mongodbObjectId(),
-        username: faker.internet.userName(),
+      const user = await User.create({
         phoneNumber: faker.string.numeric(10),
-        googleId: faker.string.alphanumeric(21),
-        roles: ["guide"],
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+        roles: ["GUIDE"],
+      });
 
-      adventure.guides.push(guide);
+      adventure.guides.push(user);
     }
 
     adventuresArray.push(adventure);

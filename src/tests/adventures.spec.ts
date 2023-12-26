@@ -53,12 +53,6 @@ describe("GET /api/adventures", () => {
 
     expect(res.body[0].location).toHaveProperty("type");
     expect(res.body[0].location).toHaveProperty("coordinates");
-
-    expect(res.body[0].packages[0]).toHaveProperty("_id");
-    expect(res.body[0].packages[0]).toHaveProperty("title");
-    expect(res.body[0].packages[0]).toHaveProperty("price");
-    expect(res.body[0].packages[0]).toHaveProperty("description");
-    expect(res.body[0].packages[0]).toHaveProperty("duration");
   });
 });
 
