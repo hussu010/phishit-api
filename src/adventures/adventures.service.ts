@@ -15,7 +15,10 @@ const getAdventures = async () => {
 
 const getAdventureById = async (id: string) => {
   try {
-    const adventure = await Adventure.findById(id);
+    const adventure = await Adventure.findById(id).populate({
+      path: "guides",
+      select: "-phoneNumber -googleId -isActive -__v -createdAt -updatedAt",
+    });
 
     if (!adventure) {
       throw new CustomError(errorMessages.OBJECT_WITH_ID_NOT_FOUND, 404);
