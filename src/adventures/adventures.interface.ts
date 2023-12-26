@@ -22,6 +22,7 @@ interface IAdventure extends Document {
 }
 
 interface IPackage {
+  _id: string;
   title: string;
   price: number;
   description: string;

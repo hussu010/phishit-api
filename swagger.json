@@ -838,12 +838,59 @@
               "$ref": "#/definitions/SingleMessage"
             }
           }
-        },
-        "security": [
+        }
+      }
+    },
+    "/bookings/": {
+      "post": {
+        "tags": ["bookings"],
+        "parameters": [
           {
-            "jwt": []
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "create booking.",
+            "schema": {
+              "$ref": "#/definitions/Booking"
+            }
           }
-        ]
+        ],
+        "responses": {
+          "201": {
+            "description": "Booking created successfully.",
+            "schema": {
+              "$ref": "#/definitions/Booking"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/BadRequestError"
+            }
+          },
+          "401": {
+            "description": "Unautorized request.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "409": {
+            "description": "Guide not available.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
       }
     }
   },
@@ -1074,6 +1121,43 @@
       "type": "array",
       "items": {
         "$ref": "#/definitions/GuideRequest"
+      }
+    },
+    "Booking": {
+      "type": "object",
+      "properties": {
+        "adventureId": {
+          "type": "string",
+          "example": "string"
+        },
+        "packageId": {
+          "type": "string",
+          "example": "string"
+        },
+        "guideId": {
+          "type": "string",
+          "example": "string"
+        },
+        "startDate": {
+          "type": "string",
+          "example": "string"
+        },
+        "numberOfPeople": {
+          "type": "integer",
+          "example": 6
+        },
+        "status": {
+          "type": "string",
+          "enum": ["PENDING", "CONFIRMED", "CANCELLED", "COMPLETED"]
+        },
+        "createdAt": {
+          "type": "string",
+          "example": "string"
+        },
+        "updatedAt": {
+          "type": "string",
+          "example": "string"
+        }
       }
     },
     "UpdateGuideRequest": {

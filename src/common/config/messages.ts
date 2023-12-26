@@ -20,6 +20,7 @@ const errorMessages = {
   PROFILE_NOT_FOUND: "Profile not found",
   FILE_SIZE_TOO_LARGE: "File size too large",
   GUIDE_ALREADY_ENROLLED: "Guide already enrolled",
+  GUIDE_NOT_AVAILABLE: "Guide not available",
 };
 
 export { errorMessages, successMessages };

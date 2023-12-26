@@ -3,6 +3,7 @@ import Adventure from "../adventures/adventures.model";
 import { IPackage } from "../adventures/adventures.interface";
 
 import dotenv from "dotenv";
+import { IUser } from "../users/users.interface";
 dotenv.config();
 
 if (process.env.NODE_ENV !== "test") {
@@ -12,9 +13,11 @@ if (process.env.NODE_ENV !== "test") {
 const seedAdventures = async ({
   numberOfAdventures,
   numberOfPackages,
+  numberOfGuides = 3,
 }: {
   numberOfAdventures: number;
   numberOfPackages: number;
+  numberOfGuides?: number;
 }) => {
   const adventuresArray = [];
 
@@ -47,6 +50,7 @@ const seedAdventures = async ({
 
     for (let j = 0; j < numberOfPackages; j++) {
       const adventurePackage: IPackage = {
+        _id: faker.database.mongodbObjectId(),
         title: faker.commerce.productName(),
         price: faker.number.int({
           min: 10000,
@@ -57,6 +61,21 @@ const seedAdventures = async ({
       };
 
       adventure.packages.push(adventurePackage);
+    }
+
+    for (let k = 0; k < numberOfGuides; k++) {
+      const guide: IUser = {
+        _id: faker.database.mongodbObjectId(),
+        username: faker.internet.userName(),
+        phoneNumber: faker.string.numeric(10),
+        googleId: faker.string.alphanumeric(21),
+        roles: ["guide"],
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      adventure.guides.push(guide);
     }
 
     adventuresArray.push(adventure);

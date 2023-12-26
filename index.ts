@@ -27,6 +27,7 @@ import usersRouter from "./src/users/users.route";
 import profilesRouter from "./src/profiles/profiles.route";
 import guideRequestsRouter from "./src/guide_requests/guide_requests.route";
 import uploadImagesRouter from "./src/common/routes/upload-image.route";
+import bookingsRouter from "./src/bookings/bookings.route";
 
 const app: Express = express();
 
@@ -50,6 +51,7 @@ app.use("/api/users", usersRouter);
 app.use("/api/profiles", profilesRouter);
 app.use("/api/guide-requests", guideRequestsRouter);
 app.use("/api/upload-images", uploadImagesRouter);
+app.use("/api/bookings", bookingsRouter);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(errorLogger);
