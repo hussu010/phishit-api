@@ -1,6 +1,6 @@
 import { body, param, query } from "express-validator";
-import { errorMessages, successMessages } from "../common/config/messages";
-import { ALLOWED_REDIRECT_URLS } from "../common/config/general";
+import { errorMessages } from "../common/config/messages";
+import { ALLOWED_GOOGLE_OAUTH_REDIRECT_URLS } from "../common/config/general";
 import { OauthProviderEnum } from "../common/config/enum";
 
 const requestOtpSchema = [
@@ -43,9 +43,9 @@ const oauthProviderSchema = [
       )}`
     ),
   query("redirect_uri")
-    .isIn(ALLOWED_REDIRECT_URLS)
+    .isIn(ALLOWED_GOOGLE_OAUTH_REDIRECT_URLS)
     .withMessage(
-      `Invalid redirect_uri. Valid values are: ${ALLOWED_REDIRECT_URLS.join(
+      `Invalid redirect_uri. Valid values are: ${ALLOWED_GOOGLE_OAUTH_REDIRECT_URLS.join(
         ", "
       )}`
     ),
