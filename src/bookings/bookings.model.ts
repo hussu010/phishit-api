@@ -1,5 +1,6 @@
 import { Schema, model, Model } from "mongoose";
 import { IBooking } from "./bookings.interface";
+import { PackageSchema } from "../adventures/adventures.model";
 
 const BookingSchema = new Schema<IBooking>(
   {
@@ -8,11 +9,7 @@ const BookingSchema = new Schema<IBooking>(
       ref: "Adventure",
       required: true,
     },
-    package: {
-      type: Schema.Types.ObjectId,
-      ref: "Package",
-      required: true,
-    },
+    package: PackageSchema,
     guide: {
       type: Schema.Types.ObjectId,
       ref: "User",

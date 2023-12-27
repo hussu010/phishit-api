@@ -81,4 +81,4 @@ const Adventure: Model<IAdventure> = model<IAdventure>(
 );
 const Package: Model<IPackage> = model<IPackage>("Package", PackageSchema);
 
-export { Adventure, Package };
+export { Adventure, Package, PackageSchema };

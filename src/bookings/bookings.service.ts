@@ -9,7 +9,6 @@ const getBookingsByUser = async (user: IUser) => {
     const bookings = await Booking.find({
       $or: [{ customer: user._id }, { guide: user._id }],
     })
-      .populate("package")
       .populate({
         path: "guide",
         select: "-phoneNumber -googleId -isActive -__v -createdAt -updatedAt",
@@ -76,7 +75,7 @@ const createBooking = async ({
 
     const booking = await Booking.create({
       adventure: adventureId,
-      package: packageId,
+      package: adventurePackage,
       guide: guideId,
       startDate,
       endDate,
