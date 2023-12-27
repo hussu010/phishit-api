@@ -1,7 +1,7 @@
 import { CustomError } from "../common/interfaces/common";
 import { errorMessages } from "../common/config/messages";
 
-import Adventure from "./adventures.model";
+import { Adventure } from "./adventures.model";
 import { IUser } from "../users/users.interface";
 
 const getAdventures = async () => {

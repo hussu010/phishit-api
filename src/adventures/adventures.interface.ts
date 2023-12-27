@@ -1,8 +1,15 @@
 import { Document } from "mongoose";
 import { IUser } from "../users/users.interface";
-import { IPackage } from "../packages/packages.interface";
 
-interface IAdventure extends Document {
+interface IPackage {
+  _id: string;
+  title: string;
+  price: number;
+  description: string;
+  duration: number;
+}
+
+interface IAdventure {
   _id: string;
   title: string;
   description: string;
@@ -22,4 +29,4 @@ interface IAdventure extends Document {
   updatedAt: Date;
 }
 
-export { IAdventure };
+export { IAdventure, IPackage };

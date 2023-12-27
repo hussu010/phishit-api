@@ -1,6 +1,5 @@
 import { faker } from "@faker-js/faker";
-import Adventure from "../adventures/adventures.model";
-import Package from "../packages/packages.model";
+import { Adventure, Package } from "../adventures/adventures.model";
 import User from "../users/users.model";
 
 import dotenv from "dotenv";
