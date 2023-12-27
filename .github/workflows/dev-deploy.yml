@@ -106,6 +106,8 @@ jobs:
           password: ${{ secrets.DEV_LINODE_PASSWORD }}
           script: |
             cd phishit-api
+            git checkout development
+            git pull
 
             echo ${{ env.CR_PAT }} | docker login ghcr.io -u hussu010 --password-stdin
             docker pull ghcr.io/hussu010/phishit-api:development
@@ -118,4 +120,5 @@ jobs:
             echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
             echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
 
+            make stop-production
             make start-production
