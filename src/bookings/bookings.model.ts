@@ -1,6 +1,45 @@
 import { Schema, model, Model } from "mongoose";
-import { IBooking } from "./bookings.interface";
+import { IBooking, IPayment } from "./bookings.interface";
 import { PackageSchema } from "../adventures/adventures.model";
+import { PaymentMethodEnum } from "../common/config/enum";
+
+const PaymentSchema = new Schema<IPayment>(
+  {
+    amount: {
+      type: Number,
+      required: true,
+    },
+    method: {
+      type: String,
+      enum: PaymentMethodEnum,
+      required: true,
+    },
+    pixd: {
+      type: String,
+    },
+    paymentUrl: {
+      type: String,
+    },
+    expiresAt: {
+      type: Date,
+    },
+    status: {
+      type: String,
+      enum: [
+        "PENDING",
+        "COMPLETED",
+        "CANCELLED",
+        "EXPIRED",
+        "FAILED",
+        "REFUNDED",
+      ],
+      default: "PENDING",
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 const BookingSchema = new Schema<IBooking>(
   {
@@ -33,9 +72,10 @@ const BookingSchema = new Schema<IBooking>(
     },
     status: {
       type: String,
-      enum: ["PENDING", "CONFIRMED", "CANCELLED", "COMPLETED"],
-      default: "PENDING",
+      enum: ["NEW", "PENDING", "CONFIRMED", "CANCELLED", "COMPLETED"],
+      default: "NEW",
     },
+    payment: PaymentSchema,
   },
   {
     timestamps: true,

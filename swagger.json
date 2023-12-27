@@ -918,6 +918,77 @@
           }
         }
       }
+    },
+    "/bookings/{id}/payments": {
+      "post": {
+        "tags": ["bookings"],
+        "summary": "initiate payment for booking.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "initiate payment for booking.",
+            "schema": {
+              "$ref": "#/definitions/InitiatePaymentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payment initiated successfully.",
+            "schema": {
+              "$ref": "#/definitions/InitiatePaymentResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/BadRequestError"
+            }
+          },
+          "401": {
+            "description": "Unautorized request.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "404": {
+            "description": "Booking not found.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "409": {
+            "description": "Booking already processed.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "503": {
+            "description": "Payment gateway error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -1279,6 +1350,36 @@
         "updatedAt": {
           "type": "string",
           "example": "string"
+        }
+      }
+    },
+    "InitiatePaymentRequest": {
+      "type": "object",
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": ["KHALTI"]
+        },
+        "redirectUrl": {
+          "type": "string",
+          "example": "http://localhost:3000/bookings/payment"
+        }
+      }
+    },
+    "InitiatePaymentResponse": {
+      "type": "object",
+      "properties": {
+        "pidx": {
+          "type": "string",
+          "example": "QXnwaNmqwmFnNL7EaSM5a9"
+        },
+        "paymentUrl": {
+          "type": "string",
+          "example": "https://test-pay.khalti.com/?pidx=QXnwaNmqwmFnNL7EaSM5a9"
+        },
+        "expiresAt": {
+          "type": "string",
+          "example": "2023-12-27T13:21:55.469Z"
         }
       }
     },

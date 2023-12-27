@@ -22,6 +22,8 @@ type JWTGrantType = "ACCESS" | "REFRESH";
 
 const GenderEnum = ["MALE", "FEMALE", "OTHER"];
 
+const PaymentMethodEnum = ["KHALTI"];
+
 const OauthProviderEnum = ["google"];
 
 export {
@@ -38,4 +40,5 @@ export {
   GuideTypeEnum,
   GuideType,
   GuideRequestDocumentTypeEnum,
+  PaymentMethodEnum,
 };

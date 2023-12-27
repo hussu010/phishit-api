@@ -21,6 +21,8 @@ const errorMessages = {
   FILE_SIZE_TOO_LARGE: "File size too large",
   GUIDE_ALREADY_ENROLLED: "Guide already enrolled",
   GUIDE_NOT_AVAILABLE: "Guide not available",
+  BOOKING_ALREADY_PROCESSED: "Booking already processed",
+  INVALID_PAYMENT_TYPE: "Invalid payment type",
 };
 
 export { errorMessages, successMessages };

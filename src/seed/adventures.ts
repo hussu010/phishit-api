@@ -52,8 +52,8 @@ const seedAdventures = async ({
       const adventurePackage = await Package.create({
         title: faker.commerce.productName(),
         price: faker.number.int({
-          min: 10000,
-          max: 100000,
+          min: 10,
+          max: 1000,
         }),
         description: faker.lorem.sentences(3),
         duration: faker.number.int({ min: 1, max: 30 }),

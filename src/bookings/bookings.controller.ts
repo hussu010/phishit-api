@@ -1,5 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import { createBooking, getBookingsByUser } from "./bookings.service";
+import {
+  createBooking,
+  getBookingsByUser,
+  initiatePaymentRequest,
+} from "./bookings.service";
 
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -30,4 +34,23 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { create, getAll };
+const initiatePayment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const { method, redirectUrl } = req.body;
+    const payment = await initiatePaymentRequest({
+      bookingId: id,
+      method,
+      redirectUrl,
+    });
+    res.status(200).json(payment);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { create, getAll, initiatePayment };

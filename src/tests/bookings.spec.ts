@@ -1,7 +1,5 @@
 import { connect, clear, close } from "./test-db-connect.helper";
 
-import { faker } from "@faker-js/faker";
-
 import request from "supertest";
 import app from "../../index";
 
@@ -10,6 +8,9 @@ import { generateJWT } from "../auth/auth.service";
 import { errorMessages } from "../common/config/messages";
 import { seedAdventures } from "../seed/adventures";
 import Booking from "../bookings/bookings.model";
+
+import * as bookingsUtils from "../bookings/bookings.utils";
+import { CustomError } from "../common/interfaces/common";
 
 beforeAll(async () => {
   await connect();
@@ -264,5 +265,225 @@ describe("POST /api/bookings", () => {
     expect(res.body).toHaveProperty("endDate");
     expect(res.body).toHaveProperty("createdAt");
     expect(res.body).toHaveProperty("updatedAt");
+  });
+});
+
+describe("POST /api/bookings/:id/payment", () => {
+  it("should return 401 if user is not logged in", async () => {
+    const res = await request(app).post("/api/bookings/123/payments").send({});
+    expect(res.status).toBe(401);
+  });
+
+  it("should return 400 if no parameters are provided", async () => {
+    const user = await getUserWithRole("GENERAL");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const res = await request(app)
+      .post("/api/bookings/123/payments")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({});
+
+    expect(res.status).toBe(400);
+
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors).toBeInstanceOf(Array);
+
+    const errorDetails = res.body.errors.map((error) => ({
+      path: error.path,
+      location: error.location,
+    }));
+
+    expect(errorDetails).toContainEqual({
+      path: "method",
+      location: "body",
+    });
+    expect(errorDetails).toContainEqual({
+      path: "redirectUrl",
+      location: "body",
+    });
+  });
+
+  it("should return 400 if type and redirectUrl is not valid", async () => {
+    const user = await getUserWithRole("GENERAL");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const res = await request(app)
+      .post("/api/bookings/123/payments")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        method: "INVALID",
+        redirectUrl: "INVALID",
+      });
+
+    expect(res.status).toBe(400);
+
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors).toBeInstanceOf(Array);
+
+    const errorDetails = res.body.errors.map((error) => ({
+      path: error.path,
+      location: error.location,
+    }));
+
+    expect(errorDetails).toContainEqual({
+      path: "method",
+      location: "body",
+    });
+    expect(errorDetails).toContainEqual({
+      path: "redirectUrl",
+      location: "body",
+    });
+  });
+
+  it("should return 404 if booking with provided id does not exist", async () => {
+    const user = await getUserWithRole("GENERAL");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const res = await request(app)
+      .post("/api/bookings/5f7a5d713d0f4d1b2c5e3f6e/payments")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        method: "KHALTI",
+        redirectUrl: "http://localhost:3000/bookings/payment",
+      });
+
+    expect(res.status).toBe(404);
+    expect(res.body).toHaveProperty("message");
+    expect(res.body.message).toBe(errorMessages.OBJECT_WITH_ID_NOT_FOUND);
+  });
+
+  it("should return 409 if booking is already processed", async () => {
+    const user = await getUserWithRole("GENERAL");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const adventures = await seedAdventures({
+      numberOfAdventures: 2,
+      numberOfPackages: 2,
+      numberOfGuides: 2,
+    });
+
+    const booking = await request(app)
+      .post("/api/bookings")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        adventureId: adventures[0]._id,
+        packageId: adventures[0].packages[0]._id,
+        guideId: adventures[0].guides[0]._id,
+        startDate: "2020-10-10",
+        noOfPeople: 5,
+      });
+
+    await Booking.findByIdAndUpdate(
+      booking.body._id,
+      {
+        status: "CONFIRMED",
+      },
+      { new: true }
+    );
+
+    const res = await request(app)
+      .post(`/api/bookings/${booking.body._id}/payments`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        method: "KHALTI",
+        redirectUrl: "http://localhost:3000/bookings/payment",
+      });
+
+    expect(res.status).toBe(409);
+    expect(res.body).toHaveProperty("message");
+    expect(res.body.message).toBe(errorMessages.BOOKING_ALREADY_PROCESSED);
+  });
+
+  it("should return 503 if booking is not processed and type is valid but payment request fails", async () => {
+    const user = await getUserWithRole("GENERAL");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const adventures = await seedAdventures({
+      numberOfAdventures: 2,
+      numberOfPackages: 2,
+      numberOfGuides: 2,
+    });
+
+    const booking = await request(app)
+      .post("/api/bookings")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        adventureId: adventures[0]._id,
+        packageId: adventures[0].packages[0]._id,
+        guideId: adventures[0].guides[0]._id,
+        startDate: "2020-10-10",
+        noOfPeople: 5,
+      });
+
+    jest
+      .spyOn(bookingsUtils, "initiateKhaltiPaymentRequest")
+      .mockRejectedValue(new CustomError("Error", 503));
+
+    const res = await request(app)
+      .post(`/api/bookings/${booking.body._id}/payments`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        method: "KHALTI",
+        redirectUrl: "http://localhost:3000/bookings/payment",
+      });
+
+    expect(res.status).toBe(503);
+    expect(res.body).toHaveProperty("message");
+  });
+
+  it("should return 200 if booking is not processed and type is valid", async () => {
+    const user = await getUserWithRole("GENERAL");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const adventures = await seedAdventures({
+      numberOfAdventures: 2,
+      numberOfPackages: 2,
+      numberOfGuides: 2,
+    });
+
+    const booking = await request(app)
+      .post("/api/bookings")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        adventureId: adventures[0]._id,
+        packageId: adventures[0].packages[0]._id,
+        guideId: adventures[0].guides[0]._id,
+        startDate: "2020-10-10",
+        noOfPeople: 5,
+      });
+
+    const fakeKhaltiResponse = {
+      pidx: "QXnwaNmqwmFnNL7EaSM5a9",
+      paymentUrl: "https://test-pay.khalti.com/?pidx=QXnwaNmqwmFnNL7EaSM5a9",
+      expiresAt: new Date(),
+    };
+    jest
+      .spyOn(bookingsUtils, "initiateKhaltiPaymentRequest")
+      .mockResolvedValue(fakeKhaltiResponse);
+
+    const res = await request(app)
+      .post(`/api/bookings/${booking.body._id}/payments`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        method: "KHALTI",
+        redirectUrl: "http://localhost:3000/bookings/payment",
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("pidx");
+    expect(res.body).toHaveProperty("paymentUrl");
+    expect(res.body).toHaveProperty("expiresAt");
+
+    const bookingHasPaymentInfo = await Booking.findOne({
+      _id: booking.body._id,
+    });
+
+    expect(bookingHasPaymentInfo).toHaveProperty("payment");
+    expect(bookingHasPaymentInfo?.payment).toHaveProperty("amount");
+    expect(bookingHasPaymentInfo?.payment).toHaveProperty("method");
+    expect(bookingHasPaymentInfo?.payment).toHaveProperty("pixd");
+    expect(bookingHasPaymentInfo?.payment).toHaveProperty("paymentUrl");
+    expect(bookingHasPaymentInfo?.payment).toHaveProperty("expiresAt");
+    expect(bookingHasPaymentInfo?.payment).toHaveProperty("status");
   });
 });

@@ -1,6 +1,15 @@
 import { IAdventure, IPackage } from "../adventures/adventures.interface";
 import { IUser } from "../users/users.interface";
 
+interface IPayment {
+  amount: number;
+  method: string;
+  pixd: string;
+  paymentUrl: string;
+  expiresAt: Date;
+  status: string;
+}
+
 interface IBooking {
   _id: string;
   adventure: IAdventure;
@@ -11,8 +20,9 @@ interface IBooking {
   startDate: Date;
   endDate: Date;
   status: string;
+  payment: IPayment;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export { IBooking };
+export { IBooking, IPayment };

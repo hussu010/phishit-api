@@ -1,6 +1,6 @@
 import { Document } from "mongoose";
 
-interface IUser {
+interface IUser extends Document {
   _id: string;
   phoneNumber: string;
   googleId: string;

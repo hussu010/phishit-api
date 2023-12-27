@@ -3,6 +3,7 @@ import { Adventure } from "../adventures/adventures.model";
 import { CustomError } from "../common/interfaces/common";
 import { errorMessages } from "../common/config/messages";
 import { IUser } from "../users/users.interface";
+import { initiateKhaltiPaymentRequest } from "./bookings.utils";
 
 const getBookingsByUser = async (user: IUser) => {
   try {
@@ -89,4 +90,52 @@ const createBooking = async ({
   }
 };
 
-export { createBooking, getBookingsByUser };
+const initiatePaymentRequest = async ({
+  bookingId,
+  method,
+  redirectUrl,
+}: {
+  bookingId: string;
+  method: string;
+  redirectUrl: string;
+}) => {
+  try {
+    const booking = await Booking.findOne({ _id: bookingId }).populate(
+      "adventure"
+    );
+
+    if (!booking) {
+      throw new CustomError(errorMessages.OBJECT_WITH_ID_NOT_FOUND, 404);
+    }
+
+    if (booking.status !== "NEW") {
+      throw new CustomError(errorMessages.BOOKING_ALREADY_PROCESSED, 409);
+    }
+
+    if (method === "KHALTI") {
+      const khaltiPaymentRequest = await initiateKhaltiPaymentRequest({
+        booking,
+        redirectUrl,
+      });
+
+      booking.payment = {
+        amount: booking.package.price * 100,
+        method: "KHALTI",
+        pixd: khaltiPaymentRequest.pidx,
+        paymentUrl: khaltiPaymentRequest.paymentUrl,
+        expiresAt: khaltiPaymentRequest.expiresAt,
+        status: "PENDING",
+      };
+      booking.status = "PENDING";
+      await booking.save();
+
+      return khaltiPaymentRequest;
+    } else {
+      throw new CustomError(errorMessages.INVALID_PAYMENT_TYPE, 400);
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+export { createBooking, getBookingsByUser, initiatePaymentRequest };

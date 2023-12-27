@@ -9,6 +9,12 @@ const ALLOWED_GOOGLE_OAUTH_REDIRECT_URLS = [
   "https://phishit-ui.tnbswap.com/auth/google/callback",
 ];
 
+const ALLOWED_PAYMENT_REDIRECT_URLS = [
+  "http://localhost:3000/bookings/payment",
+  "https://phishit-ui-dev.tnbswap.com/bookings/payment",
+  "https://phishit-ui.tnbswap.com/bookings/payment",
+];
+
 const DICEBEAR_URL = "https://api.dicebear.com/7.x/adventurer/svg";
 
 const MAX_IMAGE_SIZE = 15 * 1024 * 1024; // 15MB
@@ -18,6 +24,7 @@ export {
   ACCESS_TOKEN_VALIDITY,
   REFRESH_TOKEN_VALIDITY,
   ALLOWED_GOOGLE_OAUTH_REDIRECT_URLS,
+  ALLOWED_PAYMENT_REDIRECT_URLS,
   DICEBEAR_URL,
   MAX_IMAGE_SIZE,
 };
