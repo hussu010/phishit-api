@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   phishit-api:
-    image: "hussu010/phishit-api:${GIT_SHA}"
+    image: "ghcr.io/hussu010/phishit-api:${GIT_SHA}"
     build:
       context: .
     environment:
