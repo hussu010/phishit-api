@@ -10,7 +10,7 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
-      - MONGO_URI=mongodb://mongo:27017/merodera?authSource=admin
+      - MONGO_URI=mongodb://mongo:27017/phishit?authSource=admin
     command: npm run dev
     depends_on:
       - mongo
