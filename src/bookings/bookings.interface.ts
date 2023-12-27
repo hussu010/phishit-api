@@ -1,7 +1,7 @@
 import { IAdventure, IPackage } from "../adventures/adventures.interface";
 import { IUser } from "../users/users.interface";
 
-interface IBooking extends Document {
+interface IBooking {
   _id: string;
   adventure: IAdventure;
   package: IPackage;

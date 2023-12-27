@@ -1,5 +1,15 @@
 import { NextFunction, Request, Response } from "express";
-import { createBooking } from "./bookings.service";
+import { createBooking, getBookingsByUser } from "./bookings.service";
+
+const getAll = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = req.user!;
+    const bookings = await getBookingsByUser(user);
+    res.status(200).json(bookings);
+  } catch (error) {
+    next(error);
+  }
+};
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -20,4 +30,4 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { create };
+export { create, getAll };

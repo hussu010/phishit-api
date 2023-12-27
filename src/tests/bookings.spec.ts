@@ -19,6 +19,61 @@ beforeEach(async () => {
 });
 afterAll(async () => await close());
 
+describe("GET /api/bookings", () => {
+  it("should return 401 if user is not logged in", async () => {
+    const res = await request(app).get("/api/bookings");
+    expect(res.status).toBe(401);
+  });
+
+  it("should return 200 if user is logged in", async () => {
+    const user = await getUserWithRole("GENERAL");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const res = await request(app)
+      .get("/api/bookings")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toBeInstanceOf(Array);
+  });
+
+  it("should return 200 if user is logged in and has bookings", async () => {
+    const user = await getUserWithRole("GENERAL");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const adventures = await seedAdventures({
+      numberOfAdventures: 2,
+      numberOfPackages: 2,
+      numberOfGuides: 2,
+    });
+
+    await request(app)
+      .post("/api/bookings")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        adventureId: adventures[0]._id,
+        packageId: adventures[0].packages[0]._id,
+        guideId: adventures[0].guides[0]._id,
+        startDate: "2023-12-12",
+        noOfPeople: 5,
+      });
+
+    const res = await request(app)
+      .get("/api/bookings")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toBeInstanceOf(Array);
+    expect(res.body.length).toBe(1);
+    expect(res.body[0]).toHaveProperty("_id");
+    expect(res.body[0]).toHaveProperty("adventure");
+    expect(res.body[0]).toHaveProperty("package");
+    expect(res.body[0]).toHaveProperty("guide");
+    expect(res.body[0]).toHaveProperty("startDate");
+    expect(res.body[0]).toHaveProperty("endDate");
+  });
+});
+
 describe("POST /api/bookings", () => {
   it("should return 401 if user is not logged in", async () => {
     const res = await request(app).post("/api/bookings").send({});

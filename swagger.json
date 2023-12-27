@@ -605,8 +605,7 @@
           {
             "name": "authorization",
             "in": "header",
-            "type": "string",
-            "required": true
+            "type": "string"
           }
         ],
         "responses": {
@@ -657,8 +656,7 @@
           {
             "name": "authorization",
             "in": "header",
-            "type": "string",
-            "required": true
+            "type": "string"
           }
         ],
         "responses": {
@@ -706,8 +704,7 @@
           {
             "name": "authorization",
             "in": "header",
-            "type": "string",
-            "required": true
+            "type": "string"
           }
         ],
         "responses": {
@@ -842,6 +839,35 @@
       }
     },
     "/bookings/": {
+      "get": {
+        "tags": ["bookings"],
+        "summary": "Get all bookings.",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/BookingList"
+            }
+          },
+          "401": {
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      },
       "post": {
         "tags": ["bookings"],
         "parameters": [
@@ -1158,6 +1184,12 @@
           "type": "string",
           "example": "string"
         }
+      }
+    },
+    "BookingList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Booking"
       }
     },
     "UpdateGuideRequest": {

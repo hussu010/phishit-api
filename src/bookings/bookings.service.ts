@@ -1,8 +1,29 @@
 import Booking from "./bookings.model";
-import Adventure from "../adventures/adventures.model";
+import { Adventure } from "../adventures/adventures.model";
 import { CustomError } from "../common/interfaces/common";
 import { errorMessages } from "../common/config/messages";
 import { IUser } from "../users/users.interface";
+
+const getBookingsByUser = async (user: IUser) => {
+  try {
+    const bookings = await Booking.find({
+      $or: [{ customer: user._id }, { guide: user._id }],
+    })
+      .populate("package")
+      .populate({
+        path: "guide",
+        select: "-phoneNumber -googleId -isActive -__v -createdAt -updatedAt",
+      })
+      .populate({
+        path: "customer",
+        select: "-phoneNumber -googleId -isActive -__v -createdAt -updatedAt",
+      });
+
+    return bookings;
+  } catch (error) {
+    throw error;
+  }
+};
 
 const createBooking = async ({
   user,
@@ -22,9 +43,9 @@ const createBooking = async ({
   try {
     const adventure = await Adventure.findOne({
       _id: adventureId,
-      "packages._id": packageId,
+      packages: packageId,
       guides: guideId,
-    });
+    }).populate("packages");
 
     if (!adventure) {
       throw new CustomError(errorMessages.OBJECT_WITH_ID_NOT_FOUND, 404);
@@ -69,4 +90,4 @@ const createBooking = async ({
   }
 };
 
-export { createBooking };
+export { createBooking, getBookingsByUser };
