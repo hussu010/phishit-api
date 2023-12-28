@@ -919,7 +919,7 @@
         }
       }
     },
-    "/bookings/{id}/payments": {
+    "/bookings/{id}/initiate-payment": {
       "post": {
         "tags": ["bookings"],
         "summary": "initiate payment for booking.",

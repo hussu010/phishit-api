@@ -9,7 +9,7 @@ import { validateRequest } from "../common/middlewares/validator";
 router.get("/", isAuthorized, getAll);
 router.post("/", isAuthorized, createBookingSchema, validateRequest, create);
 router.post(
-  "/:id/payments",
+  "/:id/initiate-payment",
   isAuthorized,
   initiatePaymentSchema,
   validateRequest,

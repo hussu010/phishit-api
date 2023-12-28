@@ -270,7 +270,9 @@ describe("POST /api/bookings", () => {
 
 describe("POST /api/bookings/:id/payment", () => {
   it("should return 401 if user is not logged in", async () => {
-    const res = await request(app).post("/api/bookings/123/payments").send({});
+    const res = await request(app)
+      .post("/api/bookings/123/initiate-payment")
+      .send({});
     expect(res.status).toBe(401);
   });
 
@@ -279,7 +281,7 @@ describe("POST /api/bookings/:id/payment", () => {
     const accessToken = await generateJWT(user, "ACCESS");
 
     const res = await request(app)
-      .post("/api/bookings/123/payments")
+      .post("/api/bookings/123/initiate-payment")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({});
 
@@ -308,7 +310,7 @@ describe("POST /api/bookings/:id/payment", () => {
     const accessToken = await generateJWT(user, "ACCESS");
 
     const res = await request(app)
-      .post("/api/bookings/123/payments")
+      .post("/api/bookings/123/initiate-payment")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
         method: "INVALID",
@@ -340,7 +342,7 @@ describe("POST /api/bookings/:id/payment", () => {
     const accessToken = await generateJWT(user, "ACCESS");
 
     const res = await request(app)
-      .post("/api/bookings/5f7a5d713d0f4d1b2c5e3f6e/payments")
+      .post("/api/bookings/5f7a5d713d0f4d1b2c5e3f6e/initiate-payment")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
         method: "KHALTI",
@@ -382,7 +384,7 @@ describe("POST /api/bookings/:id/payment", () => {
     );
 
     const res = await request(app)
-      .post(`/api/bookings/${booking.body._id}/payments`)
+      .post(`/api/bookings/${booking.body._id}/initiate-payment`)
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
         method: "KHALTI",
@@ -420,7 +422,7 @@ describe("POST /api/bookings/:id/payment", () => {
       .mockRejectedValue(new CustomError("Error", 503));
 
     const res = await request(app)
-      .post(`/api/bookings/${booking.body._id}/payments`)
+      .post(`/api/bookings/${booking.body._id}/initiate-payment`)
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
         method: "KHALTI",
@@ -462,7 +464,7 @@ describe("POST /api/bookings/:id/payment", () => {
       .mockResolvedValue(fakeKhaltiResponse);
 
     const res = await request(app)
-      .post(`/api/bookings/${booking.body._id}/payments`)
+      .post(`/api/bookings/${booking.body._id}/initiate-payment`)
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
         method: "KHALTI",
