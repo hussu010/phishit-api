@@ -481,7 +481,7 @@ describe("POST /api/bookings/:id/payment", () => {
     expect(bookingHasPaymentInfo).toHaveProperty("payment");
     expect(bookingHasPaymentInfo?.payment).toHaveProperty("amount");
     expect(bookingHasPaymentInfo?.payment).toHaveProperty("method");
-    expect(bookingHasPaymentInfo?.payment).toHaveProperty("pixd");
+    expect(bookingHasPaymentInfo?.payment).toHaveProperty("pidx");
     expect(bookingHasPaymentInfo?.payment).toHaveProperty("paymentUrl");
     expect(bookingHasPaymentInfo?.payment).toHaveProperty("expiresAt");
     expect(bookingHasPaymentInfo?.payment).toHaveProperty("status");

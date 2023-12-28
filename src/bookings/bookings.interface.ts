@@ -4,7 +4,7 @@ import { IUser } from "../users/users.interface";
 interface IPayment {
   amount: number;
   method: string;
-  pixd: string;
+  pidx: string;
   paymentUrl: string;
   expiresAt: Date;
   status: string;

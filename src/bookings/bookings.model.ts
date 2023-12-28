@@ -14,7 +14,7 @@ const PaymentSchema = new Schema<IPayment>(
       enum: PaymentMethodEnum,
       required: true,
     },
-    pixd: {
+    pidx: {
       type: String,
     },
     paymentUrl: {

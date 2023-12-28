@@ -121,7 +121,7 @@ const initiatePaymentRequest = async ({
       booking.payment = {
         amount: booking.package.price * 100,
         method: "KHALTI",
-        pixd: khaltiPaymentRequest.pidx,
+        pidx: khaltiPaymentRequest.pidx,
         paymentUrl: khaltiPaymentRequest.paymentUrl,
         expiresAt: khaltiPaymentRequest.expiresAt,
         status: "PENDING",
