@@ -22,7 +22,9 @@ const errorMessages = {
   GUIDE_ALREADY_ENROLLED: "Guide already enrolled",
   GUIDE_NOT_AVAILABLE: "Guide not available",
   BOOKING_ALREADY_PROCESSED: "Booking already processed",
-  INVALID_PAYMENT_TYPE: "Invalid payment type",
+  INVALID_PAYMENT_METHOD: "Invalid payment method",
+  PAYMENT_PENDING: "Payment pending",
+  PAYMENT_FAILED: "Payment failed",
 };
 
 export { errorMessages, successMessages };

@@ -24,4 +24,6 @@ const initiatePaymentSchema = [
   param("id").isMongoId(),
 ];
 
-export { createBookingSchema, initiatePaymentSchema };
+const verifyPaymentSchema = [param("id").isMongoId()];
+
+export { createBookingSchema, initiatePaymentSchema, verifyPaymentSchema };

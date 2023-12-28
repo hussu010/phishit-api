@@ -44,4 +44,41 @@ const initiateKhaltiPaymentRequest = async ({
   }
 };
 
-export { initiateKhaltiPaymentRequest };
+const lookupKhaltiPayment = async ({
+  pidx,
+}: {
+  pidx: string;
+}): Promise<{
+  pidx: string;
+  total_amount: number;
+  status: string;
+  transaction_id: string;
+}> => {
+  try {
+    const config = {
+      headers: {
+        Authorization: `Key ${process.env.KHALTI_SECRET_KEY}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    const response = await axios.post(
+      "https://khalti.com/api/v2/epayment/lookup/",
+      {
+        pidx,
+      },
+      config
+    );
+
+    return {
+      pidx: response.data.pidx,
+      total_amount: response.data.total_amount,
+      status: response.data.transaction_id,
+      transaction_id: response.data.transaction_id,
+    };
+  } catch (error: any) {
+    throw new CustomError(error.message, 503);
+  }
+};
+
+export { initiateKhaltiPaymentRequest, lookupKhaltiPayment };

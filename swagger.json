@@ -989,6 +989,81 @@
           }
         }
       }
+    },
+    "bookings/{id}/verify-payment": {
+      "post": {
+        "tags": ["bookings"],
+        "summary": "verify payment and mark booking as confirmed.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payment verified successfully.",
+            "schema": {
+              "$ref": "#/definitions/Booking"
+            }
+          },
+          "202": {
+            "description": "Payment still pending",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/BadRequestError"
+            }
+          },
+          "401": {
+            "description": "Unautorized request.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "404": {
+            "description": "Booking not found.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "409": {
+            "description": "Booking already processed.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "422": {
+            "description": "Payment did not complete successfully.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "503": {
+            "description": "Payment verification failed.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {

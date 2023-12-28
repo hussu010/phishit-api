@@ -3,6 +3,7 @@ import {
   createBooking,
   getBookingsByUser,
   initiatePaymentRequest,
+  verifyPaymentRequest,
 } from "./bookings.service";
 
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
@@ -53,4 +54,18 @@ const initiatePayment = async (
   }
 };
 
-export { create, getAll, initiatePayment };
+const verifyPayment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const booking = await verifyPaymentRequest({ bookingId: id });
+    res.status(200).json(booking);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { create, getAll, initiatePayment, verifyPayment };

@@ -3,7 +3,10 @@ import { Adventure } from "../adventures/adventures.model";
 import { CustomError } from "../common/interfaces/common";
 import { errorMessages } from "../common/config/messages";
 import { IUser } from "../users/users.interface";
-import { initiateKhaltiPaymentRequest } from "./bookings.utils";
+import {
+  initiateKhaltiPaymentRequest,
+  lookupKhaltiPayment,
+} from "./bookings.utils";
 
 const getBookingsByUser = async (user: IUser) => {
   try {
@@ -131,11 +134,55 @@ const initiatePaymentRequest = async ({
 
       return khaltiPaymentRequest;
     } else {
-      throw new CustomError(errorMessages.INVALID_PAYMENT_TYPE, 400);
+      throw new CustomError(errorMessages.INVALID_PAYMENT_METHOD, 400);
     }
   } catch (error) {
     throw error;
   }
 };
 
-export { createBooking, getBookingsByUser, initiatePaymentRequest };
+const verifyPaymentRequest = async ({ bookingId }: { bookingId: string }) => {
+  try {
+    const booking = await Booking.findOne({ _id: bookingId });
+
+    if (!booking) {
+      throw new CustomError(errorMessages.OBJECT_WITH_ID_NOT_FOUND, 404);
+    }
+
+    if (booking.status !== "PENDING") {
+      throw new CustomError(errorMessages.BOOKING_ALREADY_PROCESSED, 409);
+    }
+
+    if (booking.payment?.method === "KHALTI") {
+      const khaltiPayment = await lookupKhaltiPayment({
+        pidx: booking.payment.pidx,
+      });
+
+      if (khaltiPayment.status === "Completed") {
+        booking.payment.status = "COMPLETED";
+        booking.status = "CONFIRMED";
+        await booking.save();
+        return booking;
+      } else if (khaltiPayment.status === "Initiated") {
+        throw new CustomError(errorMessages.PAYMENT_PENDING, 202);
+      } else {
+        booking.payment.status = "FAILED";
+        booking.status = "CANCELLED";
+        await booking.save();
+
+        throw new CustomError(errorMessages.PAYMENT_FAILED, 422);
+      }
+    } else {
+      throw new CustomError(errorMessages.INVALID_PAYMENT_METHOD, 400);
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+export {
+  createBooking,
+  getBookingsByUser,
+  initiatePaymentRequest,
+  verifyPaymentRequest,
+};
