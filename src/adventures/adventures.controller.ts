@@ -7,6 +7,7 @@ import {
   deleteAdventure,
   updateAdventure,
   enrollGuideToAdventure,
+  fetchAvailableGuides,
 } from "./adventures.service";
 
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
@@ -96,4 +97,30 @@ const enrollToAdventure = async (
   }
 };
 
-export { getAll, get, create, update, remove, enrollToAdventure };
+const getAvailableGuides = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const { startDate } = req.body;
+    const guides = await fetchAvailableGuides({
+      adventureId: id,
+      startDate,
+    });
+    res.status(200).json(guides);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export {
+  getAll,
+  get,
+  create,
+  update,
+  remove,
+  enrollToAdventure,
+  getAvailableGuides,
+};

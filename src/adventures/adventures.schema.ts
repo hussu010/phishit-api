@@ -21,4 +21,14 @@ const updateAdventureSchema = [
   ...createAdventureSchema,
 ];
 
-export { getAdventureByIdSchema, createAdventureSchema, updateAdventureSchema };
+const getAdventureGuideSchema = [
+  ...getAdventureByIdSchema,
+  body("startDate").isISO8601(),
+];
+
+export {
+  getAdventureByIdSchema,
+  createAdventureSchema,
+  updateAdventureSchema,
+  getAdventureGuideSchema,
+};

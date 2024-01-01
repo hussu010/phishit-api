@@ -12,6 +12,7 @@ import {
   getUserWithRole,
 } from "./auth.helper";
 import { generateJWT } from "../auth/auth.service";
+import Booking from "../bookings/bookings.model";
 
 beforeAll(async () => {
   await connect();
@@ -663,5 +664,149 @@ describe("POST /api/adventures/:id/enroll", () => {
     expect(res.body).toEqual({
       message: errorMessages.GUIDE_ALREADY_ENROLLED,
     });
+  });
+});
+
+describe("GET /api/adventures/:id/guides", () => {
+  it("should return 401 if user is not logged in", async () => {
+    const res = await request(app)
+      .post("/api/adventures/5f7a5d713d0f4d1b2c5e3f6e/guides")
+      .set("Accept", "application/json");
+
+    expect(res.statusCode).toEqual(401);
+    expect(res.body).toHaveProperty("message");
+  });
+
+  it("should return 400 Bad Request with invalid id", async () => {
+    const { accessToken } = await getAuthenticatedUserJWT();
+
+    const res = await request(app)
+      .post("/api/adventures/123/guides")
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.status).toBe(400);
+
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors).toBeInstanceOf(Array);
+
+    const errorDetails = res.body.errors.map((error) => ({
+      path: error.path,
+      location: error.location,
+    }));
+
+    expect(errorDetails).toContainEqual({ path: "id", location: "params" });
+    expect(errorDetails).toContainEqual({
+      path: "startDate",
+      location: "body",
+    });
+  });
+
+  it("should return 404 if adventure does not exists", async () => {
+    const { accessToken } = await getAuthenticatedUserJWT();
+
+    const res = await request(app)
+      .post("/api/adventures/5f7a5d713d0f4d1b2c5e3f6e/guides")
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        startDate: new Date(),
+      });
+
+    expect(res.status).toBe(404);
+    expect(res.body).toEqual({
+      message: errorMessages.OBJECT_WITH_ID_NOT_FOUND,
+    });
+  });
+
+  it("should return 200 OK with available guides", async () => {
+    const { accessToken } = await getAuthenticatedUserJWT();
+
+    const adventures = await seedAdventures({
+      numberOfAdventures: 1,
+      numberOfPackages: 1,
+      numberOfGuides: 5,
+    });
+
+    const res = await request(app)
+      .post(`/api/adventures/${adventures[0]._id}/guides`)
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        startDate: new Date(),
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toBeInstanceOf(Array);
+    expect(res.body.length).toBe(5);
+    expect(res.body[0]).toHaveProperty("_id");
+    expect(res.body[0]).toHaveProperty("username");
+  });
+
+  it("should return 200 OK with empty array when no guides are available", async () => {
+    const { accessToken } = await getAuthenticatedUserJWT();
+
+    const adventures = await seedAdventures({
+      numberOfAdventures: 1,
+      numberOfPackages: 1,
+      numberOfGuides: 0,
+    });
+
+    const res = await request(app)
+      .post(`/api/adventures/${adventures[0]._id}/guides`)
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        startDate: new Date(),
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toBeInstanceOf(Array);
+    expect(res.body.length).toBe(0);
+  });
+
+  it("should list out unavailable guides", async () => {
+    const { accessToken } = await getAuthenticatedUserJWT();
+
+    const adventures = await seedAdventures({
+      numberOfAdventures: 1,
+      numberOfPackages: 1,
+      numberOfGuides: 5,
+    });
+
+    const priorBooking = await request(app)
+      .post("/api/bookings")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        adventureId: adventures[0]._id,
+        packageId: adventures[0].packages[0]._id,
+        guideId: adventures[0].guides[0]._id,
+        startDate: "2020-10-10",
+        noOfPeople: 5,
+      });
+
+    await Booking.findByIdAndUpdate(
+      priorBooking.body._id,
+      {
+        status: "CONFIRMED",
+      },
+      { new: true }
+    );
+
+    const res = await request(app)
+      .post(`/api/adventures/${adventures[0]._id}/guides`)
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        startDate: "2020-10-10",
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toBeInstanceOf(Array);
+    expect(res.body.length).toBe(5);
+    expect(res.body[0]).toHaveProperty("_id");
+    expect(res.body[0]).toHaveProperty("username");
+    expect(res.body[0]).toHaveProperty("isAvailable");
+    expect(res.body[0].isAvailable).toBe(false);
   });
 });

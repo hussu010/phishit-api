@@ -8,12 +8,14 @@ import {
   remove,
   update,
   enrollToAdventure,
+  getAvailableGuides,
 } from "./adventures.controller";
 import { isAuthorized, hasRole } from "../common/middlewares/permissions";
 import {
   getAdventureByIdSchema,
   createAdventureSchema,
   updateAdventureSchema,
+  getAdventureGuideSchema,
 } from "./adventures.schema";
 import { validateRequest } from "../common/middlewares/validator";
 
@@ -50,6 +52,12 @@ router.post(
   getAdventureByIdSchema,
   validateRequest,
   enrollToAdventure
+);
+router.post(
+  "/:id/guides",
+  getAdventureGuideSchema,
+  validateRequest,
+  getAvailableGuides
 );
 
 export default router;

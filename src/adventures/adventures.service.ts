@@ -3,6 +3,7 @@ import { errorMessages } from "../common/config/messages";
 
 import { Adventure } from "./adventures.model";
 import { IUser } from "../users/users.interface";
+import Booking from "../bookings/bookings.model";
 
 const getAdventures = async () => {
   try {
@@ -155,6 +156,56 @@ const enrollGuideToAdventure = async ({
   }
 };
 
+const fetchAvailableGuides = async ({
+  adventureId,
+  startDate,
+}: {
+  adventureId: string;
+  startDate: string;
+}) => {
+  try {
+    const adventure = await Adventure.findOne({
+      _id: adventureId,
+    }).populate({
+      path: "guides",
+      select:
+        "-phoneNumber -googleId -isActive -__v -createdAt -updatedAt -roles",
+    });
+
+    if (!adventure) {
+      throw new CustomError(errorMessages.OBJECT_WITH_ID_NOT_FOUND, 404);
+    }
+
+    const bookings = await Booking.find({
+      adventure: adventureId,
+      status: {
+        $in: ["CONFIRMED"],
+      },
+    });
+
+    let availableGuides: Object[] = [];
+
+    adventure.guides.filter((guide) => {
+      const isGuideAvailable = bookings.some((booking) => {
+        return (
+          booking.guide.toString() === guide._id.toString() &&
+          new Date(startDate) >= booking.startDate &&
+          new Date(startDate) <= booking.endDate
+        );
+      });
+
+      availableGuides.push({
+        ...guide.toObject(),
+        isAvailable: !isGuideAvailable,
+      });
+    });
+
+    return availableGuides;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export {
   getAdventures,
   getAdventureById,
@@ -162,4 +213,5 @@ export {
   deleteAdventure,
   updateAdventure,
   enrollGuideToAdventure,
+  fetchAvailableGuides,
 };

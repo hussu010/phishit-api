@@ -696,6 +696,64 @@
         }
       }
     },
+    "/adventures/{id}/guides": {
+      "post": {
+        "tags": ["adventures"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "add guide to adventure.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "startDate": {
+                  "type": "string",
+                  "example": "2020-12-10"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Guides for adventure.",
+            "schema": {
+              "$ref": "#/definitions/AdventureGuides"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/BadRequestError"
+            }
+          },
+          "401": {
+            "description": "Unautorized request.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      }
+    },
     "/guide-requests": {
       "get": {
         "tags": ["guide-requests"],
@@ -1455,6 +1513,26 @@
         "expiresAt": {
           "type": "string",
           "example": "2023-12-27T13:21:55.469Z"
+        }
+      }
+    },
+    "AdventureGuides": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "string"
+          },
+          "username": {
+            "type": "string",
+            "example": "string"
+          },
+          "isAvailable": {
+            "type": "boolean",
+            "example": true
+          }
         }
       }
     },
