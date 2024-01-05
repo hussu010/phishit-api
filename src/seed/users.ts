@@ -38,12 +38,23 @@ const seedUsers = async () => {
   const usersArray = [];
 
   for (let i = 0; i < users.length; i++) {
-    const user = new User(users[i]);
+    let query;
+
+    if (users[i].phoneNumber) {
+      query = { phoneNumber: users[i].phoneNumber };
+    } else {
+      query = { googleId: users[i].googleId };
+    }
+
+    const user = await User.findOneAndUpdate(
+      query,
+      { ...users[i] },
+      { upsert: true, new: true }
+    ).lean();
     usersArray.push(user);
   }
 
-  const newUsers = await User.insertMany(usersArray);
-  return newUsers;
+  return usersArray;
 };
 
 seedUsers()
