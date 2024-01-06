@@ -2,6 +2,8 @@ import { body, param } from "express-validator";
 import { PaymentMethodEnum } from "../common/config/enum";
 import { ALLOWED_PAYMENT_REDIRECT_URLS } from "../common/config/general";
 
+const getBookingByIdSchema = [param("id").isMongoId()];
+
 const createBookingSchema = [
   body("adventureId").isMongoId(),
   body("packageId").isMongoId(),
@@ -26,4 +28,9 @@ const initiatePaymentSchema = [
 
 const verifyPaymentSchema = [param("id").isMongoId()];
 
-export { createBookingSchema, initiatePaymentSchema, verifyPaymentSchema };
+export {
+  createBookingSchema,
+  initiatePaymentSchema,
+  verifyPaymentSchema,
+  getBookingByIdSchema,
+};

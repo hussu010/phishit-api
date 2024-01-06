@@ -4,6 +4,7 @@ import {
   getBookingsByUser,
   initiatePaymentRequest,
   verifyPaymentRequest,
+  getBookingById,
 } from "./bookings.service";
 
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
@@ -11,6 +12,16 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
     const user = req.user!;
     const bookings = await getBookingsByUser(user);
     res.status(200).json(bookings);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const get = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const booking = await getBookingById(id);
+    res.status(200).json(booking);
   } catch (error) {
     next(error);
   }
@@ -68,4 +79,4 @@ const verifyPayment = async (
   }
 };
 
-export { create, getAll, initiatePayment, verifyPayment };
+export { create, getAll, get, initiatePayment, verifyPayment };

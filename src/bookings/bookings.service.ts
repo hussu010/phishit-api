@@ -28,6 +28,28 @@ const getBookingsByUser = async (user: IUser) => {
   }
 };
 
+const getBookingById = async (id: string) => {
+  try {
+    const booking = await Booking.findOne({ _id: id })
+      .populate({
+        path: "guide",
+        select: "-phoneNumber -googleId -isActive -__v -createdAt -updatedAt",
+      })
+      .populate({
+        path: "customer",
+        select: "-phoneNumber -googleId -isActive -__v -createdAt -updatedAt",
+      });
+
+    if (!booking) {
+      throw new CustomError(errorMessages.OBJECT_WITH_ID_NOT_FOUND, 404);
+    }
+
+    return booking;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const createBooking = async ({
   user,
   adventureId,
@@ -185,4 +207,5 @@ export {
   getBookingsByUser,
   initiatePaymentRequest,
   verifyPaymentRequest,
+  getBookingById,
 };
