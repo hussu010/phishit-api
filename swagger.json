@@ -1543,7 +1543,7 @@
         },
         "redirectUrl": {
           "type": "string",
-          "example": "http://localhost:3000/bookings/payment"
+          "example": "http://localhost:3000/bookings/5f7a5d713d0f4d1b2c5e3f6e"
         }
       }
     },
