@@ -11,10 +11,10 @@ const ALLOWED_GOOGLE_OAUTH_REDIRECT_URLS = [
 ];
 
 const ALLOWED_PAYMENT_REDIRECT_URLS = [
-  "http://127.0.0.1:3000/bookings/payment",
-  "http://localhost:3000/bookings/payment",
-  "https://phishit-ui-dev.tnbswap.com/bookings/payment",
-  "https://phishit-ui.tnbswap.com/bookings/payment",
+  /^http:\/\/127\.0\.0\.1:3000\/bookings\/[0-9a-fA-F]{24}$/,
+  /^http:\/\/localhost:3000\/bookings\/[0-9a-fA-F]{24}$/,
+  /^https:\/\/phishit-ui-dev\.tnbswap\.com\/bookings\/[0-9a-fA-F]{24}$/,
+  /^https:\/\/phishit-ui\.tnbswap\.com\/bookings\/[0-9a-fA-F]{24}$/,
 ];
 
 const DICEBEAR_URL = "https://api.dicebear.com/7.x/adventurer/svg";

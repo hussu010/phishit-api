@@ -22,7 +22,12 @@ const createBookingSchema = [
 
 const initiatePaymentSchema = [
   body("method").isIn(PaymentMethodEnum),
-  body("redirectUrl").isString(),
+  body("redirectUrl").custom((value) => {
+    if (!ALLOWED_PAYMENT_REDIRECT_URLS.some((url) => url.test(value))) {
+      throw new Error("redirectUrl is not allowed");
+    }
+    return true;
+  }),
   param("id").isMongoId(),
 ];
 

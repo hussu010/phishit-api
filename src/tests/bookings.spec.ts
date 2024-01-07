@@ -346,7 +346,7 @@ describe("POST /api/bookings/:id/payment", () => {
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
         method: "KHALTI",
-        redirectUrl: "http://localhost:3000/bookings/payment",
+        redirectUrl: "http://localhost:3000/bookings/5f7a5d713d0f4d1b2c5e3f6e",
       });
 
     expect(res.status).toBe(404);
@@ -388,7 +388,7 @@ describe("POST /api/bookings/:id/payment", () => {
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
         method: "KHALTI",
-        redirectUrl: "http://localhost:3000/bookings/payment",
+        redirectUrl: "http://127.0.0.1:3000/bookings/5f7a5d713d0f4d1b2c5e3f6e",
       });
 
     expect(res.status).toBe(409);
@@ -426,7 +426,8 @@ describe("POST /api/bookings/:id/payment", () => {
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
         method: "KHALTI",
-        redirectUrl: "http://localhost:3000/bookings/payment",
+        redirectUrl:
+          "https://phishit-ui-dev.tnbswap.com/bookings/5f7a5d713d0f4d1b2c5e3f6e",
       });
 
     expect(res.status).toBe(503);
@@ -468,7 +469,8 @@ describe("POST /api/bookings/:id/payment", () => {
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
         method: "KHALTI",
-        redirectUrl: "http://localhost:3000/bookings/payment",
+        redirectUrl:
+          "https://phishit-ui.tnbswap.com/bookings/5f7a5d713d0f4d1b2c5e3f6e",
       });
 
     expect(res.status).toBe(200);
@@ -530,7 +532,7 @@ describe("POST /api/bookings/:id/verify-payment", () => {
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
         method: "KHALTI",
-        redirectUrl: "http://localhost:3000/bookings/payment",
+        redirectUrl: "http://127.0.0.1:3000/bookings/5f7a5d713d0f4d1b2c5e3f6e",
       });
 
     expect(res.status).toBe(404);
@@ -611,7 +613,7 @@ describe("POST /api/bookings/:id/verify-payment", () => {
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
         method: "KHALTI",
-        redirectUrl: "http://localhost:3000/bookings/payment",
+        redirectUrl: "http://127.0.0.1:3000/bookings/5f7a5d713d0f4d1b2c5e3f6e",
       });
 
     expect(initiatePaymentResponse.status).toBe(200);
@@ -663,7 +665,7 @@ describe("POST /api/bookings/:id/verify-payment", () => {
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
         method: "KHALTI",
-        redirectUrl: "http://localhost:3000/bookings/payment",
+        redirectUrl: "http://127.0.0.1:3000/bookings/5f7a5d713d0f4d1b2c5e3f6e",
       });
 
     expect(initiatePaymentResponse.status).toBe(200);
@@ -722,7 +724,7 @@ describe("POST /api/bookings/:id/verify-payment", () => {
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
         method: "KHALTI",
-        redirectUrl: "http://localhost:3000/bookings/payment",
+        redirectUrl: "http://127.0.0.1:3000/bookings/5f7a5d713d0f4d1b2c5e3f6e",
       });
 
     expect(initiatePaymentResponse.status).toBe(200);
@@ -788,7 +790,7 @@ describe("POST /api/bookings/:id/verify-payment", () => {
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
         method: "KHALTI",
-        redirectUrl: "http://localhost:3000/bookings/payment",
+        redirectUrl: "http://127.0.0.1:3000/bookings/5f7a5d713d0f4d1b2c5e3f6e",
       });
 
     expect(initiatePaymentResponse.status).toBe(200);
