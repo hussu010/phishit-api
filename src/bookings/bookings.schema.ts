@@ -22,7 +22,7 @@ const createBookingSchema = [
 
 const initiatePaymentSchema = [
   body("method").isIn(PaymentMethodEnum),
-  body("redirectUrl").isIn(ALLOWED_PAYMENT_REDIRECT_URLS),
+  body("redirectUrl").isURL(),
   param("id").isMongoId(),
 ];
 
