@@ -75,6 +75,137 @@ describe("GET /api/bookings", () => {
   });
 });
 
+describe("GET /api/bookings/:id", () => {
+  it("should return 401 if user is not logged in", async () => {
+    const res = await request(app).get("/api/bookings/123");
+    expect(res.status).toBe(401);
+  });
+
+  it("should return 400 if invalid boooking id is provided", async () => {
+    const user = await getUserWithRole("GENERAL");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const res = await request(app)
+      .get("/api/bookings/123")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors).toBeInstanceOf(Array);
+
+    const errorDetails = res.body.errors.map((error) => ({
+      path: error.path,
+      location: error.location,
+    }));
+
+    expect(errorDetails).toContainEqual({
+      path: "id",
+      location: "params",
+    });
+  });
+
+  it("should return 404 if booking with provided id does not exist", async () => {
+    const user = await getUserWithRole("GENERAL");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const fakeBookingId = "5f7a5d713d0f4d1b2c5e3f6e";
+
+    const res = await request(app)
+      .get(`/api/bookings/${fakeBookingId}`)
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.status).toBe(404);
+    expect(res.body).toHaveProperty("message");
+    expect(res.body.message).toBe(errorMessages.OBJECT_WITH_ID_NOT_FOUND);
+  });
+
+  it("should return 200 if booking with provided id exists", async () => {
+    const user = await getUserWithRole("GENERAL");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const adventures = await seedAdventures({
+      numberOfAdventures: 1,
+      numberOfPackages: 1,
+      numberOfGuides: 1,
+    });
+
+    const booking = await request(app)
+      .post("/api/bookings")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        adventureId: adventures[0]._id,
+        packageId: adventures[0].packages[0]._id,
+        guideId: adventures[0].guides[0]._id,
+        noOfPeople: 5,
+        startDate: "2023-12-12",
+      });
+
+    const res = await request(app)
+      .get(`/api/bookings/${booking.body._id}`)
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("_id");
+    expect(res.body).toHaveProperty("adventure");
+    expect(res.body).toHaveProperty("package");
+    expect(res.body).toHaveProperty("guide");
+    expect(res.body).toHaveProperty("startDate");
+    expect(res.body).toHaveProperty("endDate");
+    expect(res.body).toHaveProperty("customer");
+    expect(res.body).toHaveProperty("noOfPeople");
+    expect(res.body).toHaveProperty("status");
+  });
+
+  it("should return 200 and payment information if payment is initiated", async () => {
+    const user = await getUserWithRole("GENERAL");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const adventures = await seedAdventures({
+      numberOfAdventures: 1,
+      numberOfPackages: 1,
+      numberOfGuides: 1,
+    });
+
+    const booking = await request(app)
+      .post("/api/bookings")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        adventureId: adventures[0]._id,
+        packageId: adventures[0].packages[0]._id,
+        guideId: adventures[0].guides[0]._id,
+        noOfPeople: 5,
+        startDate: "2023-12-12",
+      });
+
+    const initiatePayment = await request(app)
+      .post(`/api/bookings/${booking.body._id}/initiate-payment`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        method: "KHALTI",
+        redirectUrl: "http://localhost:3000/bookings/5f7a5d713d0f4d1b2c5e3f6e",
+      });
+
+    const res = await request(app)
+      .get(`/api/bookings/${booking.body._id}`)
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("_id");
+    expect(res.body).toHaveProperty("adventure");
+    expect(res.body).toHaveProperty("package");
+    expect(res.body).toHaveProperty("guide");
+    expect(res.body).toHaveProperty("startDate");
+    expect(res.body).toHaveProperty("endDate");
+    expect(res.body).toHaveProperty("customer");
+    expect(res.body).toHaveProperty("noOfPeople");
+    expect(res.body).toHaveProperty("status");
+    expect(res.body).toHaveProperty("payment");
+    expect(res.body.payment).toHaveProperty("status");
+    expect(res.body.payment).toHaveProperty("method");
+    expect(res.body.payment).toHaveProperty("amount");
+  });
+});
+
 describe("POST /api/bookings", () => {
   it("should return 401 if user is not logged in", async () => {
     const res = await request(app).post("/api/bookings").send({});
