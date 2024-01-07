@@ -55,6 +55,7 @@ router.post(
 );
 router.post(
   "/:id/guides",
+  isAuthorized,
   getAdventureGuideSchema,
   validateRequest,
   getAvailableGuides
