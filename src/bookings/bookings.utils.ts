@@ -73,7 +73,7 @@ const lookupKhaltiPayment = async ({
     return {
       pidx: response.data.pidx,
       total_amount: response.data.total_amount,
-      status: response.data.transaction_id,
+      status: response.data.status,
       transaction_id: response.data.transaction_id,
     };
   } catch (error: any) {
