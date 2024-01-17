@@ -868,7 +868,7 @@ describe("POST /api/bookings/:id/verify-payment", () => {
     const fakeKhaltiResponse = {
       pidx: "QXnwaNmqwmFnNL7EaSM5a9",
       total_amount: 1000,
-      status: "Pending",
+      status: "Expired",
       transaction_id: "123",
     };
     jest

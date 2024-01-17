@@ -185,7 +185,10 @@ const verifyPaymentRequest = async ({ bookingId }: { bookingId: string }) => {
         booking.status = "CONFIRMED";
         await booking.save();
         return booking;
-      } else if (khaltiPayment.status === "Initiated") {
+      } else if (
+        khaltiPayment.status === "Initiated" ||
+        khaltiPayment.status === "Pending"
+      ) {
         throw new CustomError(errorMessages.PAYMENT_PENDING, 202);
       } else {
         booking.payment.status = "FAILED";
