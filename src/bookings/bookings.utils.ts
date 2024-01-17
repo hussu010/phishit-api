@@ -63,7 +63,7 @@ const lookupKhaltiPayment = async ({
     };
 
     const response = await axios.post(
-      "https://khalti.com/api/v2/epayment/lookup/",
+      "https://a.khalti.com/api/v2/epayment/lookup/",
       {
         pidx,
       },
