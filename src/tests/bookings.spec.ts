@@ -586,6 +586,10 @@ describe("POST /api/bookings/:id/payment", () => {
         noOfPeople: 5,
       });
 
+    expect(booking.status).toBe(201);
+    expect(booking.body).toHaveProperty("status");
+    expect(booking.body.status).toBe("NEW");
+
     const fakeKhaltiResponse = {
       pidx: "QXnwaNmqwmFnNL7EaSM5a9",
       paymentUrl: "https://test-pay.khalti.com/?pidx=QXnwaNmqwmFnNL7EaSM5a9",
@@ -620,6 +624,7 @@ describe("POST /api/bookings/:id/payment", () => {
     expect(bookingHasPaymentInfo?.payment).toHaveProperty("paymentUrl");
     expect(bookingHasPaymentInfo?.payment).toHaveProperty("expiresAt");
     expect(bookingHasPaymentInfo?.payment).toHaveProperty("status");
+    expect(bookingHasPaymentInfo?.payment.status).toBe("PENDING");
   });
 });
 
