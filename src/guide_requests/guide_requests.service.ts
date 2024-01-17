@@ -6,7 +6,16 @@ import { IUser } from "../users/users.interface";
 
 const getGuideRequests = async () => {
   try {
-    const guideRequests = await GuideRequest.find({ status: "PENDING" }).sort({
+    const guideRequests = await GuideRequest.find({
+      $or: [
+        {
+          status: "PENDING",
+        },
+        {
+          status: "APPROVED",
+        },
+      ],
+    }).sort({
       createdAt: -1,
     });
     return guideRequests;
