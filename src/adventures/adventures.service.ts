@@ -156,6 +156,39 @@ const enrollGuideToAdventure = async ({
   }
 };
 
+const unenrollGuideFromAdventure = async ({
+  id,
+  user,
+}: {
+  id: string;
+  user: IUser;
+}) => {
+  try {
+    const adventure = await Adventure.findById(id);
+
+    if (!adventure) {
+      throw new CustomError(errorMessages.OBJECT_WITH_ID_NOT_FOUND, 404);
+    }
+
+    const isGuideAlreadyEnrolled = adventure.guides.some(
+      (guide) => guide._id.toString() === user._id.toString()
+    );
+
+    if (!isGuideAlreadyEnrolled) {
+      throw new CustomError(errorMessages.GUIDE_NOT_ENROLLED, 409);
+    }
+
+    adventure.guides = adventure.guides.filter(
+      (guide) => guide._id.toString() !== user._id.toString()
+    );
+    await adventure.save();
+
+    return adventure;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const fetchAvailableGuides = async ({
   adventureId,
   startDate,
@@ -213,5 +246,6 @@ export {
   deleteAdventure,
   updateAdventure,
   enrollGuideToAdventure,
+  unenrollGuideFromAdventure,
   fetchAvailableGuides,
 };

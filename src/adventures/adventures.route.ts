@@ -8,6 +8,7 @@ import {
   remove,
   update,
   enrollToAdventure,
+  unenrollFromAdventure,
   getAvailableGuides,
 } from "./adventures.controller";
 import { isAuthorized, hasRole } from "../common/middlewares/permissions";
@@ -52,6 +53,14 @@ router.post(
   getAdventureByIdSchema,
   validateRequest,
   enrollToAdventure
+);
+router.post(
+  "/:id/unenroll",
+  isAuthorized,
+  hasRole(["GUIDE"]),
+  getAdventureByIdSchema,
+  validateRequest,
+  unenrollFromAdventure
 );
 router.post(
   "/:id/guides",

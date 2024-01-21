@@ -7,6 +7,7 @@ import {
   deleteAdventure,
   updateAdventure,
   enrollGuideToAdventure,
+  unenrollGuideFromAdventure,
   fetchAvailableGuides,
 } from "./adventures.service";
 
@@ -97,6 +98,22 @@ const enrollToAdventure = async (
   }
 };
 
+const unenrollFromAdventure = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const user = req.user!;
+
+    await unenrollGuideFromAdventure({ id, user });
+    res.status(204).json();
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getAvailableGuides = async (
   req: Request,
   res: Response,
@@ -122,5 +139,6 @@ export {
   update,
   remove,
   enrollToAdventure,
+  unenrollFromAdventure,
   getAvailableGuides,
 };
