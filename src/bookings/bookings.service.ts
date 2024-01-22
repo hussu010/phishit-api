@@ -133,11 +133,20 @@ const initiatePaymentRequest = async ({
       throw new CustomError(errorMessages.OBJECT_WITH_ID_NOT_FOUND, 404);
     }
 
-    if (booking.status !== "NEW") {
+    if (
+      booking.status === "CONFIRMED" ||
+      booking.status === "COMPLETED" ||
+      booking.status === "CANCELLED"
+    ) {
       throw new CustomError(errorMessages.BOOKING_ALREADY_PROCESSED, 409);
     }
 
-    if (method === "KHALTI") {
+    if (
+      method === "KHALTI" &&
+      (booking.status === "NEW" ||
+        (booking.status === "PENDING" &&
+          booking.payment?.expiresAt < new Date()))
+    ) {
       const khaltiPaymentRequest = await initiateKhaltiPaymentRequest({
         booking,
         redirectUrl,
@@ -156,7 +165,11 @@ const initiatePaymentRequest = async ({
 
       return khaltiPaymentRequest;
     } else {
-      throw new CustomError(errorMessages.INVALID_PAYMENT_METHOD, 400);
+      return {
+        pidx: booking.payment?.pidx,
+        paymentUrl: booking.payment?.paymentUrl,
+        expiresAt: booking.payment?.expiresAt,
+      };
     }
   } catch (error) {
     throw error;

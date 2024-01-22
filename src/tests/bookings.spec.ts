@@ -3,6 +3,8 @@ import { connect, clear, close } from "./test-db-connect.helper";
 import request from "supertest";
 import app from "../../index";
 
+import { faker } from "@faker-js/faker";
+
 import { getUserWithRole } from "./auth.helper";
 import { generateJWT } from "../auth/auth.service";
 import { errorMessages } from "../common/config/messages";
@@ -399,7 +401,7 @@ describe("POST /api/bookings", () => {
   });
 });
 
-describe("POST /api/bookings/:id/payment", () => {
+describe("POST /api/bookings/:id/initiate-payment", () => {
   it("should return 401 if user is not logged in", async () => {
     const res = await request(app)
       .post("/api/bookings/123/initiate-payment")
@@ -625,6 +627,161 @@ describe("POST /api/bookings/:id/payment", () => {
     expect(bookingHasPaymentInfo?.payment).toHaveProperty("expiresAt");
     expect(bookingHasPaymentInfo?.payment).toHaveProperty("status");
     expect(bookingHasPaymentInfo?.payment.status).toBe("PENDING");
+  });
+
+  it("should return the same payment link if the payment is not expired", async () => {
+    const user = await getUserWithRole("GENERAL");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const adventures = await seedAdventures({
+      numberOfAdventures: 2,
+      numberOfPackages: 2,
+      numberOfGuides: 2,
+    });
+
+    const booking = await request(app)
+      .post("/api/bookings")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        adventureId: adventures[0]._id,
+        packageId: adventures[0].packages[0]._id,
+        guideId: adventures[0].guides[0]._id,
+        startDate: "2020-10-10",
+        noOfPeople: 5,
+      });
+
+    expect(booking.status).toBe(201);
+    expect(booking.body).toHaveProperty("status");
+    expect(booking.body.status).toBe("NEW");
+
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + 15 * 60000);
+
+    const fakeKhaltiResponse = {
+      pidx: faker.database.mongodbObjectId(),
+      paymentUrl: faker.internet.url(),
+      expiresAt,
+    };
+    jest
+      .spyOn(bookingsUtils, "initiateKhaltiPaymentRequest")
+      .mockResolvedValue(fakeKhaltiResponse);
+
+    const oldResponse = await request(app)
+      .post(`/api/bookings/${booking.body._id}/initiate-payment`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        method: "KHALTI",
+        redirectUrl:
+          "https://phishit-ui.tnbswap.com/bookings/5f7a5d713d0f4d1b2c5e3f6e",
+      });
+
+    expect(oldResponse.status).toBe(200);
+    expect(oldResponse.body).toHaveProperty("pidx");
+    expect(oldResponse.body).toHaveProperty("paymentUrl");
+    expect(oldResponse.body).toHaveProperty("expiresAt");
+
+    const newFakeKhaltiResponse = {
+      pidx: faker.database.mongodbObjectId(),
+      paymentUrl: faker.internet.url(),
+      expiresAt: faker.date.past(),
+    };
+    jest
+      .spyOn(bookingsUtils, "initiateKhaltiPaymentRequest")
+      .mockResolvedValue(newFakeKhaltiResponse);
+
+    const res = await request(app)
+      .post(`/api/bookings/${booking.body._id}/initiate-payment`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        method: "KHALTI",
+        redirectUrl:
+          "https://phishit-ui.tnbswap.com/bookings/5f7a5d713d0f4d1b2c5e3f6e",
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("pidx");
+    expect(res.body).toHaveProperty("paymentUrl");
+    expect(res.body).toHaveProperty("expiresAt");
+    expect(res.body.pidx).toBe(oldResponse.body.pidx);
+    expect(res.body.paymentUrl).toBe(oldResponse.body.paymentUrl);
+    expect(res.body.expiresAt).toBe(oldResponse.body.expiresAt);
+  });
+
+  it("should return the different payment link if the payment is expired", async () => {
+    const user = await getUserWithRole("GENERAL");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const adventures = await seedAdventures({
+      numberOfAdventures: 2,
+      numberOfPackages: 2,
+      numberOfGuides: 2,
+    });
+
+    const booking = await request(app)
+      .post("/api/bookings")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        adventureId: adventures[0]._id,
+        packageId: adventures[0].packages[0]._id,
+        guideId: adventures[0].guides[0]._id,
+        startDate: "2020-10-10",
+        noOfPeople: 5,
+      });
+
+    expect(booking.status).toBe(201);
+    expect(booking.body).toHaveProperty("status");
+    expect(booking.body.status).toBe("NEW");
+
+    const fakeKhaltiResponse = {
+      pidx: faker.database.mongodbObjectId(),
+      paymentUrl: faker.internet.url(),
+      expiresAt: faker.date.past(),
+    };
+    jest
+      .spyOn(bookingsUtils, "initiateKhaltiPaymentRequest")
+      .mockResolvedValue(fakeKhaltiResponse);
+
+    const oldResponse = await request(app)
+      .post(`/api/bookings/${booking.body._id}/initiate-payment`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        method: "KHALTI",
+        redirectUrl:
+          "https://phishit-ui.tnbswap.com/bookings/5f7a5d713d0f4d1b2c5e3f6e",
+      });
+
+    expect(oldResponse.status).toBe(200);
+    expect(oldResponse.body).toHaveProperty("pidx");
+    expect(oldResponse.body).toHaveProperty("paymentUrl");
+    expect(oldResponse.body).toHaveProperty("expiresAt");
+
+    const newFakeKhaltiResponse = {
+      pidx: faker.database.mongodbObjectId(),
+      paymentUrl: faker.internet.url(),
+      expiresAt: faker.date.past(),
+    };
+    jest
+      .spyOn(bookingsUtils, "initiateKhaltiPaymentRequest")
+      .mockResolvedValue(newFakeKhaltiResponse);
+
+    const res = await request(app)
+      .post(`/api/bookings/${booking.body._id}/initiate-payment`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        method: "KHALTI",
+        redirectUrl:
+          "https://phishit-ui.tnbswap.com/bookings/5f7a5d713d0f4d1b2c5e3f6e",
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("pidx");
+    expect(res.body).toHaveProperty("paymentUrl");
+    expect(res.body).toHaveProperty("expiresAt");
+    expect(res.body.pidx).toBe(newFakeKhaltiResponse.pidx);
+    expect(res.body.paymentUrl).toBe(newFakeKhaltiResponse.paymentUrl);
+    expect(res.body.expiresAt).toBe(
+      newFakeKhaltiResponse.expiresAt.toISOString()
+    );
   });
 });
 
