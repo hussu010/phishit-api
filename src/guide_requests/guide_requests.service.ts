@@ -44,6 +44,19 @@ const createGuideRequest = async ({
   documents: string[];
 }) => {
   try {
+    if (user.roles.includes("GUIDE")) {
+      throw new CustomError(errorMessages.USER_ALREADY_GUIDE, 409);
+    }
+
+    const isCurrentRequestPending = await GuideRequest.findOne({
+      user,
+      status: "PENDING",
+    });
+
+    if (isCurrentRequestPending) {
+      throw new CustomError(errorMessages.GUIDE_REQUEST_ALREADY_PENDING, 409);
+    }
+
     const guideRequest = await GuideRequest.create({
       user,
       type,
@@ -54,6 +67,7 @@ const createGuideRequest = async ({
       message,
       documents,
     });
+
     return guideRequest;
   } catch (error) {
     throw error;

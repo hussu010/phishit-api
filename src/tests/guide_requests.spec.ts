@@ -167,6 +167,76 @@ describe("POST /api/guide-requests", () => {
     });
   });
 
+  it("should return 409 if user is already a guide", async () => {
+    const user = await getUserWithRole("GUIDE");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const res = await request(app)
+      .post("/api/guide-requests")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        type: faker.helpers.arrayElement(GuideTypeEnum),
+        name: faker.person.fullName(),
+        phoneNumber: "9800000000",
+        email: faker.internet.email(),
+        address: faker.location.streetAddress(),
+        message: faker.lorem.paragraph(),
+        documents: [
+          {
+            url: faker.internet.url(),
+            type: faker.helpers.arrayElement(GuideRequestDocumentTypeEnum),
+          },
+        ],
+      });
+
+    expect(res.status).toBe(409);
+    expect(res.body.message).toBe(errorMessages.USER_ALREADY_GUIDE);
+  });
+
+  it("should return 409 if user already has a pending guide request", async () => {
+    const user = await getUserWithRole("GENERAL");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    await request(app)
+      .post("/api/guide-requests")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        type: faker.helpers.arrayElement(GuideTypeEnum),
+        name: faker.person.fullName(),
+        phoneNumber: "9800000000",
+        email: faker.internet.email(),
+        address: faker.location.streetAddress(),
+        message: faker.lorem.paragraph(),
+        documents: [
+          {
+            url: faker.internet.url(),
+            type: faker.helpers.arrayElement(GuideRequestDocumentTypeEnum),
+          },
+        ],
+      });
+
+    const res = await request(app)
+      .post("/api/guide-requests")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        type: faker.helpers.arrayElement(GuideTypeEnum),
+        name: faker.person.fullName(),
+        phoneNumber: "9800000000",
+        email: faker.internet.email(),
+        address: faker.location.streetAddress(),
+        message: faker.lorem.paragraph(),
+        documents: [
+          {
+            url: faker.internet.url(),
+            type: faker.helpers.arrayElement(GuideRequestDocumentTypeEnum),
+          },
+        ],
+      });
+
+    expect(res.status).toBe(409);
+    expect(res.body.message).toBe(errorMessages.GUIDE_REQUEST_ALREADY_PENDING);
+  });
+
   it("should return 200 and create a guide request if fields are valid", async () => {
     const user = await getUserWithRole("GENERAL");
     const accessToken = await generateJWT(user, "ACCESS");
