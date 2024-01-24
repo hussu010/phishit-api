@@ -3,36 +3,11 @@ import User from "../users/users.model";
 import dotenv from "dotenv";
 dotenv.config();
 
+import { users } from "./data";
+
 if (process.env.NODE_ENV !== "test") {
   import("../common/config/db");
 }
-
-const users = [
-  {
-    phoneNumber: "9848000000",
-    username: "user1",
-    roles: ["GENERAL", "GUIDE"],
-    isActive: true,
-  },
-  {
-    phoneNumber: "9863299610",
-    username: "user2",
-    roles: ["GENERAL", "ADMIN"],
-    isActive: true,
-  },
-  {
-    googleId: "105438825981277363287",
-    username: "user3",
-    roles: ["GENERAL", "GUIDE"],
-    isActive: true,
-  },
-  {
-    googleId: "106959373406842225543",
-    username: "user4",
-    roles: ["GENERAL", "ADMIN", "SUPER_ADMIN"],
-    isActive: true,
-  },
-];
 
 const seedUsers = async () => {
   const usersArray = [];

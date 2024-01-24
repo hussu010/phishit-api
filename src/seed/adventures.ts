@@ -2,8 +2,9 @@ import { faker } from "@faker-js/faker";
 import { Adventure, Package } from "../adventures/adventures.model";
 import User from "../users/users.model";
 
+import { adventures } from "./data";
+
 import dotenv from "dotenv";
-import { IUser } from "../users/users.interface";
 dotenv.config();
 
 if (process.env.NODE_ENV !== "test") {
@@ -11,55 +12,38 @@ if (process.env.NODE_ENV !== "test") {
 }
 
 const seedAdventures = async ({
-  numberOfAdventures,
-  numberOfPackages,
   numberOfGuides = 3,
 }: {
-  numberOfAdventures: number;
-  numberOfPackages: number;
   numberOfGuides?: number;
 }) => {
   const adventuresArray = [];
 
-  for (let i = 0; i < numberOfAdventures; i++) {
-    const adventure = new Adventure({
-      title: faker.location.city(),
-      description: faker.lorem.sentences(3),
+  for await (const adventure of adventures) {
+    const newAdventure = new Adventure({
+      title: adventure.title,
+      description: adventure.description,
       location: {
         type: "Point",
-        coordinates: [faker.location.longitude(), faker.location.latitude()],
+        coordinates: [
+          adventure.location.longitude,
+          adventure.location.latitude,
+        ],
       },
-      imageUrl: faker.image.urlLoremFlickr({ category: "nature" }),
-      imageAlt: faker.lorem.words(3),
-      images: [
-        {
-          url: faker.image.urlLoremFlickr({ category: "nature" }),
-          position: 1,
-        },
-        {
-          url: faker.image.urlLoremFlickr({ category: "nature" }),
-          position: 2,
-        },
-        {
-          url: faker.image.urlLoremFlickr({ category: "nature" }),
-          position: 3,
-        },
-      ],
+      imageUrl: adventure.imageUrl,
+      imageAlt: adventure.imageAlt,
+      images: adventure.images,
       packages: [],
     });
 
-    for (let j = 0; j < numberOfPackages; j++) {
-      const adventurePackage = await Package.create({
-        title: faker.commerce.productName(),
-        price: faker.number.int({
-          min: 10,
-          max: 1000,
-        }),
-        description: faker.lorem.sentences(3),
-        duration: faker.number.int({ min: 1, max: 30 }),
+    for await (const adventurePackage of adventure.packages) {
+      const newPackage = await Package.create({
+        title: adventurePackage.title,
+        price: adventurePackage.price,
+        description: adventurePackage.description,
+        duration: adventurePackage.duration,
       });
 
-      adventure.packages.push(adventurePackage);
+      newAdventure.packages.push(newPackage);
     }
 
     for (let k = 0; k < numberOfGuides; k++) {
@@ -68,21 +52,17 @@ const seedAdventures = async ({
         roles: ["GUIDE"],
       });
 
-      adventure.guides.push(user);
+      newAdventure.guides.push(user);
     }
-
-    adventuresArray.push(adventure);
+    adventuresArray.push(newAdventure);
   }
 
-  const adventures = await Adventure.insertMany(adventuresArray);
-  return adventures;
+  const newAdventures = await Adventure.insertMany(adventuresArray);
+  return newAdventures;
 };
 
 if (require.main === module) {
-  seedAdventures({
-    numberOfAdventures: 6,
-    numberOfPackages: 6,
-  })
+  seedAdventures({ numberOfGuides: 3 })
     .catch((err) => {
       console.log(err);
       process.exit(1);
