@@ -4,7 +4,7 @@ import { faker } from "@faker-js/faker";
 
 import request from "supertest";
 import app from "../../index";
-import { seedAdventures } from "../seed/adventures";
+import { seedAdventures } from "./adventure.helper";
 import { errorMessages } from "../common/config/messages";
 import {
   getAuthenticatedUserJWT,
