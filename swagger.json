@@ -1538,6 +1538,12 @@
             "example": "string"
           }
         },
+        "adventures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Adventure"
+          }
+        },
         "createdAt": {
           "type": "string",
           "example": "string"

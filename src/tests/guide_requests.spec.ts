@@ -398,5 +398,6 @@ describe("PUT /api/guide-requests/:id/status", () => {
     expect(resUserInfo.body).toHaveProperty("username");
     expect(resUserInfo.body).toHaveProperty("roles");
     expect(resUserInfo.body.roles).toContain("GUIDE");
+    expect(resUserInfo.body).toHaveProperty("adventures");
   });
 });

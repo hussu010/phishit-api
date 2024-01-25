@@ -636,6 +636,15 @@ describe("POST /api/adventures/:id/enroll", () => {
       .set("Authorization", `Bearer ${accessToken}`);
 
     expect(res.status).toBe(204);
+
+    const resUserInfo = await request(app)
+      .get("/api/users/me")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(resUserInfo.status).toBe(200);
+    expect(resUserInfo.body).toHaveProperty("adventures");
+    expect(resUserInfo.body.adventures).toBeInstanceOf(Array);
+    expect(resUserInfo.body.adventures.length).toBe(1);
   });
 
   it("should return 409 Conflict when user is already enrolled", async () => {
