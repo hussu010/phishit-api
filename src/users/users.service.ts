@@ -5,18 +5,12 @@ import { errorMessages } from "../common/config/messages";
 
 const getUserUsingPhoneNumber = async (phoneNumber: string): Promise<IUser> => {
   try {
-    const user = await User.findOneAndUpdate(
-      {
-        phoneNumber,
-      },
-      {
-        phoneNumber,
-      },
-      {
-        new: true,
-        upsert: true,
-      }
-    );
+    const user = await User.findOne({ phoneNumber });
+
+    if (!user) {
+      const user = await User.create({ phoneNumber });
+      return user;
+    }
 
     return user;
   } catch (error) {
