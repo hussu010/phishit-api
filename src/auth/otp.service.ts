@@ -31,15 +31,7 @@ const generateUserOtp = async (
         code: otp,
         expiresAt,
       },
-      {
-        $setOnInsert: {
-          user: user._id,
-          type,
-          code: otp,
-          expiresAt,
-        },
-        upsert: true,
-      }
+      { new: true, upsert: true }
     );
     return { otp: otp, expiresAt: expiresAt };
   } catch (error) {
