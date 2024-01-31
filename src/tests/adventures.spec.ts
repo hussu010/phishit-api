@@ -4,7 +4,7 @@ import { faker } from "@faker-js/faker";
 
 import request from "supertest";
 import app from "../../index";
-import { seedAdventures } from "./adventure.helper";
+import { seedAdventures } from "./adventures.helper";
 import { errorMessages } from "../common/config/messages";
 import {
   getAuthenticatedUserJWT,
@@ -928,5 +928,422 @@ describe("GET /api/adventures/:id/guides", () => {
     expect(res.body[0]).toHaveProperty("username");
     expect(res.body[0]).toHaveProperty("isAvailable");
     expect(res.body[0].isAvailable).toBe(false);
+  });
+});
+
+describe("POST /api/adventures/:id/packages", () => {
+  it("should return 401 if user is not logged in", async () => {
+    const res = await request(app)
+      .post("/api/adventures/5f7a5d713d0f4d1b2c5e3f6e/packages")
+      .set("Accept", "application/json");
+
+    expect(res.statusCode).toEqual(401);
+    expect(res.body).toHaveProperty("message");
+  });
+
+  it("should return 403 if user is not an admin", async () => {
+    const { accessToken } = await getAuthenticatedUserJWT();
+
+    const res = await request(app)
+      .post("/api/adventures/5f7a5d713d0f4d1b2c5e3f6e/packages")
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.statusCode).toEqual(403);
+    expect(res.body).toHaveProperty("message");
+    expect(res.body.message).toEqual(errorMessages.FORBIDDEN);
+  });
+
+  it("should return 400 Bad Request with invalid id and other parameters", async () => {
+    const user = await getUserWithRole("ADMIN");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const res = await request(app)
+      .post("/api/adventures/123/packages")
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        title: "a",
+        price: "a",
+        description: "a",
+        duration: "a",
+      });
+    expect(res.status).toBe(400);
+
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors).toBeInstanceOf(Array);
+
+    const errorDetails = res.body.errors.map((error) => ({
+      path: error.path,
+      location: error.location,
+    }));
+
+    expect(errorDetails).toContainEqual({
+      path: "id",
+      location: "params",
+    });
+    expect(errorDetails).toContainEqual({
+      path: "title",
+      location: "body",
+    });
+    expect(errorDetails).toContainEqual({
+      path: "price",
+      location: "body",
+    });
+    expect(errorDetails).toContainEqual({
+      path: "description",
+      location: "body",
+    });
+  });
+
+  it("should return 404 Not Found if adventure does not exists", async () => {
+    const user = await getUserWithRole("ADMIN");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const res = await request(app)
+      .post("/api/adventures/5f7a5d713d0f4d1b2c5e3f6e/packages")
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        title: "a".repeat(3),
+        price: 100,
+        description: "a".repeat(16),
+        duration: 1,
+      });
+
+    expect(res.status).toBe(404);
+    expect(res.body).toHaveProperty("message");
+    expect(res.body.message).toEqual(errorMessages.OBJECT_WITH_ID_NOT_FOUND);
+  });
+
+  it("should return 201 Created when package is created", async () => {
+    const user = await getUserWithRole("ADMIN");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const numberOfAdventures = 1;
+    const adventures = await seedAdventures({
+      numberOfAdventures,
+      numberOfPackages: 0,
+    });
+
+    const res = await request(app)
+      .post(`/api/adventures/${adventures[0]._id}/packages`)
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        title: "a".repeat(3),
+        price: 100,
+        description: "a".repeat(16),
+        duration: 1,
+      });
+
+    expect(res.status).toBe(201);
+    expect(res.body).toHaveProperty("_id");
+    expect(res.body).toHaveProperty("title");
+    expect(res.body).toHaveProperty("price");
+    expect(res.body).toHaveProperty("description");
+    expect(res.body).toHaveProperty("duration");
+
+    const resAdventure = await request(app).get(
+      `/api/adventures/${adventures[0]._id}`
+    );
+
+    expect(resAdventure.status).toBe(200);
+    expect(resAdventure.body.packages).toBeInstanceOf(Array);
+    expect(resAdventure.body.packages.length).toBe(1);
+    expect(resAdventure.body.packages[0]).toHaveProperty("_id");
+    expect(resAdventure.body.packages[0]._id).toBe(res.body._id);
+  });
+});
+
+describe("PUT /api/adventures/:id/packages/:packageId", () => {
+  it("should return 401 if user is not logged in", async () => {
+    const res = await request(app)
+      .put(
+        "/api/adventures/5f7a5d713d0f4d1b2c5e3f6e/packages/5f7a5d713d0f4d1b2c5e3f6e"
+      )
+      .set("Accept", "application/json");
+
+    expect(res.statusCode).toEqual(401);
+    expect(res.body).toHaveProperty("message");
+  });
+
+  it("should return 403 if user is not an admin", async () => {
+    const { accessToken } = await getAuthenticatedUserJWT();
+
+    const res = await request(app)
+      .put(
+        "/api/adventures/5f7a5d713d0f4d1b2c5e3f6e/packages/5f7a5d713d0f4d1b2c5e3f6e"
+      )
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.statusCode).toEqual(403);
+    expect(res.body).toHaveProperty("message");
+    expect(res.body.message).toEqual(errorMessages.FORBIDDEN);
+  });
+
+  it("should return 400 Bad Request with invalid id and other parameters", async () => {
+    const user = await getUserWithRole("ADMIN");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const res = await request(app)
+      .put("/api/adventures/123/packages/123")
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        title: "a",
+        price: "a",
+        description: "a",
+        duration: "a",
+      });
+    expect(res.status).toBe(400);
+
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors).toBeInstanceOf(Array);
+
+    const errorDetails = res.body.errors.map((error) => ({
+      path: error.path,
+      location: error.location,
+    }));
+    expect(errorDetails).toContainEqual({ path: "id", location: "params" });
+    expect(errorDetails).toContainEqual({
+      path: "packageId",
+      location: "params",
+    });
+    expect(errorDetails).toContainEqual({
+      path: "title",
+      location: "body",
+    });
+    expect(errorDetails).toContainEqual({
+      path: "price",
+      location: "body",
+    });
+    expect(errorDetails).toContainEqual({
+      path: "description",
+      location: "body",
+    });
+  });
+
+  it("should return 404 Not Found if adventure does not exists", async () => {
+    const user = await getUserWithRole("ADMIN");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const res = await request(app)
+      .put(
+        `/api/adventures/5f7a5d713d0f4d1b2c5e3f6e/packages/5f7a5d713d0f4d1b2c5e3f6e`
+      )
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        title: "a".repeat(3),
+        price: 100,
+        description: "a".repeat(16),
+        duration: 1,
+      });
+
+    expect(res.status).toBe(404);
+    expect(res.body).toHaveProperty("message");
+    expect(res.body.message).toEqual(errorMessages.OBJECT_WITH_ID_NOT_FOUND);
+  });
+
+  it("should return 404 Not Found if package does not exists", async () => {
+    const user = await getUserWithRole("ADMIN");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const numberOfAdventures = 1;
+    const adventures = await seedAdventures({
+      numberOfAdventures,
+      numberOfPackages: 0,
+    });
+
+    const res = await request(app)
+      .put(
+        `/api/adventures/${adventures[0]._id}/packages/5f7a5d713d0f4d1b2c5e3f6e`
+      )
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        title: "a".repeat(3),
+        price: 100,
+        description: "a".repeat(16),
+        duration: 1,
+      });
+
+    expect(res.status).toBe(404);
+    expect(res.body).toHaveProperty("message");
+    expect(res.body.message).toEqual(errorMessages.OBJECT_WITH_ID_NOT_FOUND);
+  });
+
+  it("should return 200 OK when package is updated", async () => {
+    const user = await getUserWithRole("ADMIN");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const numberOfAdventures = 1;
+    const numberOfPackages = 1;
+    const adventures = await seedAdventures({
+      numberOfAdventures,
+      numberOfPackages,
+    });
+
+    const newTitle = "a".repeat(3);
+    const newPrice = 100;
+    const newDescription = "a".repeat(16);
+    const newDuration = 1;
+
+    const res = await request(app)
+      .put(
+        `/api/adventures/${adventures[0]._id}/packages/${adventures[0].packages[0]._id}`
+      )
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        title: newTitle,
+        price: newPrice,
+        description: newDescription,
+        duration: newDuration,
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("_id");
+    expect(res.body).toHaveProperty("title");
+    expect(res.body).toHaveProperty("price");
+    expect(res.body).toHaveProperty("description");
+    expect(res.body).toHaveProperty("duration");
+
+    expect(res.body.title).toEqual(newTitle);
+    expect(res.body.price).toEqual(newPrice);
+    expect(res.body.description).toEqual(newDescription);
+    expect(res.body.duration).toEqual(newDuration);
+
+    const resAdventure = await request(app).get(
+      `/api/adventures/${adventures[0]._id}`
+    );
+
+    expect(resAdventure.status).toBe(200);
+    expect(resAdventure.body.packages).toBeInstanceOf(Array);
+    expect(resAdventure.body.packages.length).toBe(1);
+    expect(resAdventure.body.packages[0]).toHaveProperty("title");
+    expect(resAdventure.body.packages[0].title).toBe(newTitle);
+  });
+});
+
+describe("DELETE /api/adventures/:id/packages/:packageId", () => {
+  it("should return 401 if user is not logged in", async () => {
+    const res = await request(app)
+      .delete(
+        "/api/adventures/5f7a5d713d0f4d1b2c5e3f6e/packages/5f7a5d713d0f4d1b2c5e3f6e"
+      )
+      .set("Accept", "application/json");
+
+    expect(res.statusCode).toEqual(401);
+    expect(res.body).toHaveProperty("message");
+  });
+
+  it("should return 403 if user is not an admin", async () => {
+    const { accessToken } = await getAuthenticatedUserJWT();
+
+    const res = await request(app)
+      .delete(
+        "/api/adventures/5f7a5d713d0f4d1b2c5e3f6e/packages/5f7a5d713d0f4d1b2c5e3f6e"
+      )
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.statusCode).toEqual(403);
+    expect(res.body).toHaveProperty("message");
+    expect(res.body.message).toEqual(errorMessages.FORBIDDEN);
+  });
+
+  it("should return 400 Bad Request with invalid id", async () => {
+    const user = await getUserWithRole("ADMIN");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const res = await request(app)
+      .delete("/api/adventures/123/packages/123")
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.status).toBe(400);
+
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors).toBeInstanceOf(Array);
+
+    const errorDetails = res.body.errors.map((error) => ({
+      path: error.path,
+      location: error.location,
+    }));
+    expect(errorDetails).toContainEqual({ path: "id", location: "params" });
+    expect(errorDetails).toContainEqual({
+      path: "packageId",
+      location: "params",
+    });
+  });
+
+  it("should return 404 Not Found if adventure does not exists", async () => {
+    const user = await getUserWithRole("ADMIN");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const res = await request(app)
+      .delete(
+        "/api/adventures/5f7a5d713d0f4d1b2c5e3f6e/packages/5f7a5d713d0f4d1b2c5e3f6e"
+      )
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.status).toBe(404);
+    expect(res.body).toHaveProperty("message");
+    expect(res.body.message).toEqual(errorMessages.OBJECT_WITH_ID_NOT_FOUND);
+  });
+
+  it("should return 404 Not Found if package does not exists", async () => {
+    const user = await getUserWithRole("ADMIN");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const numberOfAdventures = 1;
+    const adventures = await seedAdventures({
+      numberOfAdventures,
+      numberOfPackages: 0,
+    });
+
+    const res = await request(app)
+      .delete(
+        `/api/adventures/${adventures[0]._id}/packages/5f7a5d713d0f4d1b2c5e3f6e`
+      )
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.status).toBe(404);
+    expect(res.body).toHaveProperty("message");
+    expect(res.body.message).toEqual(errorMessages.OBJECT_WITH_ID_NOT_FOUND);
+  });
+
+  it("should return 204 No Content when package is deleted", async () => {
+    const user = await getUserWithRole("ADMIN");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const numberOfAdventures = 1;
+    const numberOfPackages = 1;
+    const adventures = await seedAdventures({
+      numberOfAdventures,
+      numberOfPackages,
+    });
+
+    const res = await request(app)
+      .delete(
+        `/api/adventures/${adventures[0]._id}/packages/${adventures[0].packages[0]._id}`
+      )
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.status).toBe(204);
+
+    const resAdventure = await request(app).get(
+      `/api/adventures/${adventures[0]._id}`
+    );
+
+    expect(resAdventure.status).toBe(200);
+    expect(resAdventure.body.packages).toBeInstanceOf(Array);
+    expect(resAdventure.body.packages.length).toBe(0);
   });
 });

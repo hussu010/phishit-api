@@ -10,6 +10,9 @@ import {
   enrollToAdventure,
   unenrollFromAdventure,
   getAvailableGuides,
+  createPackage,
+  updatePackage,
+  removePackage,
 } from "./adventures.controller";
 import { isAuthorized, hasRole } from "../common/middlewares/permissions";
 import {
@@ -17,6 +20,9 @@ import {
   createAdventureSchema,
   updateAdventureSchema,
   getAdventureGuideSchema,
+  getPackageByIdSchema,
+  createPackageSchema,
+  updatePackageSchema,
 } from "./adventures.schema";
 import { validateRequest } from "../common/middlewares/validator";
 
@@ -68,6 +74,30 @@ router.post(
   getAdventureGuideSchema,
   validateRequest,
   getAvailableGuides
+);
+router.post(
+  "/:id/packages",
+  isAuthorized,
+  hasRole(["SUPER_ADMIN", "ADMIN"]),
+  createPackageSchema,
+  validateRequest,
+  createPackage
+);
+router.put(
+  "/:id/packages/:packageId",
+  isAuthorized,
+  hasRole(["SUPER_ADMIN", "ADMIN"]),
+  updatePackageSchema,
+  validateRequest,
+  updatePackage
+);
+router.delete(
+  "/:id/packages/:packageId",
+  isAuthorized,
+  hasRole(["SUPER_ADMIN", "ADMIN"]),
+  getPackageByIdSchema,
+  validateRequest,
+  removePackage
 );
 
 export default router;

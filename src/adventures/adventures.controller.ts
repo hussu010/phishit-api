@@ -9,6 +9,9 @@ import {
   enrollGuideToAdventure,
   unenrollGuideFromAdventure,
   fetchAvailableGuides,
+  updateAdventurePackage,
+  createAdventurePackage,
+  removeAdventurePackage,
 } from "./adventures.service";
 
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
@@ -132,6 +135,69 @@ const getAvailableGuides = async (
   }
 };
 
+const createPackage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const { title, price, description, duration } = req.body;
+
+    const adventurePackage = await createAdventurePackage({
+      adventureId: id,
+      title,
+      price,
+      description,
+      duration,
+    });
+    res.status(201).json(adventurePackage);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updatePackage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { packageId, id } = req.params;
+    const { title, price, description, duration } = req.body;
+
+    const adventurePackage = await updateAdventurePackage({
+      adventureId: id,
+      packageId,
+      title,
+      price,
+      description,
+      duration,
+    });
+    res.status(200).json(adventurePackage);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const removePackage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { packageId, id } = req.params;
+
+    await removeAdventurePackage({
+      adventureId: id,
+      packageId,
+    });
+    res.status(204).json();
+  } catch (error) {
+    next(error);
+  }
+};
+
 export {
   getAll,
   get,
@@ -141,4 +207,7 @@ export {
   enrollToAdventure,
   unenrollFromAdventure,
   getAvailableGuides,
+  createPackage,
+  updatePackage,
+  removePackage,
 };

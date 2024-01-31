@@ -26,9 +26,27 @@ const getAdventureGuideSchema = [
   body("startDate").isISO8601(),
 ];
 
+const getPackageByIdSchema = [
+  ...getAdventureByIdSchema,
+  param("packageId").isMongoId(),
+];
+
+const createPackageSchema = [
+  ...getAdventureByIdSchema,
+  body("title").trim().isString().isLength({ min: 3, max: 64 }),
+  body("description").isString().isLength({ min: 16, max: 1024 }),
+  body("price").isNumeric(),
+  body("duration").isNumeric(),
+];
+
+const updatePackageSchema = [...getPackageByIdSchema, ...createPackageSchema];
+
 export {
   getAdventureByIdSchema,
   createAdventureSchema,
   updateAdventureSchema,
   getAdventureGuideSchema,
+  getPackageByIdSchema,
+  createPackageSchema,
+  updatePackageSchema,
 };

@@ -643,6 +643,192 @@
         }
       }
     },
+    "/adventures/{id}/packages": {
+      "post": {
+        "tags": ["packages"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "create package for adventure.",
+            "schema": {
+              "$ref": "#/definitions/AdventurePackage"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Adventure package created successfully.",
+            "schema": {
+              "$ref": "#/definitions/AdventurePackage"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/BadRequestError"
+            }
+          },
+          "401": {
+            "description": "Unautorized request.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "403": {
+            "description": "Forbidden.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      }
+    },
+    "/adventures/{id}/packages/{packageId}": {
+      "put": {
+        "tags": ["packages"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "packageId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "update package for adventure.",
+            "schema": {
+              "$ref": "#/definitions/AdventurePackage"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Adventure package updated successfully.",
+            "schema": {
+              "$ref": "#/definitions/AdventurePackage"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/BadRequestError"
+            }
+          },
+          "401": {
+            "description": "Unautorized request.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "403": {
+            "description": "Forbidden.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "404": {
+            "description": "Adventure not found.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["packages"],
+        "summary": "delete adventure package by id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "packageId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Adventure package deleted successfully."
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/BadRequestError"
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "403": {
+            "description": "Forbidden.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "404": {
+            "description": "Property not found.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      }
+    },
     "/adventures/{id}/enroll": {
       "post": {
         "tags": ["adventures"],
@@ -1342,29 +1528,7 @@
         "packages": {
           "type": "array",
           "items": {
-            "type": "object",
-            "properties": {
-              "_id": {
-                "type": "string",
-                "example": "63d1eef1fee2948db16b7842"
-              },
-              "title": {
-                "type": "string",
-                "example": "string"
-              },
-              "description": {
-                "type": "string",
-                "example": "string"
-              },
-              "price": {
-                "type": "integer",
-                "example": 12345
-              },
-              "duration": {
-                "type": "integer",
-                "example": 12
-              }
-            }
+            "$ref": "#/definitions/AdventurePackage"
           }
         },
         "createdAt": {
@@ -1381,6 +1545,33 @@
       "type": "array",
       "items": {
         "$ref": "#/definitions/Adventure"
+      }
+    },
+    "AdventurePackage": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "example": "string"
+        },
+        "description": {
+          "type": "string",
+          "example": "string"
+        },
+        "price": {
+          "type": "integer",
+          "example": 12345
+        },
+        "duration": {
+          "type": "integer",
+          "example": 12
+        }
+      }
+    },
+    "AdventurePackageList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/AdventurePackage"
       }
     },
     "UpdateUsername": {

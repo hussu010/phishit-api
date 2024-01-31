@@ -1,7 +1,7 @@
 import { CustomError } from "../common/interfaces/common";
 import { errorMessages } from "../common/config/messages";
 
-import { Adventure } from "./adventures.model";
+import { Adventure, Package } from "./adventures.model";
 import { IUser } from "../users/users.interface";
 import Booking from "../bookings/bookings.model";
 
@@ -239,6 +239,116 @@ const fetchAvailableGuides = async ({
   }
 };
 
+const createAdventurePackage = async ({
+  adventureId,
+  title,
+  price,
+  description,
+  duration,
+}: {
+  adventureId: string;
+  title: string;
+  price: number;
+  description: string;
+  duration: number;
+}) => {
+  try {
+    const adventure = await Adventure.findById(adventureId);
+
+    if (!adventure) {
+      throw new CustomError(errorMessages.OBJECT_WITH_ID_NOT_FOUND, 404);
+    }
+
+    const adventurePackage = await Package.create({
+      title,
+      price,
+      description,
+      duration,
+    });
+
+    adventure.packages.push(adventurePackage);
+    await adventure.save();
+
+    return adventurePackage;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const updateAdventurePackage = async ({
+  adventureId,
+  packageId,
+  title,
+  price,
+  description,
+  duration,
+}: {
+  adventureId: string;
+  packageId: string;
+  title: string;
+  price: number;
+  description: string;
+  duration: number;
+}) => {
+  try {
+    const adventure = await Adventure.findById(adventureId);
+
+    if (!adventure) {
+      throw new CustomError(errorMessages.OBJECT_WITH_ID_NOT_FOUND, 404);
+    }
+
+    const adventurePackage = await Package.findByIdAndUpdate(
+      packageId,
+      {
+        title,
+        price,
+        description,
+        duration,
+      },
+      { new: true }
+    );
+
+    if (!adventurePackage) {
+      throw new CustomError(errorMessages.OBJECT_WITH_ID_NOT_FOUND, 404);
+    }
+
+    return adventurePackage;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const removeAdventurePackage = async ({
+  packageId,
+  adventureId,
+}: {
+  packageId: string;
+  adventureId: string;
+}) => {
+  try {
+    const adventure = await Adventure.findById(adventureId);
+
+    if (!adventure) {
+      throw new CustomError(errorMessages.OBJECT_WITH_ID_NOT_FOUND, 404);
+    }
+
+    const adventurePackage = await Package.findByIdAndDelete(packageId);
+
+    if (!adventurePackage) {
+      throw new CustomError(errorMessages.OBJECT_WITH_ID_NOT_FOUND, 404);
+    }
+
+    adventure.packages = adventure.packages.filter(
+      (packageItem) => packageItem.toString() !== packageId
+    );
+    await adventure.save();
+
+    return adventurePackage;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export {
   getAdventures,
   getAdventureById,
@@ -248,4 +358,7 @@ export {
   enrollGuideToAdventure,
   unenrollGuideFromAdventure,
   fetchAvailableGuides,
+  updateAdventurePackage,
+  createAdventurePackage,
+  removeAdventurePackage,
 };
