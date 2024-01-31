@@ -184,8 +184,14 @@ const verifyPaymentRequest = async ({ bookingId }: { bookingId: string }) => {
       throw new CustomError(errorMessages.OBJECT_WITH_ID_NOT_FOUND, 404);
     }
 
-    if (booking.status !== "PENDING") {
+    if (
+      booking.status === "CONFIRMED" ||
+      booking.status === "COMPLETED" ||
+      booking.status === "CANCELLED"
+    ) {
       throw new CustomError(errorMessages.BOOKING_ALREADY_PROCESSED, 409);
+    } else if (booking.status === "NEW") {
+      throw new CustomError(errorMessages.PAYMENT_NOT_INITIATED, 404);
     }
 
     if (booking.payment?.method === "KHALTI") {
@@ -203,6 +209,12 @@ const verifyPaymentRequest = async ({ bookingId }: { bookingId: string }) => {
         khaltiPayment.status === "Pending"
       ) {
         throw new CustomError(errorMessages.PAYMENT_PENDING, 202);
+      } else if (khaltiPayment.status === "Expired") {
+        booking.payment.status = "EXPIRED";
+        booking.status = "NEW";
+        await booking.save();
+
+        throw new CustomError(errorMessages.PAYMENT_EXPIRED, 410);
       } else {
         booking.payment.status = "FAILED";
         booking.status = "CANCELLED";

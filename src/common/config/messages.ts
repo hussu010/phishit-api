@@ -26,6 +26,8 @@ const errorMessages = {
   INVALID_PAYMENT_METHOD: "Invalid payment method",
   PAYMENT_PENDING: "Payment pending",
   PAYMENT_FAILED: "Payment failed",
+  PAYMENT_EXPIRED: "Payment expired",
+  PAYMENT_NOT_INITIATED: "Payment not initiated",
   USER_ALREADY_GUIDE: "User already guide",
   GUIDE_REQUEST_ALREADY_PENDING: "Guide request already pending",
 };

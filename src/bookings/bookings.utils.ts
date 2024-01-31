@@ -77,6 +77,15 @@ const lookupKhaltiPayment = async ({
       transaction_id: response.data.transaction_id,
     };
   } catch (error: any) {
+    if (error.isAxiosError && error.response.status === 400) {
+      return {
+        pidx: error.response.data.pidx,
+        total_amount: error.response.data.total_amount,
+        status: "Expired",
+        transaction_id: error.response.data.transaction_id,
+      };
+    }
+
     throw new CustomError(error.message, 503);
   }
 };

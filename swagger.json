@@ -1341,7 +1341,7 @@
         }
       }
     },
-    "bookings/{id}/verify-payment": {
+    "/bookings/{id}/verify-payment": {
       "post": {
         "tags": ["bookings"],
         "summary": "verify payment and mark booking as confirmed.",
