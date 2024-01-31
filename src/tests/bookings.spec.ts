@@ -1025,7 +1025,7 @@ describe("POST /api/bookings/:id/verify-payment", () => {
     const fakeKhaltiResponse = {
       pidx: "QXnwaNmqwmFnNL7EaSM5a9",
       total_amount: 1000,
-      status: "Expired",
+      status: "Failed",
       transaction_id: "123",
     };
     jest
@@ -1046,6 +1046,72 @@ describe("POST /api/bookings/:id/verify-payment", () => {
     expect(failedBooking).toHaveProperty("payment");
     expect(failedBooking?.status).toBe("CANCELLED");
     expect(failedBooking?.payment.status).toBe("FAILED");
+  });
+
+  it("should return 410 if booking is not processed but payment verification is expired", async () => {
+    const user = await getUserWithRole("GENERAL");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const adventures = await seedAdventures({
+      numberOfAdventures: 2,
+      numberOfPackages: 2,
+      numberOfGuides: 2,
+    });
+
+    const booking = await request(app)
+      .post("/api/bookings")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        adventureId: adventures[0]._id,
+        packageId: adventures[0].packages[0]._id,
+        guideId: adventures[0].guides[0]._id,
+        startDate: "2020-10-10",
+        noOfPeople: 5,
+      });
+
+    const fakeinitiateKhaltiPaymentResponse = {
+      pidx: "QXnwaNmqwmFnNL7EaSM5a9",
+      paymentUrl: "https://test-pay.khalti.com/?pidx=QXnwaNmqwmFnNL7EaSM5a9",
+      expiresAt: new Date(),
+    };
+    jest
+      .spyOn(bookingsUtils, "initiateKhaltiPaymentRequest")
+      .mockResolvedValue(fakeinitiateKhaltiPaymentResponse);
+
+    const initiatePaymentResponse = await request(app)
+      .post(`/api/bookings/${booking.body._id}/initiate-payment`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        method: "KHALTI",
+        redirectUrl: "http://127.0.0.1:3000/bookings/5f7a5d713d0f4d1b2c5e3f6e",
+      });
+
+    expect(initiatePaymentResponse.status).toBe(200);
+
+    const fakeKhaltiResponse = {
+      pidx: "QXnwaNmqwmFnNL7EaSM5a9",
+      total_amount: 1000,
+      status: "Expired",
+      transaction_id: "123",
+    };
+    jest
+      .spyOn(bookingsUtils, "lookupKhaltiPayment")
+      .mockResolvedValue(fakeKhaltiResponse);
+
+    const res = await request(app)
+      .post(`/api/bookings/${booking.body._id}/verify-payment`)
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.status).toBe(410);
+    expect(res.body).toHaveProperty("message");
+    expect(res.body.message).toBe(errorMessages.PAYMENT_EXPIRED);
+
+    const failedBooking = await Booking.findOne({
+      _id: booking.body._id,
+    });
+    expect(failedBooking).toHaveProperty("payment");
+    expect(failedBooking?.status).toBe("NEW");
+    expect(failedBooking?.payment.status).toBe("EXPIRED");
   });
 
   it("should return 200 if booking is not processed and type is valid", async () => {
