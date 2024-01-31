@@ -8,7 +8,7 @@ import { faker } from "@faker-js/faker";
 import { getUserWithRole } from "./auth.helper";
 import { generateJWT } from "../auth/auth.service";
 import { errorMessages } from "../common/config/messages";
-import { seedAdventures } from "./adventure.helper";
+import { seedAdventures } from "./adventures.helper";
 import Booking from "../bookings/bookings.model";
 
 import * as bookingsUtils from "../bookings/bookings.utils";
