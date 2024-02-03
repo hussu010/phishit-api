@@ -179,6 +179,15 @@ describe("GET /api/bookings/:id", () => {
         startDate: "2023-12-12",
       });
 
+    const fakeKhaltiResponse = {
+      pidx: faker.database.mongodbObjectId(),
+      paymentUrl: faker.internet.url(),
+      expiresAt: faker.date.past(),
+    };
+    jest
+      .spyOn(bookingsUtils, "initiateKhaltiPaymentRequest")
+      .mockResolvedValue(fakeKhaltiResponse);
+
     const initiatePayment = await request(app)
       .post(`/api/bookings/${booking.body._id}/initiate-payment`)
       .set("Authorization", `Bearer ${accessToken}`)
