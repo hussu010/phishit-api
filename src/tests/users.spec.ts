@@ -103,3 +103,66 @@ describe("PUT /users/me/username", () => {
     expect(res.body.username).toEqual(username);
   });
 });
+
+describe("PUT /users/me/update-available-status", () => {
+  it("should return 401 if user is not authenticated", async () => {
+    const res = await request(app).put("/api/users/me/update-available-status");
+
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty("message");
+  });
+
+  it("should return 403 if user is not a guide", async () => {
+    const { accessToken } = await getAuthenticatedUserJWT();
+
+    const res = await request(app)
+      .put("/api/users/me/update-available-status")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        isAvailable: true,
+      });
+
+    expect(res.status).toBe(403);
+    expect(res.body).toHaveProperty("message");
+    expect(res.body.message).toEqual(errorMessages.FORBIDDEN);
+  });
+
+  it("should return 400 if isAvailable is not provided", async () => {
+    const user = await getUserWithRole("GUIDE");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const res = await request(app)
+      .put("/api/users/me/update-available-status")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({});
+
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors).toBeInstanceOf(Array);
+
+    const errorDetails = res.body.errors.map((error) => ({
+      path: error.path,
+      location: error.location,
+    }));
+
+    expect(errorDetails).toContainEqual({
+      path: "isAvailable",
+      location: "body",
+    });
+  });
+
+  it("should return 200 if isAvailable is updated successfully", async () => {
+    const user = await getUserWithRole("GUIDE");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const res = await request(app)
+      .put("/api/users/me/update-available-status")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        isAvailable: false,
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body.isAvailable).toEqual(false);
+  });
+});

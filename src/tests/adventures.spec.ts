@@ -885,7 +885,7 @@ describe("GET /api/adventures/:id/guides", () => {
     expect(res.body.length).toBe(0);
   });
 
-  it("should list out unavailable guides", async () => {
+  it("should mark guide as not available if guide is already booked", async () => {
     const { accessToken } = await getAuthenticatedUserJWT();
 
     const adventures = await seedAdventures({
@@ -924,6 +924,54 @@ describe("GET /api/adventures/:id/guides", () => {
     expect(res.status).toBe(200);
     expect(res.body).toBeInstanceOf(Array);
     expect(res.body.length).toBe(5);
+    expect(res.body[0]).toHaveProperty("_id");
+    expect(res.body[0]).toHaveProperty("username");
+    expect(res.body[0]).toHaveProperty("isAvailable");
+    expect(res.body[0].isAvailable).toBe(false);
+  });
+
+  it("should mark guide as not available if guide has marked themselves as not available", async () => {
+    const { accessToken } = await getAuthenticatedUserJWT();
+
+    const user = await getUserWithRole("GUIDE");
+    const guideAccessToken = await generateJWT(user, "ACCESS");
+
+    const adventures = await seedAdventures({
+      numberOfAdventures: 1,
+      numberOfPackages: 1,
+      numberOfGuides: 0,
+    });
+
+    const enrollGuideToAdventureRes = await request(app)
+      .post(`/api/adventures/${adventures[0]._id}/enroll`)
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${guideAccessToken}`);
+
+    expect(enrollGuideToAdventureRes.status).toBe(204);
+
+    const updateAvailableStatusRes = await request(app)
+      .put(`/api/users/me/update-available-status`)
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${guideAccessToken}`)
+      .send({
+        isAvailable: false,
+      });
+
+    expect(updateAvailableStatusRes.status).toBe(200);
+    expect(updateAvailableStatusRes.body).toHaveProperty("isAvailable");
+    expect(updateAvailableStatusRes.body.isAvailable).toBe(false);
+
+    const res = await request(app)
+      .post(`/api/adventures/${adventures[0]._id}/guides`)
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        startDate: new Date(),
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toBeInstanceOf(Array);
+    expect(res.body.length).toBe(1);
     expect(res.body[0]).toHaveProperty("_id");
     expect(res.body[0]).toHaveProperty("username");
     expect(res.body[0]).toHaveProperty("isAvailable");
@@ -1256,7 +1304,7 @@ describe("DELETE /api/adventures/:id/packages/:packageId", () => {
   });
 
   it("should return 400 Bad Request with invalid id", async () => {
-    const user = await getUserWithRole("ADMIN");
+    const user = await getUserWithRole("SUPER_ADMIN");
     const accessToken = await generateJWT(user, "ACCESS");
 
     const res = await request(app)
@@ -1281,7 +1329,7 @@ describe("DELETE /api/adventures/:id/packages/:packageId", () => {
   });
 
   it("should return 404 Not Found if adventure does not exists", async () => {
-    const user = await getUserWithRole("ADMIN");
+    const user = await getUserWithRole("SUPER_ADMIN");
     const accessToken = await generateJWT(user, "ACCESS");
 
     const res = await request(app)
@@ -1297,7 +1345,7 @@ describe("DELETE /api/adventures/:id/packages/:packageId", () => {
   });
 
   it("should return 404 Not Found if package does not exists", async () => {
-    const user = await getUserWithRole("ADMIN");
+    const user = await getUserWithRole("SUPER_ADMIN");
     const accessToken = await generateJWT(user, "ACCESS");
 
     const numberOfAdventures = 1;
@@ -1319,7 +1367,7 @@ describe("DELETE /api/adventures/:id/packages/:packageId", () => {
   });
 
   it("should return 204 No Content when package is deleted", async () => {
-    const user = await getUserWithRole("ADMIN");
+    const user = await getUserWithRole("SUPER_ADMIN");
     const accessToken = await generateJWT(user, "ACCESS");
 
     const numberOfAdventures = 1;

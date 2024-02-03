@@ -2,7 +2,7 @@ import { getUserUsingPhoneNumber, generateJWT } from "../auth/auth.service";
 import { UserRoleType } from "../common/config/enum";
 
 const getAuthenticatedUserJWT = async () => {
-  const phoneNumber = "9840000000";
+  const phoneNumber = `98${Math.floor(10000000 + Math.random() * 90000000)}`;
   const user = await getUserUsingPhoneNumber(phoneNumber);
   const accessToken = await generateJWT(user, "ACCESS");
   const refreshToken = await generateJWT(user, "REFRESH");
@@ -11,7 +11,7 @@ const getAuthenticatedUserJWT = async () => {
 };
 
 const getDeletedUserJWT = async () => {
-  const phoneNumber = "9840000000";
+  const phoneNumber = `98${Math.floor(10000000 + Math.random() * 90000000)}`;
   const user = await getUserUsingPhoneNumber(phoneNumber);
   const accessToken = await generateJWT(user, "ACCESS");
   user.deleteOne();
@@ -19,7 +19,7 @@ const getDeletedUserJWT = async () => {
 };
 
 const getUserWithRole = async (role: UserRoleType) => {
-  const phoneNumber = "9840000000";
+  const phoneNumber = `98${Math.floor(10000000 + Math.random() * 90000000)}`;
   const user = await getUserUsingPhoneNumber(phoneNumber);
   user.roles = [role];
   await user.save();

@@ -7,6 +7,7 @@ interface IUser extends Document {
   username: string;
   roles: string[];
   isActive: boolean;
+  isAvailable: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

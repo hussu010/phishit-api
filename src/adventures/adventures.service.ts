@@ -219,7 +219,7 @@ const fetchAvailableGuides = async ({
     let availableGuides: Object[] = [];
 
     adventure.guides.filter((guide) => {
-      const isGuideAvailable = bookings.some((booking) => {
+      const guideHasBookings = bookings.some((booking) => {
         return (
           booking.guide.toString() === guide._id.toString() &&
           new Date(startDate) >= booking.startDate &&
@@ -227,9 +227,11 @@ const fetchAvailableGuides = async ({
         );
       });
 
+      const isGuideAvailable = !guideHasBookings && guide.isAvailable;
+
       availableGuides.push({
         ...guide.toObject(),
-        isAvailable: !isGuideAvailable,
+        isAvailable: isGuideAvailable,
       });
     });
 

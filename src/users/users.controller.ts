@@ -39,4 +39,22 @@ const getMe = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { updateUsername, getMe };
+const updateAvailableStatus = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { isAvailable } = req.body;
+    const user = req.user!;
+
+    user.isAvailable = isAvailable;
+    await user.save();
+
+    res.status(200).json(user);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { updateUsername, getMe, updateAvailableStatus };

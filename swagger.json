@@ -275,6 +275,58 @@
         }
       }
     },
+    "/users/me/update-available-status": {
+      "put": {
+        "tags": ["users"],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "update available status",
+            "schema": {
+              "$ref": "#/definitions/UpdateAvailableStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Adventure updated successfully.",
+            "schema": {
+              "$ref": "#/definitions/GetMeUser"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/BadRequestError"
+            }
+          },
+          "401": {
+            "description": "Unautorized request.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "403": {
+            "description": "Forbidden.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      }
+    },
     "/profiles/": {
       "get": {
         "tags": ["profiles"],
@@ -1580,6 +1632,15 @@
         "username": {
           "type": "string",
           "example": "string"
+        }
+      }
+    },
+    "UpdateAvailableStatus": {
+      "type": "object",
+      "properties": {
+        "isAvailable": {
+          "type": "boolean",
+          "example": true
         }
       }
     },
