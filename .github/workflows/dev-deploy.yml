@@ -33,6 +33,7 @@ jobs:
       - run: npm run build
 
   push-image:
+    needs: build-and-test
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -106,7 +107,7 @@ jobs:
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
 
   deploy-to-development:
-    needs: build-and-push-image
+    needs: push-image
     runs-on: ubuntu-latest
     name: Deploy to development server
 
