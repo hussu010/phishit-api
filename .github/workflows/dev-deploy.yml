@@ -14,6 +14,7 @@ env:
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
   CR_PAT: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+  JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
 
 jobs:
   build-and-test:
