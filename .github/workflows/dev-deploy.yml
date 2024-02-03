@@ -16,7 +16,23 @@ env:
   CR_PAT: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
 
 jobs:
-  build-and-push-image:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+      - run: npm install
+      - run: npm test
+      - run: npm run build
+
+  push-image:
     runs-on: ubuntu-latest
     permissions:
       contents: read
