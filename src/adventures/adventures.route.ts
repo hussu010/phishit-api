@@ -94,7 +94,7 @@ router.put(
 router.delete(
   "/:id/packages/:packageId",
   isAuthorized,
-  hasRole(["SUPER_ADMIN", "ADMIN"]),
+  hasRole(["SUPER_ADMIN"]),
   getPackageByIdSchema,
   validateRequest,
   removePackage
