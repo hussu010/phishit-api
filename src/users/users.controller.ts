@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { changeUsername } from "./users.service";
+import { changeUsername, fetchUserByUsername } from "./users.service";
 import { Adventure } from "../adventures/adventures.model";
 
 const updateUsername = async (
@@ -18,6 +18,22 @@ const updateUsername = async (
     });
 
     res.status(200).json(updatedUser);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getUserByUsername = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { username } = req.params;
+
+    const user = await fetchUserByUsername(username);
+
+    res.status(200).json(user);
   } catch (error) {
     next(error);
   }
@@ -57,4 +73,4 @@ const updateAvailableStatus = async (
   }
 };
 
-export { updateUsername, getMe, updateAvailableStatus };
+export { updateUsername, getMe, updateAvailableStatus, getUserByUsername };

@@ -1,5 +1,8 @@
 import { Document } from "mongoose";
 
+import { IProfile } from "../profiles/profiles.interface";
+import { IAdventure } from "../adventures/adventures.interface";
+
 interface IUser extends Document {
   _id: string;
   phoneNumber: string;
@@ -12,4 +15,10 @@ interface IUser extends Document {
   updatedAt: Date;
 }
 
-export { IUser };
+interface UserFetchResult {
+  user: IUser;
+  profile: IProfile | null;
+  adventures: IAdventure[];
+}
+
+export { IUser, UserFetchResult };

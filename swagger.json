@@ -191,6 +191,39 @@
         }
       }
     },
+    "/users/{username}": {
+      "get": {
+        "tags": ["users"],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User informaton.",
+            "schema": {
+              "$ref": "#/definitions/GetUserPublicInfo"
+            }
+          },
+          "401": {
+            "description": "Unautorized request.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      }
+    },
     "/users/me": {
       "get": {
         "tags": ["users"],
@@ -1803,6 +1836,47 @@
         "updatedAt": {
           "type": "string",
           "example": "string"
+        }
+      }
+    },
+    "GetUserPublicInfo": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "string",
+              "example": "string"
+            },
+            "username": {
+              "type": "string",
+              "example": "string"
+            }
+          }
+        },
+        "profile": {
+          "type": "object",
+          "properties": {
+            "fullName": {
+              "type": "string",
+              "example": "string"
+            },
+            "gender": {
+              "type": "string",
+              "example": "MALE"
+            },
+            "bio": {
+              "type": "string",
+              "example": "hello this is the best guide ever"
+            }
+          }
+        },
+        "adventures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Adventure"
+          }
         }
       }
     },

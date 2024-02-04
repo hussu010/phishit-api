@@ -5,6 +5,7 @@ import {
   updateUsername,
   getMe,
   updateAvailableStatus,
+  getUserByUsername,
 } from "./users.controller";
 import { isAuthorized, hasRole } from "../common/middlewares/permissions";
 import {
@@ -29,5 +30,6 @@ router.put(
   validateRequest,
   updateAvailableStatus
 );
+router.get("/:username", getUserByUsername);
 
 export default router;

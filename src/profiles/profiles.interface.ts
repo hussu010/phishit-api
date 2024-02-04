@@ -1,6 +1,6 @@
 import { IUser } from "../users/users.interface";
 
-interface IProfile extends Document {
+interface IProfile {
   _id: string;
   user: IUser;
   fullName: string;
