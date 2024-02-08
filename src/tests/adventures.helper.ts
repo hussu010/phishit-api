@@ -5,7 +5,7 @@ import User from "../users/users.model";
 const seedAdventures = async ({
   numberOfAdventures,
   numberOfPackages,
-  numberOfGuides = 3,
+  numberOfGuides = 0,
 }: {
   numberOfAdventures: number;
   numberOfPackages: number;

@@ -5,6 +5,8 @@ import { Adventure, Package } from "./adventures.model";
 import { IUser } from "../users/users.interface";
 import Booking from "../bookings/bookings.model";
 
+import redis from "../common/config/redis-client";
+
 const getAdventures = async () => {
   try {
     const adventures = await Adventure.find();
@@ -16,17 +18,25 @@ const getAdventures = async () => {
 
 const getAdventureById = async (id: string) => {
   try {
+    const cachedAdventure = await redis.get(`adventure:${id}`);
+
+    if (cachedAdventure) {
+      return JSON.parse(cachedAdventure);
+    }
+
     const adventure = await Adventure.findById(id)
       .populate({
         path: "guides",
         select: "-phoneNumber -googleId -isActive -__v -createdAt -updatedAt",
       })
-      .populate("packages");
+      .populate("packages")
+      .lean();
 
     if (!adventure) {
       throw new CustomError(errorMessages.OBJECT_WITH_ID_NOT_FOUND, 404);
     }
 
+    await redis.set(`adventure:${id}`, JSON.stringify(adventure));
     return adventure;
   } catch (error) {
     throw error;
@@ -75,6 +85,8 @@ const deleteAdventure = async (id: string) => {
       throw new CustomError(errorMessages.OBJECT_WITH_ID_NOT_FOUND, 404);
     }
 
+    redis.del(`adventure:${id}`);
+
     return adventure;
   } catch (error) {
     throw error;
@@ -119,6 +131,8 @@ const updateAdventure = async ({
       throw new CustomError(errorMessages.OBJECT_WITH_ID_NOT_FOUND, 404);
     }
 
+    redis.del(`adventure:${id}`);
+
     return adventure;
   } catch (error) {
     throw error;
@@ -149,6 +163,8 @@ const enrollGuideToAdventure = async ({
 
     adventure.guides.push(user);
     await adventure.save();
+
+    redis.del(`adventure:${id}`);
 
     return adventure;
   } catch (error) {
@@ -182,6 +198,8 @@ const unenrollGuideFromAdventure = async ({
       (guide) => guide._id.toString() !== user._id.toString()
     );
     await adventure.save();
+
+    redis.del(`adventure:${id}`);
 
     return adventure;
   } catch (error) {
@@ -271,6 +289,8 @@ const createAdventurePackage = async ({
     adventure.packages.push(adventurePackage);
     await adventure.save();
 
+    redis.del(`adventure:${adventureId}`);
+
     return adventurePackage;
   } catch (error) {
     throw error;
@@ -314,6 +334,8 @@ const updateAdventurePackage = async ({
       throw new CustomError(errorMessages.OBJECT_WITH_ID_NOT_FOUND, 404);
     }
 
+    redis.del(`adventure:${adventureId}`);
+
     return adventurePackage;
   } catch (error) {
     throw error;
@@ -344,6 +366,8 @@ const removeAdventurePackage = async ({
       (packageItem) => packageItem.toString() !== packageId
     );
     await adventure.save();
+
+    redis.del(`adventure:${adventureId}`);
 
     return adventurePackage;
   } catch (error) {

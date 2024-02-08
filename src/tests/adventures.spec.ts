@@ -13,12 +13,14 @@ import {
 } from "./auth.helper";
 import { generateJWT } from "../auth/auth.service";
 import Booking from "../bookings/bookings.model";
+import redisClient from "../common/config/redis-client";
 
 beforeAll(async () => {
   await connect();
 });
 beforeEach(async () => {
   await clear();
+  await redisClient.flushall();
 });
 afterAll(async () => await close());
 
@@ -645,6 +647,16 @@ describe("POST /api/adventures/:id/enroll", () => {
     expect(resUserInfo.body).toHaveProperty("adventures");
     expect(resUserInfo.body.adventures).toBeInstanceOf(Array);
     expect(resUserInfo.body.adventures.length).toBe(1);
+
+    const resAdventure = await request(app)
+      .get(`/api/adventures/${adventures[0]._id}`)
+      .set("Accept", "application/json");
+
+    expect(resAdventure.status).toBe(200);
+    expect(resAdventure.body).toHaveProperty("guides");
+    expect(resAdventure.body.guides).toBeInstanceOf(Array);
+    expect(resAdventure.body.guides.length).toBe(1);
+    expect(resAdventure.body.guides[0]._id).toBe(user._id.toString());
   });
 
   it("should return 409 Conflict when user is already enrolled", async () => {
