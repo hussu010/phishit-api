@@ -230,10 +230,32 @@ const verifyPaymentRequest = async ({ bookingId }: { bookingId: string }) => {
   }
 };
 
+const cancelBooking = async ({ bookingId }: { bookingId: string }) => {
+  try {
+    const booking = await Booking.findOne({ _id: bookingId });
+
+    if (!booking) {
+      throw new CustomError(errorMessages.OBJECT_WITH_ID_NOT_FOUND, 404);
+    }
+
+    if (!(booking.status === "CONFIRMED")) {
+      throw new CustomError(errorMessages.BOOKING_NOT_CONFIRMED, 409);
+    }
+
+    booking.status = "CANCELLED";
+    await booking.save();
+
+    return booking;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export {
   createBooking,
   getBookingsByUser,
   initiatePaymentRequest,
   verifyPaymentRequest,
   getBookingById,
+  cancelBooking,
 };

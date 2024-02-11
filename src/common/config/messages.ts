@@ -23,6 +23,7 @@ const errorMessages = {
   GUIDE_NOT_ENROLLED: "Guide not enrolled",
   GUIDE_NOT_AVAILABLE: "Guide not available",
   BOOKING_ALREADY_PROCESSED: "Booking already processed",
+  BOOKING_NOT_CONFIRMED: "Booking not confirmed",
   INVALID_PAYMENT_METHOD: "Invalid payment method",
   PAYMENT_PENDING: "Payment pending",
   PAYMENT_FAILED: "Payment failed",

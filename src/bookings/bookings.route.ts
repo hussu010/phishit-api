@@ -7,6 +7,7 @@ import {
   create,
   initiatePayment,
   verifyPayment,
+  cancel,
 } from "./bookings.controller";
 import { isAuthorized } from "../common/middlewares/permissions";
 import {
@@ -33,6 +34,14 @@ router.post(
   verifyPaymentSchema,
   validateRequest,
   verifyPayment
+);
+router.post(
+  "/:id/cancel",
+  isAuthorized,
+  getBookingByIdSchema,
+  validateRequest,
+  isAuthorized,
+  cancel
 );
 
 export default router;

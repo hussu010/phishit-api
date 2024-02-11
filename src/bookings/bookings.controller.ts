@@ -5,6 +5,7 @@ import {
   initiatePaymentRequest,
   verifyPaymentRequest,
   getBookingById,
+  cancelBooking,
 } from "./bookings.service";
 
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
@@ -79,4 +80,14 @@ const verifyPayment = async (
   }
 };
 
-export { create, getAll, get, initiatePayment, verifyPayment };
+const cancel = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const booking = await cancelBooking({ bookingId: id });
+    res.status(200).json(booking);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { create, getAll, get, initiatePayment, verifyPayment, cancel };

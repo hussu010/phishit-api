@@ -77,6 +77,7 @@ const BookingSchema = new Schema<IBooking>(
         "PENDING",
         "COMPLETED",
         "CANCELLED",
+        "CONFIRMED",
         "EXPIRED",
         "FAILED",
         "REFUNDED",
