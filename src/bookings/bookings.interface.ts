@@ -1,5 +1,6 @@
 import { IAdventure, IPackage } from "../adventures/adventures.interface";
 import { IUser } from "../users/users.interface";
+import { BookingStatus } from "../common/config/enum";
 
 interface IPayment {
   amount: number;
@@ -19,7 +20,7 @@ interface IBooking {
   noOfPeople: number;
   startDate: Date;
   endDate: Date;
-  status: string;
+  status: BookingStatus;
   payment: IPayment;
   createdAt: Date;
   updatedAt: Date;

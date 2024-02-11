@@ -26,6 +26,16 @@ const PaymentMethodEnum = ["KHALTI"];
 
 const OauthProviderEnum = ["google"];
 
+type BookingStatus =
+  | "NEW"
+  | "PENDING"
+  | "COMPLETED"
+  | "CANCELLED"
+  | "CONFIRMED"
+  | "EXPIRED"
+  | "FAILED"
+  | "REFUNDED";
+
 export {
   UserEnum,
   UserRole,
@@ -41,4 +51,5 @@ export {
   GuideType,
   GuideRequestDocumentTypeEnum,
   PaymentMethodEnum,
+  BookingStatus,
 };
