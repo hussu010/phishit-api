@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import {
   getGuideRequests,
   createGuideRequest,
-  updateGuideRequestApproval,
+  updateGuideRequest,
 } from "./guide_requests.service";
 
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
@@ -44,7 +44,7 @@ const updateApproval = async (
   try {
     const { id } = req.params;
     const { status } = req.body;
-    const guideRequest = await updateGuideRequestApproval({ id, status });
+    const guideRequest = await updateGuideRequest({ id, status });
     res.status(200).json(guideRequest);
   } catch (error) {
     next(error);

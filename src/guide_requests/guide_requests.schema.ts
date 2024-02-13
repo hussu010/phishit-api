@@ -24,9 +24,9 @@ const createGuideRequestSchema = [
   body("documents.*.type").isIn(GuideRequestDocumentTypeEnum),
 ];
 
-const updateGuideRequestApprovalSchema = [
+const updateGuideRequestSchema = [
   param("id").isMongoId(),
   body("status").isString().isIn(StatusEnum),
 ];
 
-export { createGuideRequestSchema, updateGuideRequestApprovalSchema };
+export { createGuideRequestSchema, updateGuideRequestSchema };

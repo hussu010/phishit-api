@@ -5,7 +5,7 @@ import { getAll, create, updateApproval } from "./guide_requests.controller";
 import { isAuthorized, hasRole } from "../common/middlewares/permissions";
 import {
   createGuideRequestSchema,
-  updateGuideRequestApprovalSchema,
+  updateGuideRequestSchema,
 } from "./guide_requests.schema";
 import { validateRequest } from "../common/middlewares/validator";
 
@@ -21,7 +21,7 @@ router.put(
   "/:id/status",
   isAuthorized,
   hasRole(["SUPER_ADMIN", "ADMIN"]),
-  updateGuideRequestApprovalSchema,
+  updateGuideRequestSchema,
   validateRequest,
   updateApproval
 );

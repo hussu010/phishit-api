@@ -74,7 +74,7 @@ const createGuideRequest = async ({
   }
 };
 
-const updateGuideRequestApproval = async ({
+const updateGuideRequest = async ({
   id,
   status,
 }: {
@@ -108,4 +108,4 @@ const updateGuideRequestApproval = async ({
   }
 };
 
-export { getGuideRequests, createGuideRequest, updateGuideRequestApproval };
+export { getGuideRequests, createGuideRequest, updateGuideRequest };
