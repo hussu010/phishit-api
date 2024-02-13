@@ -4,6 +4,7 @@ import { errorMessages } from "../common/config/messages";
 import { Adventure, Package } from "./adventures.model";
 import { IUser } from "../users/users.interface";
 import Booking from "../bookings/bookings.model";
+import { logInteraction } from "../backoffice/backoffice.service";
 
 import redis from "../common/config/redis-client";
 
@@ -44,6 +45,7 @@ const getAdventureById = async (id: string) => {
 };
 
 const createAdventure = async ({
+  user,
   title,
   description,
   location,
@@ -51,6 +53,7 @@ const createAdventure = async ({
   imageAlt,
   images,
 }: {
+  user: IUser;
   title: string;
   description: string;
   location: string;
@@ -71,13 +74,21 @@ const createAdventure = async ({
       images,
     });
 
+    logInteraction({
+      user,
+      action: "create",
+      resource: "adventure",
+      resourceId: adventure._id,
+      data: adventure,
+    });
+
     return adventure;
   } catch (error) {
     throw error;
   }
 };
 
-const deleteAdventure = async (id: string) => {
+const deleteAdventure = async ({ id, user }: { id: string; user: IUser }) => {
   try {
     const adventure = await Adventure.findByIdAndDelete(id);
 
@@ -87,6 +98,14 @@ const deleteAdventure = async (id: string) => {
 
     redis.del(`adventure:${id}`);
 
+    logInteraction({
+      user,
+      action: "delete",
+      resource: "adventure",
+      resourceId: adventure._id,
+      data: adventure,
+    });
+
     return adventure;
   } catch (error) {
     throw error;
@@ -94,6 +113,7 @@ const deleteAdventure = async (id: string) => {
 };
 
 const updateAdventure = async ({
+  user,
   id,
   title,
   description,
@@ -102,6 +122,7 @@ const updateAdventure = async ({
   imageAlt,
   images,
 }: {
+  user: IUser;
   id: string;
   title: string;
   description: string;
@@ -132,6 +153,14 @@ const updateAdventure = async ({
     }
 
     redis.del(`adventure:${id}`);
+
+    logInteraction({
+      user,
+      action: "delete",
+      resource: "adventure",
+      resourceId: adventure._id,
+      data: adventure,
+    });
 
     return adventure;
   } catch (error) {
@@ -260,12 +289,14 @@ const fetchAvailableGuides = async ({
 };
 
 const createAdventurePackage = async ({
+  user,
   adventureId,
   title,
   price,
   description,
   duration,
 }: {
+  user: IUser;
   adventureId: string;
   title: string;
   price: number;
@@ -291,6 +322,14 @@ const createAdventurePackage = async ({
 
     redis.del(`adventure:${adventureId}`);
 
+    logInteraction({
+      user,
+      action: "create",
+      resource: "package",
+      resourceId: adventurePackage._id,
+      data: adventure,
+    });
+
     return adventurePackage;
   } catch (error) {
     throw error;
@@ -298,6 +337,7 @@ const createAdventurePackage = async ({
 };
 
 const updateAdventurePackage = async ({
+  user,
   adventureId,
   packageId,
   title,
@@ -305,6 +345,7 @@ const updateAdventurePackage = async ({
   description,
   duration,
 }: {
+  user: IUser;
   adventureId: string;
   packageId: string;
   title: string;
@@ -336,6 +377,14 @@ const updateAdventurePackage = async ({
 
     redis.del(`adventure:${adventureId}`);
 
+    logInteraction({
+      user,
+      action: "update",
+      resource: "package",
+      resourceId: adventurePackage._id,
+      data: adventure,
+    });
+
     return adventurePackage;
   } catch (error) {
     throw error;
@@ -343,9 +392,11 @@ const updateAdventurePackage = async ({
 };
 
 const removeAdventurePackage = async ({
+  user,
   packageId,
   adventureId,
 }: {
+  user: IUser;
   packageId: string;
   adventureId: string;
 }) => {
@@ -368,6 +419,14 @@ const removeAdventurePackage = async ({
     await adventure.save();
 
     redis.del(`adventure:${adventureId}`);
+
+    logInteraction({
+      user,
+      action: "delete",
+      resource: "package",
+      resourceId: adventurePackage._id,
+      data: adventure,
+    });
 
     return adventurePackage;
   } catch (error) {

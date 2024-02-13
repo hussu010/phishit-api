@@ -44,7 +44,8 @@ const updateApproval = async (
   try {
     const { id } = req.params;
     const { status } = req.body;
-    const guideRequest = await updateGuideRequest({ id, status });
+    const user = req.user!;
+    const guideRequest = await updateGuideRequest({ id, status, user });
     res.status(200).json(guideRequest);
   } catch (error) {
     next(error);

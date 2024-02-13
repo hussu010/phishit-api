@@ -1500,6 +1500,114 @@
           }
         }
       }
+    },
+    "/bookings/{id}/cancel": {
+      "post": {
+        "tags": ["bookings"],
+        "summary": "cancel booking.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Booking cancelled successfully.",
+            "schema": {
+              "$ref": "#/definitions/Booking"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/BadRequestError"
+            }
+          },
+          "401": {
+            "description": "Unautorized request.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "403": {
+            "description": "Forbidden.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "404": {
+            "description": "Booking not found.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      }
+    },
+    "/backoffice/interactions": {
+      "get": {
+        "tags": ["backoffice"],
+        "summary": "Get all interactions.",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Interactions successfully obtained.",
+            "schema": {
+              "$ref": "#/definitions/InteractionsList"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/BadRequestError"
+            }
+          },
+          "401": {
+            "description": "Unautorized request.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "403": {
+            "description": "Forbidden.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "404": {
+            "description": "Booking not found.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -1972,6 +2080,76 @@
             "type": "boolean",
             "example": true
           }
+        }
+      }
+    },
+    "Interactions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "example": "string"
+              },
+              "username": {
+                "type": "string",
+                "example": "string"
+              }
+            }
+          },
+          "resource": {
+            "type": "string",
+            "enum": ["booking", "guideRequest", "adventure"]
+          },
+          "action": {
+            "type": "string",
+            "enum": ["create", "update", "delete"]
+          },
+          "resourceId": {
+            "type": "string",
+            "example": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {}
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "string"
+          },
+          "updatedAt": {
+            "type": "string",
+            "example": "string"
+          }
+        }
+      }
+    },
+    "InteractionsList": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "$ref": "#/definitions/Interactions"
+        },
+        "total": {
+          "type": "number",
+          "example": 10
+        },
+        "count": {
+          "type": "number",
+          "example": 10
+        },
+        "limit": {
+          "type": "number",
+          "example": 10
+        },
+        "offset": {
+          "type": "number",
+          "example": 4
         }
       }
     },

@@ -60,7 +60,7 @@ describe("GET /api/adventures", () => {
 });
 
 describe("GET /api/adventures/:id", () => {
-  it("should return 400 Bad Request", async () => {
+  it("should return 400 Bad Request if adventure id is not valid", async () => {
     const res = await request(app).get("/api/adventures/123");
     expect(res.status).toBe(400);
 
@@ -75,7 +75,7 @@ describe("GET /api/adventures/:id", () => {
     expect(errorDetails).toContainEqual({ path: "id", location: "params" });
   });
 
-  it("should return 404 Not Found", async () => {
+  it("should return 404 Not Found if adventure with id not found", async () => {
     const res = await request(app).get(
       "/api/adventures/5f7a5d713d0f4d1b2c5e3f6e"
     );
@@ -85,7 +85,7 @@ describe("GET /api/adventures/:id", () => {
     });
   });
 
-  it("should return 200 OK with adventure", async () => {
+  it("should return 200 OK with adventure if found", async () => {
     const numberOfAdventures = 6;
     const numberOfPackages = 6;
 
@@ -171,7 +171,7 @@ describe("POST /api/adventures", () => {
     expect(res.body.message).toEqual(errorMessages.FORBIDDEN);
   });
 
-  it("should return 400 Bad Request", async () => {
+  it("should return 400 Bad Request if the fields are not present/ valid", async () => {
     const user = await getUserWithRole("ADMIN");
     const accessToken = await generateJWT(user, "ACCESS");
 
@@ -239,7 +239,7 @@ describe("POST /api/adventures", () => {
     });
   });
 
-  it("should return 201 Created", async () => {
+  it("should return 201 Created if the adventure is created successfully", async () => {
     const user = await getUserWithRole("ADMIN");
     const accessToken = await generateJWT(user, "ACCESS");
 
@@ -467,7 +467,7 @@ describe("PUT /api/adventures/:id", () => {
     });
   });
 
-  it("should return 404 Not Found", async () => {
+  it("should return 404 Not Found if adventure with id is not found", async () => {
     const user = await getUserWithRole("ADMIN");
     const accessToken = await generateJWT(user, "ACCESS");
 

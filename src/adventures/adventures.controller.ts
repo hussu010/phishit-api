@@ -38,8 +38,10 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { title, description, location, imageUrl, imageAlt, images } =
       req.body;
+    const user = req.user!;
 
     const adventure = await createAdventure({
+      user,
       title,
       description,
       location,
@@ -47,6 +49,7 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
       imageUrl,
       imageAlt,
     });
+
     res.status(201).json(adventure);
   } catch (error) {
     next(error);
@@ -58,8 +61,10 @@ const update = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     const { title, description, location, imageUrl, imageAlt, images } =
       req.body;
+    const user = req.user!;
 
     const adventure = await updateAdventure({
+      user,
       id,
       title,
       description,
@@ -77,8 +82,9 @@ const update = async (req: Request, res: Response, next: NextFunction) => {
 const remove = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
+    const user = req.user!;
 
-    await deleteAdventure(id);
+    await deleteAdventure({ id, user });
     res.status(204).json();
   } catch (error) {
     next(error);
@@ -143,8 +149,10 @@ const createPackage = async (
   try {
     const { id } = req.params;
     const { title, price, description, duration } = req.body;
+    const user = req.user!;
 
     const adventurePackage = await createAdventurePackage({
+      user,
       adventureId: id,
       title,
       price,
@@ -165,8 +173,10 @@ const updatePackage = async (
   try {
     const { packageId, id } = req.params;
     const { title, price, description, duration } = req.body;
+    const user = req.user!;
 
     const adventurePackage = await updateAdventurePackage({
+      user,
       adventureId: id,
       packageId,
       title,
@@ -187,8 +197,10 @@ const removePackage = async (
 ) => {
   try {
     const { packageId, id } = req.params;
+    const user = req.user!;
 
     await removeAdventurePackage({
+      user,
       adventureId: id,
       packageId,
     });

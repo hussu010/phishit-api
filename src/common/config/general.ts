@@ -21,6 +21,9 @@ const DICEBEAR_URL = "https://api.dicebear.com/7.x/adventurer/svg";
 
 const MAX_IMAGE_SIZE = 15 * 1024 * 1024; // 15MB
 
+const PAGE_SIZE = 10;
+const PAGE_SIZE_LIMIT = 50;
+
 export {
   OTP_EXPIRATION_DURATION,
   ACCESS_TOKEN_VALIDITY,
@@ -29,4 +32,6 @@ export {
   ALLOWED_PAYMENT_REDIRECT_URLS,
   DICEBEAR_URL,
   MAX_IMAGE_SIZE,
+  PAGE_SIZE,
+  PAGE_SIZE_LIMIT,
 };

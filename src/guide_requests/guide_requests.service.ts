@@ -3,6 +3,7 @@ import { CustomError } from "../common/interfaces/common";
 import { errorMessages } from "../common/config/messages";
 import User from "../users/users.model";
 import { IUser } from "../users/users.interface";
+import { logInteraction } from "../backoffice/backoffice.service";
 
 const getGuideRequests = async () => {
   try {
@@ -75,9 +76,11 @@ const createGuideRequest = async ({
 };
 
 const updateGuideRequest = async ({
+  user,
   id,
   status,
 }: {
+  user: IUser;
   id: string;
   status: string;
 }) => {
@@ -101,6 +104,14 @@ const updateGuideRequest = async ({
         { $push: { roles: "GUIDE" } }
       );
     }
+
+    logInteraction({
+      user: user,
+      action: "update",
+      resource: "guideRequest",
+      resourceId: guideRequest._id,
+      data: guideRequest,
+    });
 
     return guideRequest;
   } catch (error) {
