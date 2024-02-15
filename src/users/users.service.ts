@@ -11,7 +11,7 @@ const getUserUsingPhoneNumber = async (phoneNumber: string): Promise<IUser> => {
     const user = await User.findOne({ phoneNumber });
 
     if (!user) {
-      const user = await User.create({ phoneNumber });
+      const user = await User.create({ phoneNumber, roles: ["GENERAL"] });
       return user;
     }
 

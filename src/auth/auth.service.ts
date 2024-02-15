@@ -9,26 +9,12 @@ import {
   ACCESS_TOKEN_VALIDITY,
 } from "../common/config/general";
 import { verifyOtp, deleteUserOtp } from "./otp.service";
+import { getUserUsingPhoneNumber } from "../users/users.service";
 
 import {
   generateGoogleOauthProviderAuthorizationUrl,
   getGoogleUserDetails,
 } from "./auth.utils";
-
-const getUserUsingPhoneNumber = async (phoneNumber: string): Promise<IUser> => {
-  try {
-    const user = await User.findOne({ phoneNumber });
-
-    if (!user) {
-      const user = await User.create({ phoneNumber });
-      return user;
-    }
-
-    return user;
-  } catch (error) {
-    throw error;
-  }
-};
 
 const getUserById = async (_id: string): Promise<IUser> => {
   try {
@@ -152,6 +138,7 @@ const getUserUsingGoogleOauth = async ({
     if (!user) {
       const user = await User.create({
         googleId: id,
+        roles: ["GENERAL"],
       });
 
       // await updateUserProfile({
@@ -173,7 +160,6 @@ const getUserUsingGoogleOauth = async ({
 export {
   generateJWT,
   getUserViaMethod,
-  getUserUsingPhoneNumber,
   verifyJWT,
   getUserById,
   generateOauthProviderAuthorizationUrl,

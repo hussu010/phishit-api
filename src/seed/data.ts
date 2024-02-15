@@ -242,19 +242,19 @@ const users = [
   {
     phoneNumber: "9848000000",
     username: "user1",
-    roles: ["GENERAL", "GUIDE"],
+    roles: ["GENERAL", "ADMIN"],
     isActive: true,
   },
   {
     phoneNumber: "9863299610",
     username: "user2",
-    roles: ["GENERAL", "ADMIN", "SUPER_ADMIN"],
+    roles: ["GENERAL", "SUPER_ADMIN"],
     isActive: true,
   },
   {
     googleId: "105438825981277363287",
     username: "user3",
-    roles: ["GENERAL", "GUIDE"],
+    roles: ["GENERAL", "ADMIN"],
     isActive: true,
   },
   {

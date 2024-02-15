@@ -1,4 +1,5 @@
-import { getUserUsingPhoneNumber, generateJWT } from "../auth/auth.service";
+import { generateJWT } from "../auth/auth.service";
+import { getUserUsingPhoneNumber } from "../users/users.service";
 import { UserRoleType } from "../common/config/enum";
 
 const getAuthenticatedUserJWT = async () => {

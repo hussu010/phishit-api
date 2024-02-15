@@ -4,7 +4,7 @@ import request from "supertest";
 import app from "../../index";
 
 import { errorMessages, successMessages } from "../common/config/messages";
-import { getUserUsingPhoneNumber } from "../auth/auth.service";
+import { getUserUsingPhoneNumber } from "../users/users.service";
 import { generateUserOtp } from "../auth/otp.service";
 
 beforeAll(async () => {
