@@ -5,4 +5,10 @@ const getAllInteractionsSchema = [
   query("offset").isNumeric().optional(),
 ];
 
-export { getAllInteractionsSchema };
+const getAllBookingsSchema = [
+  query("limit").isNumeric().optional(),
+  query("offset").isNumeric().optional(),
+  query("status").isIn(["CANCELLED"]),
+];
+
+export { getAllInteractionsSchema, getAllBookingsSchema };

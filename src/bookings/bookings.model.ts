@@ -85,6 +85,9 @@ const BookingSchema = new Schema<IBooking>(
       default: "NEW",
     },
     payment: PaymentSchema,
+    cancelledAt: {
+      type: Date,
+    },
   },
   {
     timestamps: true,

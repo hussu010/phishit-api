@@ -1594,8 +1594,54 @@
               "$ref": "#/definitions/SingleMessage"
             }
           },
-          "404": {
-            "description": "Booking not found.",
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          }
+        }
+      }
+    },
+    "/backoffice/bookings": {
+      "get": {
+        "tags": ["backoffice"],
+        "summary": "Get all bookings.",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "type": "string",
+            "description": "booking status",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bookings successfully obtained.",
+            "schema": {
+              "$ref": "#/definitions/BookingListPaginated"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/BadRequestError"
+            }
+          },
+          "401": {
+            "description": "Unautorized request.",
+            "schema": {
+              "$ref": "#/definitions/SingleMessage"
+            }
+          },
+          "403": {
+            "description": "Forbidden.",
             "schema": {
               "$ref": "#/definitions/SingleMessage"
             }
@@ -1894,6 +1940,31 @@
       "type": "array",
       "items": {
         "$ref": "#/definitions/Booking"
+      }
+    },
+    "BookingListPaginated": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "$ref": "#/definitions/Booking"
+        },
+        "total": {
+          "type": "number",
+          "example": 10
+        },
+        "count": {
+          "type": "number",
+          "example": 10
+        },
+        "limit": {
+          "type": "number",
+          "example": 10
+        },
+        "offset": {
+          "type": "number",
+          "example": 4
+        }
       }
     },
     "UpdateGuideRequest": {

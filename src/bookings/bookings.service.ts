@@ -243,6 +243,7 @@ const cancelBooking = async ({ bookingId }: { bookingId: string }) => {
     }
 
     booking.status = "CANCELLED";
+    booking.cancelledAt = new Date();
     await booking.save();
 
     return booking;

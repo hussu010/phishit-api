@@ -24,6 +24,7 @@ interface IBooking {
   payment: IPayment;
   createdAt: Date;
   updatedAt: Date;
+  cancelledAt: Date;
 }
 
 export { IBooking, IPayment };

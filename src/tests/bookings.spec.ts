@@ -1303,5 +1303,6 @@ describe("POST /api/bookings/:id/cancel", () => {
     expect(res.body).toHaveProperty("adventure");
     expect(res.body).toHaveProperty("status");
     expect(res.body.status).toBe("CANCELLED");
+    expect(res.body).toHaveProperty("cancelledAt");
   });
 });

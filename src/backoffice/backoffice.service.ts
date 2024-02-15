@@ -2,8 +2,9 @@ import InteractionLog from "./interactionLogs.model";
 import { IResource, IAction } from "./backoffice.interface";
 import { IUser } from "../users/users.interface";
 import { PAGE_SIZE, PAGE_SIZE_LIMIT } from "../common/config/general";
+import Booking from "../bookings/bookings.model";
 
-const getAllInteractions = async ({
+const fetchAllInteractions = async ({
   limitQuery,
   offsetQuery,
 }: {
@@ -69,4 +70,51 @@ const logInteraction = async ({
   }
 };
 
-export { logInteraction, getAllInteractions };
+const fetchAllBookings = async ({
+  limitQuery,
+  offsetQuery,
+  status,
+}: {
+  limitQuery: string;
+  offsetQuery: string;
+  status: string;
+}) => {
+  try {
+    const _limit =
+      parseInt(limitQuery) > PAGE_SIZE_LIMIT
+        ? PAGE_SIZE_LIMIT
+        : parseInt(limitQuery) || PAGE_SIZE;
+    const _offset = parseInt(offsetQuery) || 0;
+
+    const bookings = await Booking.find({
+      status,
+    })
+      .populate({
+        path: "guide",
+        select: "-phoneNumber -googleId -isActive -__v -createdAt -updatedAt",
+      })
+      .populate({
+        path: "customer",
+        select: "-phoneNumber -googleId -isActive -__v -createdAt -updatedAt",
+      })
+      .limit(_limit)
+      .skip(_offset)
+      .sort({
+        updatedAt: -1,
+      });
+
+    const total = await Booking.find({ status }).countDocuments();
+
+    return {
+      bookings,
+      total,
+      count: bookings.length,
+      limit: _limit,
+      offset: _offset,
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export { logInteraction, fetchAllInteractions, fetchAllBookings };

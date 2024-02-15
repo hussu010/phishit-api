@@ -3,10 +3,9 @@ import { connect, clear, close } from "./test-db-connect.helper";
 import request from "supertest";
 import app from "../../index";
 import { seedInteractions } from "./backoffice.helper";
-import { errorMessages } from "../common/config/messages";
+import { seedBookings } from "./bookings.helper";
 import { getAuthenticatedUserJWT, getUserWithRole } from "./auth.helper";
 import { generateJWT } from "../auth/auth.service";
-import Booking from "../bookings/bookings.model";
 import redisClient from "../common/config/redis-client";
 
 beforeAll(async () => {
@@ -103,5 +102,88 @@ describe("GET /backoffice/interactions", () => {
     expect(res.body.count).toBe(2);
     expect(res.body).toHaveProperty("limit");
     expect(res.body).toHaveProperty("offset");
+  });
+});
+
+describe("GET /backoffice/bookings", () => {
+  it("should return 401 if user is not authenticated", async () => {
+    const res = await request(app).get("/api/backoffice/bookings");
+
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty("message");
+  });
+
+  it("should return 403 if user is not an admin", async () => {
+    const { accessToken } = await getAuthenticatedUserJWT();
+
+    const res = await request(app)
+      .get("/api/backoffice/bookings")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.status).toBe(403);
+    expect(res.body).toHaveProperty("message");
+  });
+
+  it("should return 400 if limit or offset is not a number", async () => {
+    const user = await getUserWithRole("ADMIN");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const res = await request(app)
+      .get("/api/backoffice/bookings?limit=not-a-number&offset=not-a-number")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    const errorDetails = res.body.errors.map((error) => ({
+      path: error.path,
+      location: error.location,
+    }));
+
+    expect(errorDetails).toContainEqual({ path: "limit", location: "query" });
+    expect(errorDetails).toContainEqual({ path: "offset", location: "query" });
+  });
+
+  it("should return 400 if status is not CANCELLED", async () => {
+    const user = await getUserWithRole("ADMIN");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const res = await request(app)
+      .get("/api/backoffice/bookings?status=not-cancelled")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    const errorDetails = res.body.errors.map((error) => ({
+      path: error.path,
+      location: error.location,
+    }));
+
+    expect(errorDetails).toContainEqual({ path: "status", location: "query" });
+  });
+
+  it("should return 200 with no bookings if there are no bookings", async () => {
+    const user = await getUserWithRole("ADMIN");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const res = await request(app)
+      .get("/api/backoffice/bookings?status=CANCELLED")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("data");
+    expect(res.body.data).toHaveLength(0);
+  });
+
+  it("should return 200 with bookings if there are bookings", async () => {
+    const user = await getUserWithRole("ADMIN");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    await seedBookings({ noOfBookings: 18, status: "CANCELLED" });
+
+    const res = await request(app)
+      .get("/api/backoffice/bookings?status=CANCELLED")
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("data");
+    expect(res.body.data).toHaveLength(10);
+    expect(res.body).toHaveProperty("total");
+    expect(res.body.total).toBe(18);
   });
 });
