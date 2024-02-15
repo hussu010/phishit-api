@@ -3,6 +3,7 @@ import {
   StatusEnum,
   GuideTypeEnum,
   GuideRequestDocumentTypeEnum,
+  GenderEnum,
 } from "../common/config/enum";
 import { IGuideRequest } from "./guide_requests.interface";
 
@@ -23,6 +24,15 @@ const GuideRequestSchema = new Schema<IGuideRequest>(
     },
     phoneNumber: {
       type: String,
+      required: true,
+    },
+    gender: {
+      type: String,
+      required: true,
+      enum: GenderEnum,
+    },
+    dateOfBirth: {
+      type: Date,
       required: true,
     },
     email: {

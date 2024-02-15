@@ -5,6 +5,7 @@ import User from "../users/users.model";
 import {
   GuideTypeEnum,
   GuideRequestDocumentTypeEnum,
+  GenderEnum,
 } from "../common/config/enum";
 
 const seedGuideRequests = async ({
@@ -26,6 +27,8 @@ const seedGuideRequests = async ({
         name: faker.person.fullName(),
         phoneNumber: faker.phone.number(),
         email: faker.internet.email(),
+        gender: faker.helpers.arrayElement(GenderEnum),
+        dateOfBirth: faker.date.past(),
         address: faker.location.streetAddress(),
         message: faker.lorem.sentences(3),
         documents: [

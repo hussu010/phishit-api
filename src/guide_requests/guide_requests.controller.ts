@@ -17,8 +17,17 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
 const create = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = req.user!;
-    const { type, name, phoneNumber, email, address, message, documents } =
-      req.body;
+    const {
+      type,
+      name,
+      phoneNumber,
+      email,
+      gender,
+      dateOfBirth,
+      address,
+      message,
+      documents,
+    } = req.body;
 
     const guideRequest = await createGuideRequest({
       user,
@@ -26,6 +35,8 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
       name,
       phoneNumber,
       email,
+      gender,
+      dateOfBirth,
       address,
       message,
       documents,

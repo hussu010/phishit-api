@@ -9,6 +9,7 @@ import { getUserWithRole } from "./auth.helper";
 import {
   GuideRequestDocumentTypeEnum,
   GuideTypeEnum,
+  GenderEnum,
 } from "../common/config/enum";
 import { seedGuideRequests } from "./guide_requests.helper";
 import { generateJWT } from "../auth/auth.service";
@@ -179,6 +180,8 @@ describe("POST /api/guide-requests", () => {
         name: faker.person.fullName(),
         phoneNumber: "9800000000",
         email: faker.internet.email(),
+        gender: faker.helpers.arrayElement(GenderEnum),
+        dateOfBirth: faker.date.past(),
         address: faker.location.streetAddress(),
         message: faker.lorem.paragraph(),
         documents: [
@@ -197,7 +200,7 @@ describe("POST /api/guide-requests", () => {
     const user = await getUserWithRole("GENERAL");
     const accessToken = await generateJWT(user, "ACCESS");
 
-    await request(app)
+    const priorGuideReqRes = await request(app)
       .post("/api/guide-requests")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
@@ -205,6 +208,8 @@ describe("POST /api/guide-requests", () => {
         name: faker.person.fullName(),
         phoneNumber: "9800000000",
         email: faker.internet.email(),
+        gender: faker.helpers.arrayElement(GenderEnum),
+        dateOfBirth: faker.date.past(),
         address: faker.location.streetAddress(),
         message: faker.lorem.paragraph(),
         documents: [
@@ -215,6 +220,8 @@ describe("POST /api/guide-requests", () => {
         ],
       });
 
+    expect(priorGuideReqRes.status).toBe(200);
+
     const res = await request(app)
       .post("/api/guide-requests")
       .set("Authorization", `Bearer ${accessToken}`)
@@ -223,6 +230,8 @@ describe("POST /api/guide-requests", () => {
         name: faker.person.fullName(),
         phoneNumber: "9800000000",
         email: faker.internet.email(),
+        gender: faker.helpers.arrayElement(GenderEnum),
+        dateOfBirth: faker.date.past(),
         address: faker.location.streetAddress(),
         message: faker.lorem.paragraph(),
         documents: [
@@ -249,6 +258,8 @@ describe("POST /api/guide-requests", () => {
         name: faker.person.fullName(),
         phoneNumber: "9800000000",
         email: faker.internet.email(),
+        gender: faker.helpers.arrayElement(GenderEnum),
+        dateOfBirth: faker.date.past(),
         address: faker.location.streetAddress(),
         message: faker.lorem.paragraph(),
         documents: [
@@ -356,18 +367,24 @@ describe("PUT /api/guide-requests/:id/status", () => {
     expect(res.body.updatedAt).toBeDefined();
   });
 
-  it("should send guide request, approve it and check if user is guide", async () => {
+  it("should send guide request, approve it, check if user is guide and create profile", async () => {
     const user = await getUserWithRole("GENERAL");
     const accessToken = await generateJWT(user, "ACCESS");
+
+    const name = faker.person.fullName();
+    const email = faker.internet.email();
+    const dateOfBirth = faker.date.past();
 
     const createGuideRequestRes = await request(app)
       .post("/api/guide-requests")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
         type: faker.helpers.arrayElement(GuideTypeEnum),
-        name: faker.person.fullName(),
+        name,
         phoneNumber: "9800000000",
-        email: faker.internet.email(),
+        email,
+        gender: faker.helpers.arrayElement(GenderEnum),
+        dateOfBirth,
         address: faker.location.streetAddress(),
         message: faker.lorem.paragraph(),
         documents: [
@@ -399,5 +416,17 @@ describe("PUT /api/guide-requests/:id/status", () => {
     expect(resUserInfo.body).toHaveProperty("roles");
     expect(resUserInfo.body.roles).toContain("GUIDE");
     expect(resUserInfo.body).toHaveProperty("adventures");
+
+    const profileRes = await request(app)
+      .get(`/api/profiles`)
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(profileRes.status).toBe(200);
+    expect(profileRes.body).toHaveProperty("fullName");
+    expect(profileRes.body.fullName).toBe(name);
+    expect(profileRes.body).toHaveProperty("email");
+    expect(profileRes.body.email).toBe(email);
+    expect(profileRes.body).toHaveProperty("dateOfBirth");
+    expect(profileRes.body.dateOfBirth).toBe(dateOfBirth.toISOString());
   });
 });

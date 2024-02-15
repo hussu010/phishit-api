@@ -9,6 +9,8 @@ interface IGuideRequest extends Document {
   name: string;
   phoneNumber: string;
   email: string;
+  gender: string;
+  dateOfBirth: Date;
   address: string;
   message: string;
   documents: {

@@ -1,7 +1,9 @@
 import GuideRequest from "./guide_requests.model";
+import User from "../users/users.model";
+import Profile from "../profiles/profiles.model";
+
 import { CustomError } from "../common/interfaces/common";
 import { errorMessages } from "../common/config/messages";
-import User from "../users/users.model";
 import { IUser } from "../users/users.interface";
 import { logInteraction } from "../backoffice/backoffice.service";
 
@@ -31,6 +33,8 @@ const createGuideRequest = async ({
   name,
   phoneNumber,
   email,
+  gender,
+  dateOfBirth,
   address,
   message,
   documents,
@@ -40,6 +44,8 @@ const createGuideRequest = async ({
   name: string;
   phoneNumber: string;
   email: string;
+  gender: string;
+  dateOfBirth: Date;
   address: string;
   message: string;
   documents: string[];
@@ -64,6 +70,8 @@ const createGuideRequest = async ({
       name,
       phoneNumber,
       email,
+      gender,
+      dateOfBirth,
       address,
       message,
       documents,
@@ -102,6 +110,18 @@ const updateGuideRequest = async ({
       await User.findOneAndUpdate(
         { _id: guideRequest.user },
         { $push: { roles: "GUIDE" } }
+      );
+
+      await Profile.findOneAndUpdate(
+        { user: guideRequest.user },
+        {
+          fullName: guideRequest.name,
+          email: guideRequest.email,
+          gender: guideRequest.gender,
+          dateOfBirth: guideRequest.dateOfBirth,
+          bio: "",
+        },
+        { new: true, upsert: true }
       );
     }
 
