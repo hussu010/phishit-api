@@ -23,22 +23,18 @@ const profileSchema = new mongoose.Schema<IProfile>(
     },
     gender: {
       type: String,
-      required: true,
       enum: GenderEnum,
     },
     dateOfBirth: {
       type: Date,
-      required: true,
     },
     bio: {
       type: String,
-      required: true,
       minLength: 3,
       maxLength: 254,
     },
     avatar: {
       type: String,
-      required: false,
     },
   },
   {

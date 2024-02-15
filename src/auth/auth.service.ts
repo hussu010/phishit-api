@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { CustomError } from "../common/interfaces/common";
 import User from "../users/users.model";
+import Profile from "../profiles/profiles.model";
 import { IUser } from "../users/users.interface";
 import { errorMessages } from "../common/config/messages";
 import { JWTGrantType } from "../common/config/enum";
@@ -141,13 +142,13 @@ const getUserUsingGoogleOauth = async ({
         roles: ["GENERAL"],
       });
 
-      // await updateUserProfile({
-      //   user,
-      //   firstName: given_name,
-      //   lastName: family_name,
-      //   email,
-      //   avatarUrl: picture,
-      // });
+      await Profile.create({
+        user,
+        fullName: `${given_name} ${family_name}`,
+        email,
+        avatar: picture,
+      });
+
       return user;
     }
 
