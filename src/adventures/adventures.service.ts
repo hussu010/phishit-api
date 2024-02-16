@@ -156,7 +156,7 @@ const updateAdventure = async ({
 
     logInteraction({
       user,
-      action: "delete",
+      action: "update",
       resource: "adventure",
       resourceId: adventure._id,
       data: adventure,
@@ -267,9 +267,13 @@ const fetchAvailableGuides = async ({
 
     adventure.guides.filter((guide) => {
       const guideHasBookings = bookings.some((booking) => {
+        const endDate =
+          new Date(startDate).getTime() +
+          booking.package.duration * 60 * 60 * 1000;
+
         return (
           booking.guide.toString() === guide._id.toString() &&
-          new Date(startDate) >= booking.startDate &&
+          new Date(endDate) >= booking.startDate &&
           new Date(startDate) <= booking.endDate
         );
       });
