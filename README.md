@@ -3,19 +3,33 @@
 ## Project Structure
 
 `src` - Source code for the application
+
 `scripts` - Scripts to automate tasks
+
 `Dockerfile` - Dockerfile for the application
+
 `Makefile` - Makefile to automate tasks
+
 `package.json` - Node.js package file
+
 `swagger.json` - Swagger file for the application
+
 `src/tests` - Tests for the application
+
 `src/seed` - Seed data for the application
+
 `src/users` - users feature module
+
 `src/auth` - auth feature module
+
 `src/bookings` - bookings feature module
+
 `src/adventures` - adventures feature module
+
 `src/common` - common feature module
+
 `src/common/config` - configuration for the application
+
 `src/backoffice` - admin feature module
 
 ## Development Guide
