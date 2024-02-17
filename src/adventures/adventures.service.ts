@@ -267,9 +267,8 @@ const fetchAvailableGuides = async ({
 
     adventure.guides.filter((guide) => {
       const guideHasBookings = bookings.some((booking) => {
-        const endDate =
-          new Date(startDate).getTime() +
-          booking.package.duration * 60 * 60 * 1000;
+        let endDate = new Date(startDate);
+        endDate.setDate(endDate.getDate() + booking.package.duration);
 
         return (
           booking.guide.toString() === guide._id.toString() &&
