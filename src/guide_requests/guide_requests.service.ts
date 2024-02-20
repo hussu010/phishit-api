@@ -87,10 +87,12 @@ const updateGuideRequest = async ({
   user,
   id,
   status,
+  message,
 }: {
   user: IUser;
   id: string;
   status: string;
+  message?: string;
 }) => {
   try {
     const guideRequest = await GuideRequest.findOneAndUpdate(
@@ -98,7 +100,7 @@ const updateGuideRequest = async ({
         _id: id,
         status: "PENDING",
       },
-      { status },
+      { status, message },
       { new: true }
     );
 

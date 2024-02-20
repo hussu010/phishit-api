@@ -429,4 +429,47 @@ describe("PUT /api/guide-requests/:id/status", () => {
     expect(profileRes.body).toHaveProperty("dateOfBirth");
     expect(profileRes.body.dateOfBirth).toBe(dateOfBirth.toISOString());
   });
+
+  it("should send guide request, reject it with a message", async () => {
+    const user = await getUserWithRole("GENERAL");
+    const accessToken = await generateJWT(user, "ACCESS");
+
+    const name = faker.person.fullName();
+    const email = faker.internet.email();
+    const dateOfBirth = faker.date.past();
+
+    const createGuideRequestRes = await request(app)
+      .post("/api/guide-requests")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        type: faker.helpers.arrayElement(GuideTypeEnum),
+        name,
+        phoneNumber: "9800000000",
+        email: email,
+        gender: faker.helpers.arrayElement(GenderEnum),
+        dateOfBirth,
+        address: faker.location.streetAddress(),
+        message: faker.lorem.paragraph(),
+        documents: [
+          {
+            url: faker.internet.url(),
+            type: faker.helpers.arrayElement(GuideRequestDocumentTypeEnum),
+          },
+        ],
+      });
+
+    expect(createGuideRequestRes.status).toBe(200);
+
+    const adminUser = await getUserWithRole("ADMIN");
+    const adminAccessToken = await generateJWT(adminUser, "ACCESS");
+
+    const approveGuideRequest = await request(app)
+      .put(`/api/guide-requests/${createGuideRequestRes.body._id}/status`)
+      .set("Authorization", `Bearer ${adminAccessToken}`)
+      .send({ status: "REJECTED", message: "Invalid Documents" });
+
+    expect(approveGuideRequest.status).toBe(200);
+    expect(approveGuideRequest.body.status).toBe("REJECTED");
+    expect(approveGuideRequest.body.message).toBe("Invalid Documents");
+  });
 });

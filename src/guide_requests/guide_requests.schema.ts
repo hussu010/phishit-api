@@ -34,6 +34,7 @@ const createGuideRequestSchema = [
 const updateGuideRequestSchema = [
   param("id").isMongoId(),
   body("status").isString().isIn(StatusEnum),
+  body("message").isString().isLength({ min: 3, max: 255 }).optional(),
 ];
 
 export { createGuideRequestSchema, updateGuideRequestSchema };

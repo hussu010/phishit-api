@@ -1973,6 +1973,10 @@
         "type": {
           "status": "string",
           "enum": ["APPROVED", "REJECTED"]
+        },
+        "message": {
+          "type": "string",
+          "example": "this is a message"
         }
       }
     },
