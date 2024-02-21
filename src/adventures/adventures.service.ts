@@ -238,26 +238,37 @@ const unenrollGuideFromAdventure = async ({
 
 const fetchAvailableGuides = async ({
   adventureId,
+  packageId,
   startDate,
 }: {
   adventureId: string;
+  packageId: string;
   startDate: string;
 }) => {
   try {
     const adventure = await Adventure.findOne({
       _id: adventureId,
-    }).populate({
-      path: "guides",
-      select:
-        "-phoneNumber -googleId -isActive -__v -createdAt -updatedAt -roles",
-    });
+    })
+      .populate({
+        path: "guides",
+        select:
+          "-phoneNumber -googleId -isActive -__v -createdAt -updatedAt -roles",
+      })
+      .populate("packages");
 
     if (!adventure) {
       throw new CustomError(errorMessages.OBJECT_WITH_ID_NOT_FOUND, 404);
     }
 
+    const adventurePackage = adventure.packages.find(
+      (packageItem) => packageItem._id.toString() === packageId
+    );
+
+    if (!adventurePackage) {
+      throw new CustomError(errorMessages.OBJECT_WITH_ID_NOT_FOUND, 404);
+    }
+
     const bookings = await Booking.find({
-      adventure: adventureId,
       status: {
         $in: ["CONFIRMED"],
       },
@@ -268,7 +279,7 @@ const fetchAvailableGuides = async ({
     adventure.guides.filter((guide) => {
       const guideHasBookings = bookings.some((booking) => {
         let endDate = new Date(startDate);
-        endDate.setDate(endDate.getDate() + booking.package.duration);
+        endDate.setDate(endDate.getDate() + adventurePackage.duration);
 
         return (
           booking.guide.toString() === guide._id.toString() &&

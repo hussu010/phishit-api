@@ -129,10 +129,11 @@ const getAvailableGuides = async (
   next: NextFunction
 ) => {
   try {
-    const { id } = req.params;
+    const { id, packageId } = req.params;
     const { startDate } = req.body;
     const guides = await fetchAvailableGuides({
       adventureId: id,
+      packageId,
       startDate,
     });
     res.status(200).json(guides);

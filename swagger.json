@@ -1020,12 +1020,18 @@
         }
       }
     },
-    "/adventures/{id}/guides": {
+    "/adventures/{id}/packages/{packageId}/guides": {
       "post": {
         "tags": ["adventures"],
         "parameters": [
           {
             "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "packageId",
             "in": "path",
             "required": true,
             "type": "string"

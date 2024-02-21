@@ -69,13 +69,6 @@ router.post(
   unenrollFromAdventure
 );
 router.post(
-  "/:id/guides",
-  isAuthorized,
-  getAdventureGuideSchema,
-  validateRequest,
-  getAvailableGuides
-);
-router.post(
   "/:id/packages",
   isAuthorized,
   hasRole(["SUPER_ADMIN", "ADMIN"]),
@@ -98,6 +91,13 @@ router.delete(
   getPackageByIdSchema,
   validateRequest,
   removePackage
+);
+router.post(
+  "/:id/packages/:packageId/guides",
+  isAuthorized,
+  getAdventureGuideSchema,
+  validateRequest,
+  getAvailableGuides
 );
 
 export default router;

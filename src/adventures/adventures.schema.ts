@@ -23,6 +23,7 @@ const updateAdventureSchema = [
 
 const getAdventureGuideSchema = [
   ...getAdventureByIdSchema,
+  param("packageId").isMongoId(),
   body("startDate").isISO8601(),
 ];
 

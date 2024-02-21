@@ -799,21 +799,23 @@ describe("POST /api/adventures/:id/unenroll", () => {
   });
 });
 
-describe("GET /api/adventures/:id/guides", () => {
+describe("GET /api/adventures/:id/packages/:packageId/guides", () => {
   it("should return 401 if user is not logged in", async () => {
     const res = await request(app)
-      .post("/api/adventures/5f7a5d713d0f4d1b2c5e3f6e/guides")
+      .post(
+        "/api/adventures/5f7a5d713d0f4d1b2c5e3f6e/packages/5f7a5d713d0f4d1b2c5e3f6e/guides"
+      )
       .set("Accept", "application/json");
 
     expect(res.statusCode).toEqual(401);
     expect(res.body).toHaveProperty("message");
   });
 
-  it("should return 400 Bad Request with invalid id", async () => {
+  it("should return 400 Bad Request with invalid adventure and package ID", async () => {
     const { accessToken } = await getAuthenticatedUserJWT();
 
     const res = await request(app)
-      .post("/api/adventures/123/guides")
+      .post("/api/adventures/123/packages/123/guides")
       .set("Accept", "application/json")
       .set("Authorization", `Bearer ${accessToken}`);
 
@@ -829,6 +831,10 @@ describe("GET /api/adventures/:id/guides", () => {
 
     expect(errorDetails).toContainEqual({ path: "id", location: "params" });
     expect(errorDetails).toContainEqual({
+      path: "packageId",
+      location: "params",
+    });
+    expect(errorDetails).toContainEqual({
       path: "startDate",
       location: "body",
     });
@@ -838,7 +844,34 @@ describe("GET /api/adventures/:id/guides", () => {
     const { accessToken } = await getAuthenticatedUserJWT();
 
     const res = await request(app)
-      .post("/api/adventures/5f7a5d713d0f4d1b2c5e3f6e/guides")
+      .post(
+        "/api/adventures/5f7a5d713d0f4d1b2c5e3f6e/packages/5f7a5d713d0f4d1b2c5e3f6e/guides"
+      )
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        startDate: new Date(),
+      });
+
+    expect(res.status).toBe(404);
+    expect(res.body).toEqual({
+      message: errorMessages.OBJECT_WITH_ID_NOT_FOUND,
+    });
+  });
+
+  it("should return 404 if package does not exists", async () => {
+    const { accessToken } = await getAuthenticatedUserJWT();
+
+    const adventures = await seedAdventures({
+      numberOfAdventures: 1,
+      numberOfPackages: 1,
+      numberOfGuides: 5,
+    });
+
+    const res = await request(app)
+      .post(
+        `/api/adventures/${adventures[0]._id}/packages/5f7a5d713d0f4d1b2c5e3f6e/guides`
+      )
       .set("Accept", "application/json")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
@@ -861,7 +894,9 @@ describe("GET /api/adventures/:id/guides", () => {
     });
 
     const res = await request(app)
-      .post(`/api/adventures/${adventures[0]._id}/guides`)
+      .post(
+        `/api/adventures/${adventures[0]._id}/packages/${adventures[0].packages[0]._id}/guides`
+      )
       .set("Accept", "application/json")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
@@ -885,7 +920,9 @@ describe("GET /api/adventures/:id/guides", () => {
     });
 
     const res = await request(app)
-      .post(`/api/adventures/${adventures[0]._id}/guides`)
+      .post(
+        `/api/adventures/${adventures[0]._id}/packages/${adventures[0].packages[0]._id}/guides`
+      )
       .set("Accept", "application/json")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
@@ -925,21 +962,59 @@ describe("GET /api/adventures/:id/guides", () => {
       { new: true }
     );
 
-    const res = await request(app)
-      .post(`/api/adventures/${adventures[0]._id}/guides`)
+    expect(priorBooking.status).toBe(201);
+
+    const upperBoundCheck = await request(app)
+      .post(
+        `/api/adventures/${adventures[0]._id}/packages/${adventures[0].packages[0]._id}/guides`
+      )
       .set("Accept", "application/json")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
-        startDate: "2020-10-10",
+        startDate: priorBooking.body.endDate,
       });
 
-    expect(res.status).toBe(200);
-    expect(res.body).toBeInstanceOf(Array);
-    expect(res.body.length).toBe(5);
-    expect(res.body[0]).toHaveProperty("_id");
-    expect(res.body[0]).toHaveProperty("username");
-    expect(res.body[0]).toHaveProperty("isAvailable");
-    expect(res.body[0].isAvailable).toBe(false);
+    expect(upperBoundCheck.status).toBe(200);
+    expect(upperBoundCheck.body).toBeInstanceOf(Array);
+    expect(upperBoundCheck.body.length).toBe(5);
+    expect(upperBoundCheck.body[0]).toHaveProperty("username");
+    expect(upperBoundCheck.body[0]).toHaveProperty("isAvailable");
+    expect(upperBoundCheck.body[0].isAvailable).toBe(false);
+
+    const lowerBoundCheck = await request(app)
+      .post(
+        `/api/adventures/${adventures[0]._id}/packages/${adventures[0].packages[0]._id}/guides`
+      )
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        startDate: priorBooking.body.startDate,
+      });
+
+    expect(lowerBoundCheck.status).toBe(200);
+    expect(upperBoundCheck.body).toBeInstanceOf(Array);
+    expect(upperBoundCheck.body[0]).toHaveProperty("isAvailable");
+    expect(upperBoundCheck.body[0].isAvailable).toBe(false);
+
+    const startDate = new Date(priorBooking.body.startDate);
+    startDate.setDate(
+      startDate.getDate() - adventures[0].packages[0].duration + 1
+    );
+
+    const beforeBookingWillEnd = await request(app)
+      .post(
+        `/api/adventures/${adventures[0]._id}/packages/${adventures[0].packages[0]._id}/guides`
+      )
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        startDate,
+      });
+
+    expect(beforeBookingWillEnd.status).toBe(200);
+    expect(beforeBookingWillEnd.body).toBeInstanceOf(Array);
+    expect(beforeBookingWillEnd.body[0]).toHaveProperty("isAvailable");
+    expect(beforeBookingWillEnd.body[0].isAvailable).toBe(false);
   });
 
   it("should mark guide as not available if guide has marked themselves as not available", async () => {
@@ -974,7 +1049,9 @@ describe("GET /api/adventures/:id/guides", () => {
     expect(updateAvailableStatusRes.body.isAvailable).toBe(false);
 
     const res = await request(app)
-      .post(`/api/adventures/${adventures[0]._id}/guides`)
+      .post(
+        `/api/adventures/${adventures[0]._id}/packages/${adventures[0].packages[0]._id}/guides`
+      )
       .set("Accept", "application/json")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
