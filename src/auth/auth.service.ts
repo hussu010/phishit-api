@@ -139,6 +139,7 @@ const getUserUsingGoogleOauth = async ({
     if (!user) {
       const user = await User.create({
         googleId: id,
+        email,
         roles: ["GENERAL"],
       });
 

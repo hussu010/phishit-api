@@ -1,6 +1,6 @@
 import GuideRequest from "./guide_requests.model";
-import User from "../users/users.model";
 import Profile from "../profiles/profiles.model";
+import { sendGuideRequestUpdateEmail } from "../common/utils/email";
 
 import { CustomError } from "../common/interfaces/common";
 import { errorMessages } from "../common/config/messages";
@@ -102,17 +102,15 @@ const updateGuideRequest = async ({
       },
       { status, message },
       { new: true }
-    );
+    ).populate("user");
 
     if (!guideRequest) {
       throw new CustomError(errorMessages.OBJECT_WITH_ID_NOT_FOUND, 404);
     }
 
     if (status === "APPROVED") {
-      await User.findOneAndUpdate(
-        { _id: guideRequest.user },
-        { $push: { roles: "GUIDE" } }
-      );
+      guideRequest.user.roles.push("GUIDE");
+      await guideRequest.user.save();
 
       await Profile.findOneAndUpdate(
         { user: guideRequest.user },
@@ -125,6 +123,13 @@ const updateGuideRequest = async ({
         },
         { new: true, upsert: true }
       );
+    }
+
+    if (guideRequest.user.googleId) {
+      await sendGuideRequestUpdateEmail({
+        user: guideRequest.user,
+        status,
+      });
     }
 
     logInteraction({

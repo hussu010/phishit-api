@@ -7,6 +7,7 @@ interface IUser extends Document {
   _id: string;
   phoneNumber: string;
   googleId: string;
+  email: string;
   username: string;
   roles: string[];
   isActive: boolean;

@@ -138,6 +138,8 @@ jobs:
             echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
             echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
             echo "KHALTI_SECRET_KEY=${{ secrets.DEV_KHALTI_SECRET_KEY }}" >> .env
+            echo "SMTP_USERNAME=${{ secrets.SMTP_USERNAME }}" >> .env
+            echo "SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}" >> .env
 
             make stop-production
             make start-production
