@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { Adventure, Package } from "../adventures/adventures.model";
 import User from "../users/users.model";
+import Profile from "../profiles/profiles.model";
 
 import { adventures } from "./data";
 
@@ -50,6 +51,16 @@ const seedAdventures = async ({
       const user = await User.create({
         phoneNumber: faker.string.numeric(10),
         roles: ["GUIDE"],
+      });
+
+      await Profile.create({
+        user: user._id,
+        fullName: faker.person.fullName(),
+        email: faker.internet.email(),
+        gender: faker.helpers.arrayElement(["MALE", "FEMALE", "OTHER"]),
+        dateOfBirth: faker.date.past({ years: 22 }),
+        bio: faker.lorem.paragraph(),
+        avatar: faker.image.avatar(),
       });
 
       newAdventure.guides.push(user);

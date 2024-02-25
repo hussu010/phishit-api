@@ -17,6 +17,9 @@ const getGuideRequests = async () => {
         {
           status: "APPROVED",
         },
+        {
+          status: "REJECTED",
+        },
       ],
     }).sort({
       createdAt: -1,
