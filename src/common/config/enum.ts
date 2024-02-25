@@ -14,6 +14,7 @@ const GuideRequestDocumentTypeEnum = [
   "NID",
   "PASSPORT",
   "COMPANY_REGISTRATION_CERTIFICATE",
+  "GUIDE_ID",
   "OTHER",
 ];
 type GuideType = "INDIVIDUAL" | "ORGANIZATION";

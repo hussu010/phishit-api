@@ -1880,6 +1880,7 @@
               "type": {
                 "type": "string",
                 "enum": [
+                  "GUIDE_ID",
                   "NID",
                   "PASSPORT",
                   "COMPANY_REGISTRATION_CERTIFICATE",
