@@ -7,6 +7,8 @@ import { errorMessages, successMessages } from "../common/config/messages";
 import { getUserUsingPhoneNumber } from "../users/users.service";
 import { generateUserOtp } from "../auth/otp.service";
 
+import * as otpService from "../auth/otp.service";
+
 beforeAll(async () => {
   await connect();
 });
@@ -61,6 +63,12 @@ describe("POST /api/auth/otp", () => {
   });
 
   it("should return 200 if phoneNumber is valid", async () => {
+    const fakeSmsResponse = {
+      success: true,
+    };
+
+    jest.spyOn(otpService, "sendSMS").mockResolvedValue(fakeSmsResponse);
+
     const res = await request(app)
       .post("/api/auth/otp")
       .send({

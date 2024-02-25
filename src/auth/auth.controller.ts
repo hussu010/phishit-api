@@ -17,7 +17,7 @@ const requestOTP = async (req: Request, res: Response, next: NextFunction) => {
 
     const { otp, expiresAt } = await generateUserOtp(user, "AUTH");
     const message = `Phish.it OTP: ${otp}`;
-    // await sendSMS(phoneNumber, message);
+    await sendSMS(phoneNumber, message);
 
     res.status(200).json({
       message: successMessages.OTP_SENT_SUCCESSFULLY,

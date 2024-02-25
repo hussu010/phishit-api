@@ -140,6 +140,7 @@ jobs:
             echo "KHALTI_SECRET_KEY=${{ secrets.DEV_KHALTI_SECRET_KEY }}" >> .env
             echo "SMTP_USERNAME=${{ secrets.SMTP_USERNAME }}" >> .env
             echo "SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}" >> .env
+            echo "SMS_API_KEY=${{ secrets.SMS_API_KEY }}" >> .env
 
             make stop-production
             make start-production

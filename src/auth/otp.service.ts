@@ -18,8 +18,8 @@ const generateUserOtp = async (
   type: OtpType
 ): Promise<{ otp: number; expiresAt: number }> => {
   try {
-    // const otp = Math.floor(100000 + Math.random() * 900000);  // TODO: uncomment this line and comment the next line
-    const otp = 123456;
+    const otp = Math.floor(100000 + Math.random() * 900000); // TODO: uncomment this line and comment the next line
+    // const otp = 123456;
     const expiresAt = calculateOtpExpirationTime();
 
     await Otp.findOneAndUpdate(
@@ -42,9 +42,10 @@ const generateUserOtp = async (
 const sendSMS = async (phoneNumber: number, message: string) => {
   try {
     const response = await axios.post(
-      "https://sms.aakashsms.com/sms/v3/send/",
+      "http://api.sparrowsms.com/v2/sms/",
       {
-        auth_token: process.env.SMS_API_KEY,
+        token: process.env.SMS_API_KEY,
+        from: "Demo",
         to: phoneNumber,
         text: message,
       },
@@ -58,6 +59,9 @@ const sendSMS = async (phoneNumber: number, message: string) => {
     if (response.data.error) {
       throw new CustomError(errorMessages.CANNOT_SEND_OTP, 503);
     }
+    return {
+      success: true,
+    };
   } catch (error) {
     throw error;
   }
